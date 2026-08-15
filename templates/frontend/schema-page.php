@@ -25,9 +25,9 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 	</header>
 
 	<section class="lpt-totals" aria-label="Totalen">
-		<div><span>Lopen</span><strong data-total="running"><?php echo esc_html(number_format_i18n($totals->runningKm, 2)); ?></strong><small>km</small></div>
-		<div><span>Fietsen</span><strong data-total="cycling"><?php echo esc_html(number_format_i18n($totals->cyclingKm, 2)); ?></strong><small>km</small></div>
-		<div><span>Zwemmen</span><strong data-total="swimming"><?php echo esc_html(number_format_i18n($totals->swimmingKm, 2)); ?></strong><small>km</small></div>
+		<div><span>Lopen: </span><strong data-total="running"><?php echo esc_html(number_format_i18n($totals->runningKm, 2)); ?></strong><small>km</small></div>
+		<div><span>Fietsen: </span><strong data-total="cycling"><?php echo esc_html(number_format_i18n($totals->cyclingKm, 2)); ?></strong><small>km</small></div>
+		<div><span>Zwemmen: </span><strong data-total="swimming"><?php echo esc_html(number_format_i18n($totals->swimmingKm, 2)); ?></strong><small>km</small></div>
 	</section>
 
 	<section class="lpt-training-list" aria-label="Trainingen">
