@@ -1,162 +1,162 @@
 .lpt-schema-page {
-	max-width: 1120px;
-	margin: 0 auto;
-	padding: 32px 16px;
-	color: #202124;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  color: #202124;
 }
 
 .lpt-schema-header {
-	display: flex;
-	align-items: flex-end;
-	justify-content: space-between;
-	gap: 24px;
-	border-bottom: 1px solid #d8dee4;
-	padding-bottom: 18px;
-	margin-bottom: 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid #d8dee4;
+  padding-bottom: 18px;
+  margin-bottom: 24px;
 }
 
 .lpt-schema-header h1 {
-	margin: 0 0 4px;
-	font-size: 2rem;
-	letter-spacing: 0;
+  margin: 0 0 4px;
+  font-size: 2rem;
+  letter-spacing: 0;
 }
 
 .lpt-schema-header p,
 .lpt-week-label {
-	margin: 0;
-	color: #4b5563;
+  margin: 0;
+  color: #4b5563;
 }
 
 .lpt-week-label {
-	text-align: right;
-	font-weight: 600;
+  text-align: right;
+  font-weight: 600;
 }
 
 .lpt-training-list {
-	display: grid;
-	gap: 14px;
+  display: grid;
+  gap: 14px;
 }
 
 .lpt-totals {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 12px;
-	margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
 }
 
 .lpt-totals div {
-	border: 1px solid #d8dee4;
-	border-radius: 6px;
-	padding: 12px;
-	background: #f7f9fb;
+  border: 1px solid #d8dee4;
+  border-radius: 6px;
+  padding: 12px;
+  background: #f7f9fb;
 }
 
 .lpt-totals span,
 .lpt-totals small {
-	color: #4b5563;
+  color: #4b5563;
 }
 
 .lpt-totals strong {
-	display: inline-block;
-	margin-right: 4px;
-	font-size: 1.5rem;
+  display: inline-block;
+  margin-right: 4px;
+  font-size: 1.5rem;
 }
 
 .lpt-training-row {
-	display: grid;
-	grid-template-columns: 150px minmax(220px, 1fr) minmax(260px, 340px);
-	gap: 18px;
-	padding: 16px;
-	border: 1px solid #d8dee4;
-	border-radius: 6px;
-	background: #fff;
+  display: grid;
+  grid-template-columns: 150px minmax(220px, 1fr) minmax(260px, 340px);
+  gap: 18px;
+  padding: 16px;
+  border: 1px solid #d8dee4;
+  border-radius: 6px;
+  background: #fff;
 }
 
 .lpt-training-date {
-	display: grid;
-	gap: 4px;
-	align-content: start;
+  display: grid;
+  gap: 4px;
+  align-content: start;
 }
 
 .lpt-training-date span {
-	color: #4b5563;
+  color: #4b5563;
 }
 
 .lpt-description p {
-	margin-top: 0;
+  margin-top: 0;
 }
 
 .lpt-type-links {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px 12px;
-	margin: 12px 0 0;
-	padding: 0;
-	list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
 .lpt-type-links a {
-	font-weight: 700;
-	text-decoration: none;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .lpt-feedback-fields {
-	display: grid;
-	gap: 10px;
+  display: grid;
+  gap: 10px;
 }
 
 .lpt-feedback-fields label {
-	display: grid;
-	gap: 4px;
-	font-weight: 600;
+  display: grid;
+  gap: 4px;
+  font-weight: 600;
 }
 
 .lpt-feedback-fields input,
 .lpt-feedback-fields textarea {
-	width: 100%;
-	box-sizing: border-box;
-	border: 1px solid #b8c0cc;
-	border-radius: 4px;
-	padding: 8px;
-	font: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #b8c0cc;
+  border-radius: 4px;
+  padding: 8px;
+  font: inherit;
 }
 
 .lpt-coach-comment {
-	grid-column: 2 / -1;
-	padding-top: 12px;
-	border-top: 1px solid #edf0f3;
+  grid-column: 2 / -1;
+  padding-top: 12px;
+  border-top: 1px solid #edf0f3;
 }
 
 .lpt-coach-comment p {
-	margin: 4px 0 0;
+  margin: 4px 0 0;
 }
 
 .lpt-save-status {
-	min-height: 20px;
-	color: #1f7a3f;
-	font-size: 0.9rem;
+  min-height: 20px;
+  color: #1f7a3f;
+  font-size: 0.9rem;
 }
 
 .lpt-save-status.is-error {
-	color: #b42318;
+  color: #b42318;
 }
 
 @media (max-width: 820px) {
-	.lpt-schema-header,
-	.lpt-training-row {
-		display: grid;
-		grid-template-columns: 1fr;
-	}
+  .lpt-schema-header,
+  .lpt-training-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
 
-	.lpt-week-label {
-		text-align: left;
-	}
+  .lpt-week-label {
+    text-align: left;
+  }
 
-	.lpt-coach-comment {
-		grid-column: auto;
-	}
+  .lpt-coach-comment {
+    grid-column: auto;
+  }
 
-	.lpt-totals {
-		grid-template-columns: 1fr;
-	}
+  .lpt-totals {
+    grid-template-columns: 1fr;
+  }
 }

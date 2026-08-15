@@ -12,20 +12,15 @@ final class SchemaRepository
 		global $wpdb;
 
 		$now = current_time('mysql');
-		$inserted = $wpdb->insert(
-			$this->table(),
-			[
-				'user_id'          => $user_id,
-				'week_start_date'  => $week_start_date,
-				'created_at'       => $now,
-				'updated_at'       => $now,
-			],
-			['%d', '%s', '%s', '%s']
+		$wpdb->query(
+			$wpdb->prepare(
+				"INSERT IGNORE INTO {$this->table()} (user_id, week_start_date, created_at, updated_at) VALUES (%d, %s, %s, %s)",
+				$user_id,
+				$week_start_date,
+				$now,
+				$now
+			)
 		);
-
-		if ($inserted !== false && $wpdb->insert_id > 0) {
-			return (int) $wpdb->insert_id;
-		}
 
 		$existing = $this->findByUserAndWeek($user_id, $week_start_date);
 		if ($existing instanceof Schema) {

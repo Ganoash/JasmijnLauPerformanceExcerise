@@ -29,21 +29,16 @@ final class TrainingRepository
 		global $wpdb;
 
 		$now = current_time('mysql');
-		$inserted = $wpdb->insert(
-			$this->table(),
-			[
-				'schema_id'   => $schema_id,
-				'day_index'   => $day_index,
-				'time_of_day' => $time_of_day,
-				'created_at'  => $now,
-				'updated_at'  => $now,
-			],
-			['%d', '%d', '%s', '%s', '%s']
+		$wpdb->query(
+			$wpdb->prepare(
+				"INSERT IGNORE INTO {$this->table()} (schema_id, day_index, time_of_day, created_at, updated_at) VALUES (%d, %d, %s, %s, %s)",
+				$schema_id,
+				$day_index,
+				$time_of_day,
+				$now,
+				$now
+			)
 		);
-
-		if ($inserted !== false && $wpdb->insert_id > 0) {
-			return (int) $wpdb->insert_id;
-		}
 
 		$existing = $this->findBySlot($schema_id, $day_index, $time_of_day);
 		return $existing instanceof Training ? $existing->id : 0;

@@ -33,7 +33,7 @@ final class Training
 			(string) $row['time_of_day'],
 			(string) ($row['description'] ?? ''),
 			$primary_id > 0 ? $primary_id : null,
-			isset($row['actual_distance']) && $row['actual_distance'] !== null ? (float) $row['actual_distance'] : null,
+			array_key_exists('actual_distance', $row) && $row['actual_distance'] !== null ? (float) $row['actual_distance'] : null,
 			(string) ($row['execution_comment'] ?? ''),
 			(string) ($row['injury_comment'] ?? ''),
 			(string) ($row['coach_comment'] ?? '')
