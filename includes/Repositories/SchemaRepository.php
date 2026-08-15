@@ -12,7 +12,7 @@ final class SchemaRepository
 		global $wpdb;
 
 		$now = current_time('mysql');
-		$wpdb->insert(
+		$inserted = $wpdb->insert(
 			$this->table(),
 			[
 				'user_id'          => $user_id,
@@ -23,7 +23,7 @@ final class SchemaRepository
 			['%d', '%s', '%s', '%s']
 		);
 
-		if ($wpdb->insert_id > 0) {
+		if ($inserted !== false && $wpdb->insert_id > 0) {
 			return (int) $wpdb->insert_id;
 		}
 
@@ -84,6 +84,33 @@ final class SchemaRepository
 	public function deleteByUser(int $user_id): void
 	{
 		global $wpdb;
+
+		$schema_ids = $wpdb->get_col(
+			$wpdb->prepare("SELECT id FROM {$this->table()} WHERE user_id = %d", $user_id)
+		);
+		$schema_ids = array_map('intval', is_array($schema_ids) ? $schema_ids : []);
+
+		if ($schema_ids !== []) {
+			$placeholders = implode(', ', array_fill(0, count($schema_ids), '%d'));
+			$trainings    = $wpdb->prefix . 'lpt_trainings';
+			$links        = $wpdb->prefix . 'lpt_training_type_links';
+
+			$training_ids = $wpdb->get_col(
+				$wpdb->prepare("SELECT id FROM {$trainings} WHERE schema_id IN ({$placeholders})", ...$schema_ids)
+			);
+			$training_ids = array_map('intval', is_array($training_ids) ? $training_ids : []);
+
+			if ($training_ids !== []) {
+				$training_placeholders = implode(', ', array_fill(0, count($training_ids), '%d'));
+				$wpdb->query(
+					$wpdb->prepare("DELETE FROM {$links} WHERE training_id IN ({$training_placeholders})", ...$training_ids)
+				);
+			}
+
+			$wpdb->query(
+				$wpdb->prepare("DELETE FROM {$trainings} WHERE schema_id IN ({$placeholders})", ...$schema_ids)
+			);
+		}
 
 		$wpdb->delete($this->table(), ['user_id' => $user_id], ['%d']);
 	}

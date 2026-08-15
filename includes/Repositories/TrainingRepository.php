@@ -29,7 +29,7 @@ final class TrainingRepository
 		global $wpdb;
 
 		$now = current_time('mysql');
-		$wpdb->insert(
+		$inserted = $wpdb->insert(
 			$this->table(),
 			[
 				'schema_id'   => $schema_id,
@@ -41,7 +41,7 @@ final class TrainingRepository
 			['%d', '%d', '%s', '%s', '%s']
 		);
 
-		if ($wpdb->insert_id > 0) {
+		if ($inserted !== false && $wpdb->insert_id > 0) {
 			return (int) $wpdb->insert_id;
 		}
 
