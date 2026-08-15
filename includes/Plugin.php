@@ -100,7 +100,7 @@ final class Plugin
 			'init',
 			static function (): void {
 				if ((bool) get_option('lpt_flush_rewrite_rules', false)) {
-					flush_rewrite_rules(false);
+					flush_rewrite_rules(true);
 					delete_option('lpt_flush_rewrite_rules');
 				}
 			},

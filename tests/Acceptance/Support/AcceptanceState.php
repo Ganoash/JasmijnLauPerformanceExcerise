@@ -32,6 +32,10 @@ final class AcceptanceState
 	public string $dashboardHtml = '';
 	public string $frontendFeedbackValue = '';
 	public string $createdExerciseName = '';
+	public string $resolvedSchemaUrl = '';
+
+	/** @var array<string,string> */
+	public array $resolvedQueryVars = [];
 
 	/** @var int[] */
 	public array $createdUserIds = [];
@@ -77,6 +81,8 @@ final class AcceptanceState
 		$this->dashboardHtml = '';
 		$this->frontendFeedbackValue = '';
 		$this->createdExerciseName = '';
+		$this->resolvedSchemaUrl = '';
+		$this->resolvedQueryVars = [];
 		$this->createdUserIds = [];
 		$this->createdTrainingTypeIds = [];
 	}
