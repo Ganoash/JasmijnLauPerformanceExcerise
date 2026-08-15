@@ -6,7 +6,7 @@
  */
 ?>
 <div class="wrap">
-	<h1>Training schema’s</h1>
+	<h1>Schema’s bewerken</h1>
 
 	<form method="get">
 		<input type="hidden" name="page" value="lpt-training">
