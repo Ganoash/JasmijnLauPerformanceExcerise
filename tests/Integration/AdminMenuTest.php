@@ -97,7 +97,7 @@ if (class_exists('WP_UnitTestCase')) {
 					$trainings,
 					$trainingTypes,
 					$schemaCreation,
-					new SchemaEditorService($trainings, new SchemaAccess()),
+					new SchemaEditorService($trainings, $trainingTypes, new SchemaAccess()),
 					new SchemaRequestValidator(),
 					$dateFactory,
 					new Nonce()

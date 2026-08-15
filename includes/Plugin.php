@@ -52,7 +52,7 @@ final class Plugin
 			$training_repository,
 			$training_type_repository,
 			$schema_creation_service,
-			new SchemaEditorService($training_repository, $schema_access),
+			new SchemaEditorService($training_repository, $training_type_repository, $schema_access),
 			new SchemaRequestValidator(),
 			$date_factory,
 			$nonce

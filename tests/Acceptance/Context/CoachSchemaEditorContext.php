@@ -45,7 +45,7 @@ final class CoachSchemaEditorContext extends BaseAcceptanceContext
 	 */
 	public function coachChangesMondayMorningDescription(): void
 	{
-		$service = new SchemaEditorService($this->state->trainings, new SchemaAccess());
+		$service = new SchemaEditorService($this->state->trainings, $this->state->trainingTypes, new SchemaAccess());
 		$service->saveWeek(
 			$this->state->currentUserId,
 			[

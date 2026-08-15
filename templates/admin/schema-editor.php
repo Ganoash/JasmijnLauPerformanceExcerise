@@ -3,6 +3,7 @@
  * @var string $action_url
  * @var string $frontend_url
  * @var array<int,int[]> $linked_types
+ * @var \LauPerformanceTraining\Domain\TrainingType[] $linked_training_types
  * @var string $nonce
  * @var \LauPerformanceTraining\Domain\Schema $schema
  * @var \LauPerformanceTraining\Domain\TrainingType[] $training_types
@@ -76,13 +77,24 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 							</select>
 						</td>
 						<td>
-							<select multiple size="4" name="trainings[<?php echo esc_attr((string) $index); ?>][linked_training_type_ids][]">
-								<?php foreach ($training_types as $type) : ?>
-									<option value="<?php echo esc_attr((string) $type->id); ?>" <?php selected(in_array($type->id, $linked_types[$training->id] ?? [], true)); ?>>
+							<fieldset class="lpt-extra-exercises">
+								<legend class="screen-reader-text">Extra oefeningen</legend>
+								<?php foreach ($linked_training_types as $type) : ?>
+									<label>
+										<input
+											type="checkbox"
+											name="trainings[<?php echo esc_attr((string) $index); ?>][linked_training_type_ids][]"
+											value="<?php echo esc_attr((string) $type->id); ?>"
+											<?php checked(in_array($type->id, $linked_types[$training->id] ?? [], true)); ?>
+										>
 										<?php echo esc_html($type->name); ?>
-									</option>
+									</label><br>
 								<?php endforeach; ?>
-							</select>
+								<?php if ($linked_training_types === []) : ?>
+									<span class="description">Maak eerst een actieve krachtoefening aan.</span>
+								<?php endif; ?>
+							</fieldset>
+							<p class="description">Selecteer een of meerdere krachtoefeningen naast de primaire training.</p>
 						</td>
 						<td>
 							<textarea name="trainings[<?php echo esc_attr((string) $index); ?>][coach_comment]" rows="4" class="large-text"><?php echo esc_textarea($training->coachComment); ?></textarea>

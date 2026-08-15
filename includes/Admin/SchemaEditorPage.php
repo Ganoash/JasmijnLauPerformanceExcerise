@@ -57,15 +57,16 @@ final class SchemaEditorPage
 		View::render(
 			'admin/schema-editor.php',
 			[
-				'action_url'     => admin_url('admin-post.php'),
-				'frontend_url'   => home_url('/training-schema/' . $user_id . '/' . $week->startDate() . '/'),
-				'linked_types'   => $this->linkedTypeMap($schema_id),
-				'nonce'          => $this->nonce->create(Nonce::ADMIN_SCHEMA_ACTION),
-				'schema'         => $schema,
-				'training_types' => $this->trainingTypesForEditor($schema_id),
-				'trainings'      => $this->trainings->findBySchema($schema_id),
-				'user'           => $user,
-				'week'           => $week,
+				'action_url'            => admin_url('admin-post.php'),
+				'frontend_url'          => home_url('/training-schema/' . $user_id . '/' . $week->startDate() . '/'),
+				'linked_types'          => $this->linkedTypeMap($schema_id),
+				'linked_training_types' => $this->linkedTrainingTypesForEditor($schema_id),
+				'nonce'                 => $this->nonce->create(Nonce::ADMIN_SCHEMA_ACTION),
+				'schema'                => $schema,
+				'training_types'        => $this->trainingTypesForEditor($schema_id),
+				'trainings'             => $this->trainings->findBySchema($schema_id),
+				'user'                  => $user,
+				'week'                  => $week,
 			]
 		);
 	}
@@ -143,6 +144,29 @@ final class SchemaEditorPage
 		}
 
 		return $map;
+	}
+
+	/**
+	 * @return TrainingType[]
+	 */
+	private function linkedTrainingTypesForEditor(int $schema_id): array
+	{
+		$used_ids = [];
+		foreach ($this->trainings->findBySchema($schema_id) as $training) {
+			foreach ($this->trainings->linkedTypeIds($training->id) as $linked_type_id) {
+				$used_ids[] = $linked_type_id;
+			}
+		}
+
+		$used_ids = array_unique($used_ids);
+
+		return array_values(
+			array_filter(
+				$this->training_types->all(false),
+				static fn (TrainingType $type): bool => strtolower($type->category) === 'strength'
+					&& ($type->active || in_array($type->id, $used_ids, true))
+			)
+		);
 	}
 
 	/**

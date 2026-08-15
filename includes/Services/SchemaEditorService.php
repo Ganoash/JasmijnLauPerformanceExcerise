@@ -5,12 +5,14 @@ namespace LauPerformanceTraining\Services;
 
 use LauPerformanceTraining\Permissions\SchemaAccess;
 use LauPerformanceTraining\Repositories\TrainingRepository;
+use LauPerformanceTraining\Repositories\TrainingTypeRepository;
 use RuntimeException;
 
 final class SchemaEditorService
 {
 	public function __construct(
 		private readonly TrainingRepository $trainings,
+		private readonly TrainingTypeRepository $training_types,
 		private readonly SchemaAccess $access
 	) {
 	}
@@ -33,7 +35,24 @@ final class SchemaEditorService
 					'coach_comment'            => $row['coach_comment'],
 				]
 			);
-			$this->trainings->replaceLinkedTypes($row['training_id'], $row['linked_training_type_ids']);
+			$this->trainings->replaceLinkedTypes($row['training_id'], $this->strengthTrainingTypeIds($row['linked_training_type_ids']));
 		}
+	}
+
+	/**
+	 * @param int[] $training_type_ids
+	 * @return int[]
+	 */
+	private function strengthTrainingTypeIds(array $training_type_ids): array
+	{
+		$strength_ids = [];
+		foreach (array_unique(array_filter(array_map('intval', $training_type_ids))) as $training_type_id) {
+			$type = $this->training_types->find($training_type_id);
+			if ($type && strtolower($type->category) === 'strength') {
+				$strength_ids[] = $training_type_id;
+			}
+		}
+
+		return $strength_ids;
 	}
 }

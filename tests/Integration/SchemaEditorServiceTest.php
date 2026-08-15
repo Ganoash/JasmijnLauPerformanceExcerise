@@ -38,7 +38,11 @@ if (class_exists('WP_UnitTestCase')) {
 				]
 			);
 
-			$service = new SchemaEditorService($trainings, new SchemaAccess(static fn (): bool => true));
+			$service = new SchemaEditorService(
+				$trainings,
+				new TrainingTypeRepository(),
+				new SchemaAccess(static fn (): bool => true)
+			);
 			$service->saveWeek(
 				1,
 				[
@@ -77,6 +81,24 @@ if (class_exists('WP_UnitTestCase')) {
 					'active'     => true,
 				]
 			);
+			$strength_id = $training_types->create(
+				[
+					'name'       => 'Core stability',
+					'category'   => 'strength',
+					'unit'       => 'sets',
+					'linked_url' => '',
+					'active'     => true,
+				]
+			);
+			$mobility_id = $training_types->create(
+				[
+					'name'       => 'Mobiliteit',
+					'category'   => 'strength',
+					'unit'       => 'sets',
+					'linked_url' => '',
+					'active'     => true,
+				]
+			);
 
 			$rows = [];
 			foreach ($slots as $index => $slot) {
@@ -84,12 +106,16 @@ if (class_exists('WP_UnitTestCase')) {
 					'training_id'              => $slot->id,
 					'description'              => $index === 0 ? 'Rustige duurloop' : '',
 					'primary_training_type_id' => $index === 0 ? $type_id : null,
-					'linked_training_type_ids' => [],
+					'linked_training_type_ids' => $index === 0 ? [$strength_id, $type_id, $mobility_id] : [],
 					'coach_comment'            => '',
 				];
 			}
 
-			$service = new SchemaEditorService($trainings, new SchemaAccess(static fn (): bool => true));
+			$service = new SchemaEditorService(
+				$trainings,
+				$training_types,
+				new SchemaAccess(static fn (): bool => true)
+			);
 			$service->saveWeek(1, $rows);
 
 			$filled = $trainings->findById($slots[0]->id);
@@ -97,6 +123,7 @@ if (class_exists('WP_UnitTestCase')) {
 
 			self::assertSame('Rustige duurloop', $filled?->description);
 			self::assertSame($type_id, $filled?->primaryTrainingTypeId);
+			self::assertSame([$strength_id, $mobility_id], $trainings->linkedTypeIds($slots[0]->id));
 			self::assertSame('', $empty?->description);
 			self::assertNull($empty?->primaryTrainingTypeId);
 		}
