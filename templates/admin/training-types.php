@@ -30,19 +30,31 @@
 			<tbody>
 				<tr>
 					<th scope="row"><label for="lpt-name">Naam</label></th>
-					<td><input class="regular-text" id="lpt-name" name="name" value="<?php echo esc_attr($editing?->name ?? ''); ?>" required></td>
+					<td>
+						<input class="regular-text" id="lpt-name" name="name" value="<?php echo esc_attr($editing?->name ?? ''); ?>" required>
+						<p class="description">Naam die Jasmijn in het schema kiest, bijvoorbeeld duurloop, interval of kracht.</p>
+					</td>
 				</tr>
 				<tr>
 					<th scope="row"><label for="lpt-category">Categorie</label></th>
-					<td><input class="regular-text" id="lpt-category" name="category" value="<?php echo esc_attr($editing?->category ?? ''); ?>" placeholder="running, cycling, swimming, strength" required></td>
+					<td>
+						<input class="regular-text" id="lpt-category" name="category" value="<?php echo esc_attr($editing?->category ?? ''); ?>" placeholder="running, cycling, swimming, strength" required>
+						<p class="description">Sportgroep voor filtering en totalen. Gebruik bijvoorbeeld running, cycling, swimming of strength.</p>
+					</td>
 				</tr>
 				<tr>
 					<th scope="row"><label for="lpt-unit">Eenheid</label></th>
-					<td><input class="regular-text" id="lpt-unit" name="unit" value="<?php echo esc_attr($editing?->unit ?? ''); ?>" placeholder="kilometers, meters" required></td>
+					<td>
+						<input class="regular-text" id="lpt-unit" name="unit" value="<?php echo esc_attr($editing?->unit ?? ''); ?>" placeholder="kilometers, meters" required>
+						<p class="description">Meetwaarde voor geplande en uitgevoerde afstand. Zwemmen met meters wordt automatisch omgerekend naar kilometers in de totalen.</p>
+					</td>
 				</tr>
 				<tr>
 					<th scope="row"><label for="lpt-linked-url">Link</label></th>
-					<td><input class="regular-text" id="lpt-linked-url" name="linked_url" type="url" value="<?php echo esc_attr($editing?->linkedUrl ?? ''); ?>"></td>
+					<td>
+						<input class="regular-text" id="lpt-linked-url" name="linked_url" type="url" value="<?php echo esc_attr($editing?->linkedUrl ?? ''); ?>">
+						<p class="description">Optionele link naar uitleg, video of externe instructie voor deze oefening.</p>
+					</td>
 				</tr>
 				<tr>
 					<th scope="row">Actief</th>
@@ -51,6 +63,7 @@
 							<input type="checkbox" name="active" value="1" <?php checked($editing?->active ?? true); ?>>
 							Tonen bij nieuwe schema’s
 						</label>
+						<p class="description">Uitgeschakelde oefeningen blijven zichtbaar in bestaande schema’s, maar zijn niet meer te kiezen voor nieuwe trainingen.</p>
 					</td>
 				</tr>
 			</tbody>
