@@ -3,6 +3,7 @@ parameters:
   paths:
     - includes
   scanFiles:
+    - stubs/wordpress.php
     - lau-performance-training.php
   excludePaths:
     - vendor

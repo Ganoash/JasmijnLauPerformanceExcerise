@@ -82,9 +82,14 @@ final class SchemaEditorPage
 
 		$user_id         = isset($_POST['user_id']) ? (int) $_POST['user_id'] : 0;
 		$week_start_date = isset($_POST['week_start_date']) ? sanitize_text_field(wp_unslash($_POST['week_start_date'])) : '';
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Each nested training row is sanitized by sanitizePostedTrainingRow().
+		$posted_trainings = isset($_POST['trainings']) && is_array($_POST['trainings'])
+			? array_map([$this, 'sanitizePostedTrainingRow'], wp_unslash($_POST['trainings']))
+			: [];
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		try {
-			$rows = $this->validator->validateTrainings(wp_unslash($_POST['trainings'] ?? []));
+			$rows = $this->validator->validateTrainings($posted_trainings);
 			$this->schema_editor_service->saveWeek(get_current_user_id(), $rows);
 
 			wp_safe_redirect(
@@ -103,6 +108,27 @@ final class SchemaEditorPage
 			);
 			exit;
 		}
+	}
+
+	/**
+	 * @param mixed $row
+	 * @return array<string,mixed>
+	 */
+	public function sanitizePostedTrainingRow(mixed $row): array
+	{
+		if (! is_array($row)) {
+			return [];
+		}
+
+		return [
+			'training_id'               => isset($row['training_id']) ? (int) $row['training_id'] : 0,
+			'description'               => isset($row['description']) ? sanitize_textarea_field((string) $row['description']) : '',
+			'primary_training_type_id'  => isset($row['primary_training_type_id']) ? (int) $row['primary_training_type_id'] : 0,
+			'linked_training_type_ids'  => isset($row['linked_training_type_ids']) && is_array($row['linked_training_type_ids'])
+				? array_map('intval', $row['linked_training_type_ids'])
+				: [],
+			'coach_comment'             => isset($row['coach_comment']) ? sanitize_textarea_field((string) $row['coach_comment']) : '',
+		];
 	}
 
 	/**

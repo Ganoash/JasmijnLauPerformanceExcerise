@@ -34,7 +34,7 @@ final class FrontendTrainingSaveAction
 
 		$training_id = isset($_POST['training_id']) ? (int) $_POST['training_id'] : 0;
 		$field       = isset($_POST['field']) ? sanitize_key(wp_unslash($_POST['field'])) : '';
-		$value       = wp_unslash($_POST['value'] ?? '');
+		$value       = isset($_POST['value']) ? sanitize_textarea_field(wp_unslash($_POST['value'])) : '';
 
 		try {
 			$training = $this->feedback_service->updateField(get_current_user_id(), $training_id, $field, $value);

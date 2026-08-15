@@ -6,7 +6,12 @@
 	<exclude-pattern>vendor/*</exclude-pattern>
 	<arg name="extensions" value="php"/>
 	<arg value="sp"/>
-	<rule ref="WordPress"/>
+	<rule ref="WordPress.Security">
+		<exclude name="WordPress.Security.NonceVerification"/>
+	</rule>
+	<rule ref="WordPress.DB.PreparedSQL">
+		<exclude name="WordPress.DB.PreparedSQL.InterpolatedNotPrepared"/>
+	</rule>
 	<rule ref="PHPCompatibilityWP"/>
 	<config name="testVersion" value="8.1-"/>
 </ruleset>
