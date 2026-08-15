@@ -1,0 +1,62 @@
+<?php
+declare(strict_types=1);
+
+namespace LauPerformanceTraining\Tests\Integration;
+
+use LauPerformanceTraining\Activation\DatabaseInstaller;
+use LauPerformanceTraining\Permissions\SchemaAccess;
+use LauPerformanceTraining\Repositories\SchemaRepository;
+use LauPerformanceTraining\Repositories\TrainingRepository;
+use LauPerformanceTraining\Services\SchemaCreationService;
+use LauPerformanceTraining\Services\SchemaEditorService;
+use LauPerformanceTraining\Support\DateFactory;
+
+if (class_exists('WP_UnitTestCase')) {
+	final class SchemaEditorServiceTest extends \WP_UnitTestCase
+	{
+		public function set_up(): void
+		{
+			parent::set_up();
+			(new DatabaseInstaller())->install();
+		}
+
+		public function test_admin_schema_save_preserves_athlete_feedback(): void
+		{
+			$user_id   = self::factory()->user->create();
+			$schemas   = new SchemaRepository();
+			$trainings = new TrainingRepository();
+			$schema_id = (new SchemaCreationService($schemas, $trainings, new DateFactory()))->createForUserWeek($user_id, '2026-08-17');
+			$training  = $trainings->findBySchema($schema_id)[0];
+
+			$trainings->updateFeedbackFields(
+				$training->id,
+				[
+					'actual_distance'   => 8.5,
+					'execution_comment' => 'Ging goed',
+					'injury_comment'    => 'Geen pijn',
+				]
+			);
+
+			$service = new SchemaEditorService($trainings, new SchemaAccess(static fn (): bool => true));
+			$service->saveWeek(
+				1,
+				[
+					[
+						'training_id'              => $training->id,
+						'description'              => 'Nieuwe training',
+						'primary_training_type_id' => null,
+						'linked_training_type_ids' => [],
+						'coach_comment'            => 'Rustig aan',
+					],
+				]
+			);
+
+			$updated = $trainings->findById($training->id);
+
+			self::assertSame('Nieuwe training', $updated->description);
+			self::assertSame(8.5, $updated->actualDistance);
+			self::assertSame('Ging goed', $updated->executionComment);
+			self::assertSame('Geen pijn', $updated->injuryComment);
+		}
+	}
+}

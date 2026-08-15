@@ -5,8 +5,11 @@ namespace LauPerformanceTraining\Admin;
 
 final class AdminMenu
 {
-	public function __construct(private readonly TrainingTypePage $training_type_page)
-	{
+	public function __construct(
+		private readonly UserOverviewPage $user_overview_page,
+		private readonly SchemaEditorPage $schema_editor_page,
+		private readonly TrainingTypePage $training_type_page
+	) {
 	}
 
 	public function register(): void
@@ -22,9 +25,27 @@ final class AdminMenu
 			'Training schema’s',
 			'manage_training_schemas',
 			'lpt-training',
-			[$this->training_type_page, 'render'],
+			[$this->user_overview_page, 'render'],
 			'dashicons-clipboard',
 			30
+		);
+
+		add_submenu_page(
+			'lpt-training',
+			'Gebruikers',
+			'Gebruikers',
+			'manage_training_schemas',
+			'lpt-training',
+			[$this->user_overview_page, 'render']
+		);
+
+		add_submenu_page(
+			'lpt-training',
+			'Schema bewerken',
+			'Schema bewerken',
+			'manage_training_schemas',
+			'lpt-schema-editor',
+			[$this->schema_editor_page, 'render']
 		);
 
 		add_submenu_page(
