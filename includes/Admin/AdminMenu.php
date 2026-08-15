@@ -18,6 +18,7 @@ final class AdminMenu
 	public function register(): void
 	{
 		add_action('admin_menu', [$this, 'registerMenus']);
+		add_action('admin_head', [$this, 'hideInternalSchemaEditorSubmenu']);
 		$this->training_type_page->register();
 	}
 
@@ -50,7 +51,6 @@ final class AdminMenu
 			self::SCHEMA_EDITOR_SLUG,
 			[$this->schema_editor_page, 'render']
 		);
-		$this->hideInternalSchemaEditorSubmenu();
 
 		add_submenu_page(
 			self::MENU_SLUG,
@@ -62,7 +62,7 @@ final class AdminMenu
 		);
 	}
 
-	private function hideInternalSchemaEditorSubmenu(): void
+	public function hideInternalSchemaEditorSubmenu(): void
 	{
 		global $submenu;
 

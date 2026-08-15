@@ -30,7 +30,9 @@ if (class_exists('WP_UnitTestCase')) {
 			$_registered_pages = [];
 			wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
 
-			$this->adminMenu()->registerMenus();
+			$admin_menu = $this->adminMenu();
+			$admin_menu->registerMenus();
+			$admin_menu->hideInternalSchemaEditorSubmenu();
 
 			$visible = array_map(
 				static fn (array $item): array => [$item[0], $item[2]],
@@ -49,6 +51,28 @@ if (class_exists('WP_UnitTestCase')) {
 				get_plugin_page_hookname('lpt-schema-editor', 'lpt-training'),
 				$_registered_pages
 			);
+		}
+
+		public function test_schema_editor_page_stays_accessible_until_wordpress_authorizes_the_request(): void
+		{
+			global $menu, $submenu, $_registered_pages, $pagenow, $plugin_page, $parent_file;
+
+			$menu = [];
+			$submenu = [];
+			$_registered_pages = [];
+			$pagenow = 'admin.php';
+			$plugin_page = 'lpt-schema-editor';
+			$parent_file = '';
+			wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
+
+			$admin_menu = $this->adminMenu();
+			$admin_menu->registerMenus();
+
+			self::assertContains('lpt-schema-editor', array_column($submenu['lpt-training'] ?? [], 2));
+			self::assertTrue(user_can_access_admin_page());
+
+			$admin_menu->hideInternalSchemaEditorSubmenu();
+			self::assertNotContains('lpt-schema-editor', array_column($submenu['lpt-training'] ?? [], 2));
 		}
 
 		private function adminMenu(): AdminMenu
