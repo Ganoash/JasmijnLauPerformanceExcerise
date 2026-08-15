@@ -8,6 +8,7 @@ use LauPerformanceTraining\Admin\SchemaEditorPage;
 use LauPerformanceTraining\Admin\TrainingTypePage;
 use LauPerformanceTraining\Admin\UserOverviewPage;
 use LauPerformanceTraining\Ajax\FrontendTrainingSaveAction;
+use LauPerformanceTraining\Blocks\DashboardSchemaBlock;
 use LauPerformanceTraining\Cron\SchemaCreationJob;
 use LauPerformanceTraining\Frontend\RewriteRoutes;
 use LauPerformanceTraining\Frontend\SchemaPage;
@@ -59,6 +60,7 @@ final class Plugin
 
 		(new AdminMenu(new UserOverviewPage($date_factory), $schema_editor_page, $training_type_page))->register();
 		(new SchemaCreationJob($schema_creation_service))->register();
+		(new DashboardSchemaBlock($date_factory))->register();
 		(new FrontendTrainingSaveAction(
 			new FrontendFeedbackService(
 				$training_repository,

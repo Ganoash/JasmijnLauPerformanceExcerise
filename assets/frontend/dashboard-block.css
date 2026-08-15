@@ -1,0 +1,40 @@
+.lpt-dashboard-block ul {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.lpt-dashboard-block a {
+	display: grid;
+	gap: 4px;
+	min-height: 92px;
+	padding: 14px;
+	border: 1px solid #d8dee4;
+	border-radius: 6px;
+	background: #fff;
+	color: #202124;
+	text-decoration: none;
+}
+
+.lpt-dashboard-block a:focus,
+.lpt-dashboard-block a:hover {
+	border-color: #1f6feb;
+}
+
+.lpt-dashboard-block span,
+.lpt-dashboard-block small {
+	color: #4b5563;
+}
+
+.lpt-dashboard-block strong {
+	font-size: 1.25rem;
+}
+
+@media (max-width: 820px) {
+	.lpt-dashboard-block ul {
+		grid-template-columns: 1fr;
+	}
+}
