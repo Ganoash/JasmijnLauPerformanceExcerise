@@ -1,0 +1,7 @@
+default:
+  suites:
+    acceptance:
+      paths:
+        - tests/Acceptance/features
+      contexts:
+        - LauPerformanceTraining\Tests\Acceptance\FeatureContext

@@ -17,6 +17,7 @@
     "php": ">=8.1"
   },
   "require-dev": {
+    "behat/behat": "^3.15",
     "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpstan/phpstan": "^2.2",
@@ -29,10 +30,12 @@
   "scripts": {
     "test": [
       "@test:unit",
-      "@test:integration"
+      "@test:integration",
+      "@test:acceptance"
     ],
     "test:unit": "phpunit --configuration phpunit.xml.dist",
     "test:integration": "phpunit --configuration phpunit.integration.xml.dist",
+    "test:acceptance": "behat --config behat.yml.dist",
     "stan": "phpstan analyse",
     "lint": "phpcs",
     "format": "phpcbf"

@@ -9,6 +9,7 @@ composer install
 composer test
 composer test:unit
 composer test:integration
+composer test:acceptance
 composer stan
 composer lint
 composer format
