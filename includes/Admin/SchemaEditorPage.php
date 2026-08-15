@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace LauPerformanceTraining\Admin;
 
 use InvalidArgumentException;
+use LauPerformanceTraining\Domain\TrainingType;
 use LauPerformanceTraining\Domain\Week;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
@@ -61,7 +62,7 @@ final class SchemaEditorPage
 				'linked_types'   => $this->linkedTypeMap($schema_id),
 				'nonce'          => $this->nonce->create(Nonce::ADMIN_SCHEMA_ACTION),
 				'schema'         => $schema,
-				'training_types' => $this->training_types->all(true),
+				'training_types' => $this->trainingTypesForEditor($schema_id),
 				'trainings'      => $this->trainings->findBySchema($schema_id),
 				'user'           => $user,
 				'week'           => $week,
@@ -142,5 +143,31 @@ final class SchemaEditorPage
 		}
 
 		return $map;
+	}
+
+	/**
+	 * @return TrainingType[]
+	 */
+	private function trainingTypesForEditor(int $schema_id): array
+	{
+		$used_ids = [];
+		foreach ($this->trainings->findBySchema($schema_id) as $training) {
+			if ($training->primaryTrainingTypeId !== null) {
+				$used_ids[] = $training->primaryTrainingTypeId;
+			}
+
+			foreach ($this->trainings->linkedTypeIds($training->id) as $linked_type_id) {
+				$used_ids[] = $linked_type_id;
+			}
+		}
+
+		$used_ids = array_unique($used_ids);
+
+		return array_values(
+			array_filter(
+				$this->training_types->all(false),
+				static fn (TrainingType $type): bool => $type->active || in_array($type->id, $used_ids, true)
+			)
+		);
 	}
 }

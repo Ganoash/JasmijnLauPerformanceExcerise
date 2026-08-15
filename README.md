@@ -32,3 +32,18 @@ in this repository yet.
 The Docker PHP container currently includes Composer but not Node/npm. JavaScript
 linting and formatting require Node to be installed in the environment running
 the npm scripts.
+
+## WordPress Usage
+
+Activate the plugin in WordPress, then use the `Training schema’s` admin menu to
+manage exercises and weekly schemas. Add the dynamic block
+`lau-performance-training/dashboard-schema` to a logged-in user dashboard page to
+show links for previous, current, next, and two-weeks-ahead schemas.
+
+The frontend schema URL format is:
+
+```text
+/training-schema/{user_id}/{week_start_date}/
+```
+
+Opening an allowed missing schema creates the empty week with fourteen slots.
