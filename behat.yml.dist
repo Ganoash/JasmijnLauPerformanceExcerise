@@ -4,4 +4,8 @@ default:
       paths:
         - tests/Acceptance/features
       contexts:
-        - LauPerformanceTraining\Tests\Acceptance\FeatureContext
+        - LauPerformanceTraining\Tests\Acceptance\Context\BootstrapContext
+        - LauPerformanceTraining\Tests\Acceptance\Context\AthleteSchemaContext
+        - LauPerformanceTraining\Tests\Acceptance\Context\SchemaPrivacyContext
+        - LauPerformanceTraining\Tests\Acceptance\Context\CoachSchemaEditorContext
+        - LauPerformanceTraining\Tests\Acceptance\Context\TrainingTypeContext
