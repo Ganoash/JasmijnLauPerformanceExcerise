@@ -75,6 +75,13 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertNotContains('lpt-schema-editor', array_column($submenu['lpt-training'] ?? [], 2));
 		}
 
+		public function test_schema_editor_save_action_is_registered(): void
+		{
+			$this->adminMenu()->register();
+
+			self::assertNotFalse(has_action('admin_post_lpt_save_schema'));
+		}
+
 		private function adminMenu(): AdminMenu
 		{
 			$schemas = new SchemaRepository();

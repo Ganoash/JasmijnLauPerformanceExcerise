@@ -7,6 +7,7 @@ use LauPerformanceTraining\Activation\DatabaseInstaller;
 use LauPerformanceTraining\Permissions\SchemaAccess;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
+use LauPerformanceTraining\Repositories\TrainingTypeRepository;
 use LauPerformanceTraining\Services\SchemaCreationService;
 use LauPerformanceTraining\Services\SchemaEditorService;
 use LauPerformanceTraining\Support\DateFactory;
@@ -57,6 +58,47 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertSame(8.5, $updated->actualDistance);
 			self::assertSame('Ging goed', $updated->executionComment);
 			self::assertSame('Geen pijn', $updated->injuryComment);
+		}
+
+		public function test_admin_schema_save_allows_only_one_filled_training_slot(): void
+		{
+			$user_id        = self::factory()->user->create();
+			$schemas        = new SchemaRepository();
+			$trainings      = new TrainingRepository();
+			$training_types = new TrainingTypeRepository();
+			$schema_id      = (new SchemaCreationService($schemas, $trainings, new DateFactory()))->createForUserWeek($user_id, '2026-08-17');
+			$slots          = $trainings->findBySchema($schema_id);
+			$type_id        = $training_types->create(
+				[
+					'name'       => 'Duurloop',
+					'category'   => 'running',
+					'unit'       => 'kilometers',
+					'linked_url' => '',
+					'active'     => true,
+				]
+			);
+
+			$rows = [];
+			foreach ($slots as $index => $slot) {
+				$rows[] = [
+					'training_id'              => $slot->id,
+					'description'              => $index === 0 ? 'Rustige duurloop' : '',
+					'primary_training_type_id' => $index === 0 ? $type_id : null,
+					'linked_training_type_ids' => [],
+					'coach_comment'            => '',
+				];
+			}
+
+			$service = new SchemaEditorService($trainings, new SchemaAccess(static fn (): bool => true));
+			$service->saveWeek(1, $rows);
+
+			$filled = $trainings->findById($slots[0]->id);
+			$empty  = $trainings->findById($slots[1]->id);
+
+			self::assertSame('Rustige duurloop', $filled?->description);
+			self::assertSame($type_id, $filled?->primaryTrainingTypeId);
+			self::assertSame('', $empty?->description);
+			self::assertNull($empty?->primaryTrainingTypeId);
 		}
 	}
 }
