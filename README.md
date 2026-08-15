@@ -27,9 +27,10 @@ Unit tests run through `phpunit.xml.dist`. Integration tests run through
 `phpunit.integration.xml.dist` and use `wp-phpunit/wp-phpunit` against the local
 Docker WordPress database with the isolated `wptests_` table prefix.
 
-Acceptance scenarios live in `tests/Acceptance/features`. They document the v1
-workflows from a user perspective; a Behat/WordPress browser runner is not wired
-in this repository yet.
+Acceptance scenarios live in `tests/Acceptance/features` and run through Behat
+against the local WordPress bootstrap. They document the v1 workflows from a user
+perspective while keeping the runner focused on service and permission behavior
+instead of browser automation.
 
 The Docker PHP container currently includes Composer but not Node/npm. Run the
 npm scripts from the host, or install Node in the container image if you want all

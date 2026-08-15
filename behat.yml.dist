@@ -5,7 +5,11 @@ default:
         - tests/Acceptance/features
       contexts:
         - LauPerformanceTraining\Tests\Acceptance\Context\BootstrapContext
+        - LauPerformanceTraining\Tests\Acceptance\Context\UserContext
         - LauPerformanceTraining\Tests\Acceptance\Context\AthleteSchemaContext
         - LauPerformanceTraining\Tests\Acceptance\Context\SchemaPrivacyContext
         - LauPerformanceTraining\Tests\Acceptance\Context\CoachSchemaEditorContext
+        - LauPerformanceTraining\Tests\Acceptance\Context\DashboardSchemaBlockContext
+        - LauPerformanceTraining\Tests\Acceptance\Context\MissingSchemaCreationContext
+        - LauPerformanceTraining\Tests\Acceptance\Context\FrontendCoachFeedbackContext
         - LauPerformanceTraining\Tests\Acceptance\Context\TrainingTypeContext

@@ -29,6 +29,9 @@ final class AcceptanceState
 	public ?float $latestRunningTotal = null;
 	public string $savedField = '';
 	public string $visibleExerciseName = '';
+	public string $dashboardHtml = '';
+	public string $frontendFeedbackValue = '';
+	public string $createdExerciseName = '';
 
 	/** @var int[] */
 	public array $createdUserIds = [];
@@ -71,6 +74,9 @@ final class AcceptanceState
 		$this->latestRunningTotal = null;
 		$this->savedField = '';
 		$this->visibleExerciseName = '';
+		$this->dashboardHtml = '';
+		$this->frontendFeedbackValue = '';
+		$this->createdExerciseName = '';
 		$this->createdUserIds = [];
 		$this->createdTrainingTypeIds = [];
 	}

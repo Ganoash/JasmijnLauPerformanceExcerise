@@ -5,6 +5,7 @@ namespace LauPerformanceTraining\Tests\Acceptance\Context;
 
 use LauPerformanceTraining\Domain\TrainingType;
 use LauPerformanceTraining\Repositories\TrainingRepository;
+use LauPerformanceTraining\Validation\TrainingTypeValidator;
 use PHPUnit\Framework\Assert;
 
 final class TrainingTypeContext extends BaseAcceptanceContext
@@ -60,5 +61,32 @@ final class TrainingTypeContext extends BaseAcceptanceContext
 	public function inactiveExerciseIsNotOfferedForNewSelections(): void
 	{
 		Assert::assertNotContains('Historische oefening', $this->activeTrainingTypeNames());
+	}
+
+	/**
+	 * @When the coach creates active exercise :name in category :category with unit :unit
+	 */
+	public function coachCreatesActiveExerciseInCategoryWithUnit(string $name, string $category, string $unit): void
+	{
+		$fields = (new TrainingTypeValidator())->validate(
+			[
+				'name'       => $name,
+				'category'   => $category,
+				'unit'       => $unit,
+				'linked_url' => 'https://example.test/exercises/' . sanitize_title($name),
+				'active'     => '1',
+			]
+		);
+
+		$this->state->createdExerciseName = $fields['name'];
+		$this->state->createdTrainingTypeIds[] = $this->state->trainingTypes->create($fields);
+	}
+
+	/**
+	 * @Then the exercise is offered for new schema selections
+	 */
+	public function exerciseIsOfferedForNewSchemaSelections(): void
+	{
+		Assert::assertContains($this->state->createdExerciseName, $this->activeTrainingTypeNames());
 	}
 }
