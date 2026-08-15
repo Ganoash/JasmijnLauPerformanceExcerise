@@ -114,6 +114,9 @@ function add_role(string $role, string $display_name, array $capabilities = []):
 function add_submenu_page(string $parent_slug, string $page_title, string $menu_title, string $capability, string $menu_slug, callable|array|string $callback = '', int|float|null $position = null): string|false { return ''; }
 function admin_url(string $path = '', string $scheme = 'admin'): string { return $path; }
 function auth_redirect(): void {}
+function block_template_part(string $part): void {}
+function bloginfo(string $show = ''): void {}
+function body_class(string|array $css_class = ''): void {}
 function current_time(string $type, int|bool $gmt = 0): string { return '2026-08-15 00:00:00'; }
 function current_user_can(string $capability, mixed ...$args): bool { return false; }
 function dbDelta(string|array $queries = '', bool $execute = true): array { return []; }
@@ -131,6 +134,7 @@ function get_user_by(string $field, int|string $value): WP_User|false { return n
 function get_users(array $args = []): array { return []; }
 function home_url(string $path = '', ?string $scheme = null): string { return $path; }
 function is_user_logged_in(): bool { return true; }
+function language_attributes(string $doctype = 'html'): void {}
 function nocache_headers(): void {}
 function register_block_type(string $block_type, array $args = []): mixed { return null; }
 function sanitize_key(string $key): string { return $key; }
@@ -143,6 +147,9 @@ function wp_create_nonce(string|int $action = -1): string { return 'nonce'; }
 function wp_die(string $message = '', string $title = '', array|string $args = []): never { exit($message); }
 function wp_enqueue_script(string $handle, string $src = '', array $deps = [], string|bool|null $ver = false, array|bool $args = []): bool { return true; }
 function wp_enqueue_style(string $handle, string $src = '', array $deps = [], string|bool|null $ver = false, string $media = 'all'): bool { return true; }
+function wp_footer(): void {}
+function wp_head(): void {}
+function wp_body_open(): void {}
 function wp_localize_script(string $handle, string $object_name, array $l10n): bool { return true; }
 function wp_next_scheduled(string $hook, array $args = []): int|false { return false; }
 function wp_register_script(string $handle, string|false $src, array $deps = [], string|bool|null $ver = false, array|bool $args = []): bool { return true; }

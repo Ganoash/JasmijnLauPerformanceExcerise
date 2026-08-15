@@ -73,21 +73,69 @@ final class SchemaPage
 
 		$trainings     = $this->trainings->findBySchema($schema_id);
 		$primary_types = $this->primaryTypesByTraining($schema_id);
-
-		get_header();
-		View::render(
-			'frontend/schema-page.php',
+		$content       = $this->schemaContent(
 			[
-				'linked_types' => $this->linkedTypesByTraining($schema_id),
+				'linked_types'  => $this->linkedTypesByTraining($schema_id),
 				'primary_types' => $primary_types,
-				'schema'       => $schema,
-				'totals'       => $this->distance_totals->calculate($trainings, $primary_types),
-				'trainings'    => $trainings,
-				'user'         => $user,
-				'week'         => $week,
+				'schema'        => $schema,
+				'totals'        => $this->distance_totals->calculate($trainings, $primary_types),
+				'trainings'     => $trainings,
+				'user'          => $user,
+				'week'          => $week,
 			]
 		);
+
+		if (function_exists('wp_is_block_theme') && wp_is_block_theme()) {
+			$this->renderBlockThemeDocument($content);
+			return;
+		}
+
+		get_header();
+		echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		get_footer();
+	}
+
+	/**
+	 * @param array<string,mixed> $data
+	 */
+	private function schemaContent(array $data): string
+	{
+		ob_start();
+		View::render('frontend/schema-page.php', $data);
+
+		return (string) ob_get_clean();
+	}
+
+	private function renderBlockThemeDocument(string $content): void
+	{
+		$header = $this->blockTemplatePart('header');
+		$footer = $this->blockTemplatePart('footer');
+		?>
+		<!DOCTYPE html>
+		<html <?php language_attributes(); ?>>
+		<head>
+			<meta charset="<?php bloginfo('charset'); ?>" />
+			<?php wp_head(); ?>
+		</head>
+		<body <?php body_class('lpt-schema-document'); ?>>
+		<?php wp_body_open(); ?>
+		<div class="wp-site-blocks">
+			<?php echo $header; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php echo $footer; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		</div>
+		<?php wp_footer(); ?>
+		</body>
+		</html>
+		<?php
+	}
+
+	private function blockTemplatePart(string $slug): string
+	{
+		ob_start();
+		block_template_part($slug);
+
+		return (string) ob_get_clean();
 	}
 
 	/**
