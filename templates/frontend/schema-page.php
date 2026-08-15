@@ -3,6 +3,7 @@
  * @var array<int,\LauPerformanceTraining\Domain\TrainingType[]> $linked_types
  * @var array<int,\LauPerformanceTraining\Domain\TrainingType|null> $primary_types
  * @var \LauPerformanceTraining\Domain\Schema $schema
+ * @var \LauPerformanceTraining\Domain\DistanceTotals $totals
  * @var \LauPerformanceTraining\Domain\Training[] $trainings
  * @var WP_User $user
  * @var \LauPerformanceTraining\Domain\Week $week
@@ -22,6 +23,12 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 			<?php echo esc_html(date_i18n('d-m-Y', strtotime($week->startDate())) . ' - ' . date_i18n('d-m-Y', strtotime($week->endDate()))); ?>
 		</div>
 	</header>
+
+	<section class="lpt-totals" aria-label="Totalen">
+		<div><span>Lopen</span><strong data-total="running"><?php echo esc_html(number_format_i18n($totals->runningKm, 2)); ?></strong><small>km</small></div>
+		<div><span>Fietsen</span><strong data-total="cycling"><?php echo esc_html(number_format_i18n($totals->cyclingKm, 2)); ?></strong><small>km</small></div>
+		<div><span>Zwemmen</span><strong data-total="swimming"><?php echo esc_html(number_format_i18n($totals->swimmingKm, 2)); ?></strong><small>km</small></div>
+	</section>
 
 	<section class="lpt-training-list" aria-label="Trainingen">
 		<?php foreach ($trainings as $training) : ?>
@@ -68,16 +75,17 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 				<div class="lpt-feedback-fields">
 					<label>
 						<span>Afstand</span>
-						<input type="number" step="0.01" min="0" value="<?php echo esc_attr($training->actualDistance === null ? '' : (string) $training->actualDistance); ?>">
+						<input data-field="actual_distance" type="number" step="0.01" min="0" value="<?php echo esc_attr($training->actualDistance === null ? '' : (string) $training->actualDistance); ?>">
 					</label>
 					<label>
 						<span>Uitvoering</span>
-						<textarea rows="3"><?php echo esc_textarea($training->executionComment); ?></textarea>
+						<textarea data-field="execution_comment" rows="3"><?php echo esc_textarea($training->executionComment); ?></textarea>
 					</label>
 					<label>
 						<span>Blessure</span>
-						<textarea rows="3"><?php echo esc_textarea($training->injuryComment); ?></textarea>
+						<textarea data-field="injury_comment" rows="3"><?php echo esc_textarea($training->injuryComment); ?></textarea>
 					</label>
+					<span class="lpt-save-status" aria-live="polite"></span>
 				</div>
 
 				<?php if ($training->coachComment !== '') : ?>

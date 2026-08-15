@@ -9,7 +9,9 @@ use LauPerformanceTraining\Permissions\SchemaAccess;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Repositories\TrainingTypeRepository;
+use LauPerformanceTraining\Services\DistanceTotalService;
 use LauPerformanceTraining\Services\SchemaCreationService;
+use LauPerformanceTraining\Support\Nonce;
 use LauPerformanceTraining\Support\View;
 
 final class SchemaPage
@@ -19,7 +21,9 @@ final class SchemaPage
 		private readonly TrainingRepository $trainings,
 		private readonly TrainingTypeRepository $training_types,
 		private readonly SchemaCreationService $schema_creation_service,
-		private readonly SchemaAccess $access
+		private readonly SchemaAccess $access,
+		private readonly DistanceTotalService $distance_totals,
+		private readonly Nonce $nonce
 	) {
 	}
 
@@ -51,15 +55,34 @@ final class SchemaPage
 			[],
 			LPT_VERSION
 		);
+		wp_enqueue_script(
+			'lpt-schema-view',
+			LPT_PLUGIN_URL . 'assets/frontend/schema-view.js',
+			[],
+			LPT_VERSION,
+			true
+		);
+		wp_localize_script(
+			'lpt-schema-view',
+			'lptSchemaView',
+			[
+				'ajaxUrl' => admin_url('admin-ajax.php'),
+				'nonce'   => $this->nonce->create(Nonce::FRONTEND_FEEDBACK_ACTION),
+			]
+		);
+
+		$trainings     = $this->trainings->findBySchema($schema_id);
+		$primary_types = $this->primaryTypesByTraining($schema_id);
 
 		get_header();
 		View::render(
 			'frontend/schema-page.php',
 			[
 				'linked_types' => $this->linkedTypesByTraining($schema_id),
-				'primary_types' => $this->primaryTypesByTraining($schema_id),
+				'primary_types' => $primary_types,
 				'schema'       => $schema,
-				'trainings'    => $this->trainings->findBySchema($schema_id),
+				'totals'       => $this->distance_totals->calculate($trainings, $primary_types),
+				'trainings'    => $trainings,
 				'user'         => $user,
 				'week'         => $week,
 			]

@@ -7,6 +7,7 @@ use LauPerformanceTraining\Admin\AdminMenu;
 use LauPerformanceTraining\Admin\SchemaEditorPage;
 use LauPerformanceTraining\Admin\TrainingTypePage;
 use LauPerformanceTraining\Admin\UserOverviewPage;
+use LauPerformanceTraining\Ajax\FrontendTrainingSaveAction;
 use LauPerformanceTraining\Cron\SchemaCreationJob;
 use LauPerformanceTraining\Frontend\RewriteRoutes;
 use LauPerformanceTraining\Frontend\SchemaPage;
@@ -14,10 +15,13 @@ use LauPerformanceTraining\Permissions\SchemaAccess;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Repositories\TrainingTypeRepository;
+use LauPerformanceTraining\Services\DistanceTotalService;
+use LauPerformanceTraining\Services\FrontendFeedbackService;
 use LauPerformanceTraining\Services\SchemaCreationService;
 use LauPerformanceTraining\Services\SchemaEditorService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
+use LauPerformanceTraining\Validation\DistanceValidator;
 use LauPerformanceTraining\Validation\SchemaRequestValidator;
 use LauPerformanceTraining\Validation\TrainingTypeValidator;
 
@@ -55,13 +59,24 @@ final class Plugin
 
 		(new AdminMenu(new UserOverviewPage($date_factory), $schema_editor_page, $training_type_page))->register();
 		(new SchemaCreationJob($schema_creation_service))->register();
+		(new FrontendTrainingSaveAction(
+			new FrontendFeedbackService(
+				$training_repository,
+				$schema_repository,
+				$schema_access,
+				new DistanceValidator()
+			),
+			$nonce
+		))->register();
 		(new RewriteRoutes(
 			new SchemaPage(
 				$schema_repository,
 				$training_repository,
 				$training_type_repository,
 				$schema_creation_service,
-				$schema_access
+				$schema_access,
+				new DistanceTotalService(),
+				$nonce
 			)
 		))->register();
 

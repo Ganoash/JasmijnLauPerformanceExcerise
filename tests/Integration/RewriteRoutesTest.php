@@ -9,8 +9,10 @@ use LauPerformanceTraining\Permissions\SchemaAccess;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Repositories\TrainingTypeRepository;
+use LauPerformanceTraining\Services\DistanceTotalService;
 use LauPerformanceTraining\Services\SchemaCreationService;
 use LauPerformanceTraining\Support\DateFactory;
+use LauPerformanceTraining\Support\Nonce;
 
 if (class_exists('WP_UnitTestCase')) {
 	final class RewriteRoutesTest extends \WP_UnitTestCase
@@ -25,7 +27,9 @@ if (class_exists('WP_UnitTestCase')) {
 					$trainings,
 					new TrainingTypeRepository(),
 					new SchemaCreationService($schemas, $trainings, new DateFactory()),
-					new SchemaAccess(static fn (): bool => false)
+					new SchemaAccess(static fn (): bool => false),
+					new DistanceTotalService(),
+					new Nonce()
 				)
 			);
 
