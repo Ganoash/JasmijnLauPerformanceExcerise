@@ -7,9 +7,15 @@ final class Plugin
 {
 	public function register(): void
 	{
-		/**
-		 * Services and WordPress hooks are added in the implementation commits
-		 * that own those features.
-		 */
+		add_action(
+			'init',
+			static function (): void {
+				if ((bool) get_option('lpt_flush_rewrite_rules', false)) {
+					flush_rewrite_rules(false);
+					delete_option('lpt_flush_rewrite_rules');
+				}
+			},
+			20
+		);
 	}
 }

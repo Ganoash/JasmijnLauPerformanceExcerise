@@ -25,6 +25,20 @@ if (file_exists($lpt_autoload)) {
 	require_once LPT_PLUGIN_DIR . 'includes/autoload.php';
 }
 
+register_activation_hook(
+	__FILE__,
+	static function (): void {
+		\LauPerformanceTraining\Activation\Activator::activate();
+	}
+);
+
+register_deactivation_hook(
+	__FILE__,
+	static function (): void {
+		\LauPerformanceTraining\Activation\Activator::deactivate();
+	}
+);
+
 add_action(
 	'plugins_loaded',
 	static function (): void {
