@@ -48,6 +48,7 @@ final class CoachSchemaEditorContext extends BaseAcceptanceContext
 		$service = new SchemaEditorService($this->state->trainings, $this->state->trainingTypes, new SchemaAccess());
 		$service->saveWeek(
 			$this->state->currentUserId,
+			$this->state->schemaId,
 			[
 				[
 					'training_id'              => $this->state->trainingId,

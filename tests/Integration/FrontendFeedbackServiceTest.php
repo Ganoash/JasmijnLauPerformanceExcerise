@@ -54,6 +54,26 @@ if (class_exists('WP_UnitTestCase')) {
 			$service->updateField($other_id, $training->id, FrontendFeedbackService::FIELD_INJURY_COMMENT, 'Pijn');
 		}
 
+		public function test_rejects_view_all_only_user_feedback_updates(): void
+		{
+			$owner_id = self::factory()->user->create();
+			$viewer_id = self::factory()->user->create();
+			$schemas = new SchemaRepository();
+			$trainings = new TrainingRepository();
+			$schema_id = (new SchemaCreationService($schemas, $trainings, new DateFactory()))->createForUserWeek($owner_id, '2026-08-17');
+			$training = $trainings->findBySchema($schema_id)[0];
+			$service = new FrontendFeedbackService(
+				$trainings,
+				$schemas,
+				new SchemaAccess(static fn (string $capability): bool => $capability === SchemaAccess::CAP_VIEW_ALL),
+				new DistanceValidator()
+			);
+
+			$this->expectException(RuntimeException::class);
+
+			$service->updateField($viewer_id, $training->id, FrontendFeedbackService::FIELD_EXECUTION_COMMENT, 'Ging goed');
+		}
+
 		public function test_rejects_unauthorized_field(): void
 		{
 			$service = new FrontendFeedbackService(new TrainingRepository(), new SchemaRepository(), new SchemaAccess(), new DistanceValidator());

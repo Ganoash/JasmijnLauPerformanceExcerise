@@ -1,6 +1,7 @@
 <?php
 /**
  * @var string $action_url
+ * @var string|null $error_message
  * @var string $frontend_url
  * @var array<int,int[]> $linked_types
  * @var \LauPerformanceTraining\Domain\TrainingType[] $linked_training_types
@@ -35,6 +36,10 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 
 	<?php if (isset($_GET['lpt_error'])) : ?>
 		<div class="notice notice-error"><p><?php echo esc_html(sanitize_text_field(wp_unslash($_GET['lpt_error']))); ?></p></div>
+	<?php endif; ?>
+
+	<?php if ($error_message !== null) : ?>
+		<div class="notice notice-error"><p><?php echo esc_html($error_message); ?></p></div>
 	<?php endif; ?>
 
 	<form method="post" action="<?php echo esc_url($action_url); ?>">

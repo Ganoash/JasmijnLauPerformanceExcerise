@@ -34,7 +34,16 @@ final class SchemaAccessTest extends TestCase
 		);
 
 		self::assertTrue($access->canViewSchema(11, 10));
+		self::assertTrue($access->canUpdateFeedback(11, 10));
 		self::assertTrue($access->canUpdateCoachFields(11));
+	}
+
+	public function test_view_all_only_user_cannot_update_feedback(): void
+	{
+		$access = new SchemaAccess(static fn (string $capability): bool => $capability === SchemaAccess::CAP_VIEW_ALL);
+
+		self::assertTrue($access->canViewSchema(11, 10));
+		self::assertFalse($access->canUpdateFeedback(11, 10));
 	}
 
 	public function test_anonymous_user_cannot_view_or_update(): void
@@ -42,6 +51,7 @@ final class SchemaAccessTest extends TestCase
 		$access = new SchemaAccess(static fn (): bool => true);
 
 		self::assertFalse($access->canViewSchema(0, 10));
+		self::assertFalse($access->canUpdateFeedback(0, 10));
 		self::assertFalse($access->canUpdateCoachFields(0));
 	}
 }

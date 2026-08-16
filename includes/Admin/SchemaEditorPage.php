@@ -14,7 +14,9 @@ use LauPerformanceTraining\Services\SchemaEditorService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
 use LauPerformanceTraining\Support\View;
+use LauPerformanceTraining\Validation\DateValidator;
 use LauPerformanceTraining\Validation\SchemaRequestValidator;
+use RuntimeException;
 
 final class SchemaEditorPage
 {
@@ -25,6 +27,7 @@ final class SchemaEditorPage
 		private readonly SchemaCreationService $schema_creation_service,
 		private readonly SchemaEditorService $schema_editor_service,
 		private readonly SchemaRequestValidator $validator,
+		private readonly DateValidator $date_validator,
 		private readonly DateFactory $date_factory,
 		private readonly Nonce $nonce
 	) {
@@ -47,9 +50,18 @@ final class SchemaEditorPage
 			wp_die(esc_html__('Gebruiker niet gevonden.', 'lau-performance-training'));
 		}
 
-		$week = isset($_GET['week_start_date'])
-			? Week::fromDateString(sanitize_text_field(wp_unslash($_GET['week_start_date'])))
-			: Week::fromDate($this->date_factory->now());
+		$error_message = null;
+		if (isset($_GET['week_start_date'])) {
+			$week_start_date = sanitize_text_field(wp_unslash($_GET['week_start_date']));
+			try {
+				$week = $this->date_validator->weekFromRequestDate($week_start_date);
+			} catch (InvalidArgumentException $exception) {
+				$week          = Week::fromDate($this->date_factory->now());
+				$error_message = $exception->getMessage();
+			}
+		} else {
+			$week = Week::fromDate($this->date_factory->now());
+		}
 
 		$schema_id = $this->schema_creation_service->createForUserWeek($user_id, $week);
 		$schema    = $this->schemas->findById($schema_id);
@@ -58,6 +70,7 @@ final class SchemaEditorPage
 			'admin/schema-editor.php',
 			[
 				'action_url'            => admin_url('admin-post.php'),
+				'error_message'         => $error_message,
 				'frontend_url'          => home_url('/training-schema/' . $user_id . '/' . $week->startDate() . '/'),
 				'linked_types'          => $this->linkedTypeMap($schema_id),
 				'linked_training_types' => $this->linkedTrainingTypesForEditor($schema_id),
@@ -91,16 +104,22 @@ final class SchemaEditorPage
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		try {
+			$week = $this->date_validator->weekFromRequestDate($week_start_date);
+			if ($user_id <= 0 || ! get_user_by('id', $user_id)) {
+				throw new InvalidArgumentException('Gebruiker niet gevonden.');
+			}
+
+			$schema_id = $this->schema_creation_service->createForUserWeek($user_id, $week);
 			$rows = $this->validator->validateTrainings($posted_trainings);
-			$this->schema_editor_service->saveWeek(get_current_user_id(), $rows);
+			$this->schema_editor_service->saveWeek(get_current_user_id(), $schema_id, $rows);
 
 			wp_safe_redirect(
 				admin_url(
-					'admin.php?page=lpt-schema-editor&user_id=' . $user_id . '&week_start_date=' . rawurlencode($week_start_date) . '&updated=1'
+					'admin.php?page=lpt-schema-editor&user_id=' . $user_id . '&week_start_date=' . rawurlencode($week->startDate()) . '&updated=1'
 				)
 			);
 			exit;
-		} catch (InvalidArgumentException $exception) {
+		} catch (InvalidArgumentException | RuntimeException $exception) {
 			wp_safe_redirect(
 				add_query_arg(
 					'lpt_error',

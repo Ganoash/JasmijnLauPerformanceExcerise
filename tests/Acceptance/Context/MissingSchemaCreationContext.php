@@ -126,6 +126,7 @@ final class MissingSchemaCreationContext extends BaseAcceptanceContext
 			$this->state->schemaCreation,
 			new SchemaAccess(),
 			new \LauPerformanceTraining\Services\DistanceTotalService(),
+			new \LauPerformanceTraining\Validation\DateValidator(),
 			new \LauPerformanceTraining\Support\Nonce()
 		);
 	}

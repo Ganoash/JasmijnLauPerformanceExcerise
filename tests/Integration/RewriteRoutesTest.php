@@ -13,6 +13,7 @@ use LauPerformanceTraining\Services\DistanceTotalService;
 use LauPerformanceTraining\Services\SchemaCreationService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
+use LauPerformanceTraining\Validation\DateValidator;
 
 if (class_exists('WP_UnitTestCase')) {
 	final class RewriteRoutesTest extends \WP_UnitTestCase
@@ -29,6 +30,7 @@ if (class_exists('WP_UnitTestCase')) {
 					new SchemaCreationService($schemas, $trainings, new DateFactory()),
 					new SchemaAccess(static fn (): bool => false),
 					new DistanceTotalService(),
+					new DateValidator(),
 					new Nonce()
 				)
 			);

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace LauPerformanceTraining\Frontend;
 
+use InvalidArgumentException;
 use LauPerformanceTraining\Domain\TrainingType;
 use LauPerformanceTraining\Domain\Week;
 use LauPerformanceTraining\Permissions\SchemaAccess;
@@ -13,6 +14,7 @@ use LauPerformanceTraining\Services\DistanceTotalService;
 use LauPerformanceTraining\Services\SchemaCreationService;
 use LauPerformanceTraining\Support\Nonce;
 use LauPerformanceTraining\Support\View;
+use LauPerformanceTraining\Validation\DateValidator;
 
 final class SchemaPage
 {
@@ -23,6 +25,7 @@ final class SchemaPage
 		private readonly SchemaCreationService $schema_creation_service,
 		private readonly SchemaAccess $access,
 		private readonly DistanceTotalService $distance_totals,
+		private readonly DateValidator $date_validator,
 		private readonly Nonce $nonce
 	) {
 	}
@@ -39,7 +42,13 @@ final class SchemaPage
 			wp_die(esc_html__('Je hebt geen toegang tot dit schema.', 'lau-performance-training'));
 		}
 
-		$week      = Week::fromDateString($week_start_date);
+		try {
+			$week = $this->date_validator->weekFromRequestDate($week_start_date);
+		} catch (InvalidArgumentException) {
+			status_header(404);
+			wp_die(esc_html__('Schema niet gevonden.', 'lau-performance-training'));
+		}
+
 		$schema_id = $this->schema_creation_service->createForUserWeek($user_id, $week);
 		$schema    = $this->schemas->findById($schema_id);
 		$user      = get_user_by('id', $user_id);

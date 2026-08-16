@@ -22,6 +22,7 @@ use LauPerformanceTraining\Services\SchemaCreationService;
 use LauPerformanceTraining\Services\SchemaEditorService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
+use LauPerformanceTraining\Validation\DateValidator;
 use LauPerformanceTraining\Validation\DistanceValidator;
 use LauPerformanceTraining\Validation\SchemaRequestValidator;
 use LauPerformanceTraining\Validation\TrainingTypeValidator;
@@ -40,6 +41,7 @@ final class Plugin
 			$date_factory
 		);
 		$schema_access = new SchemaAccess();
+		$date_validator = new DateValidator();
 		$nonce         = new Nonce();
 
 		$training_type_page = new TrainingTypePage(
@@ -54,6 +56,7 @@ final class Plugin
 			$schema_creation_service,
 			new SchemaEditorService($training_repository, $training_type_repository, $schema_access),
 			new SchemaRequestValidator(),
+			$date_validator,
 			$date_factory,
 			$nonce
 		);
@@ -78,6 +81,7 @@ final class Plugin
 				$schema_creation_service,
 				$schema_access,
 				new DistanceTotalService(),
+				$date_validator,
 				$nonce
 			)
 		))->register();

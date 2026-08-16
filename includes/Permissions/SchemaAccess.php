@@ -30,9 +30,19 @@ final class SchemaAccess
 			|| $this->hasCapability(self::CAP_MANAGE_SCHEMAS);
 	}
 
+	public function canViewAndEditSchema(int $current_user_id, int $schema_owner_id): bool
+	{
+		if ($current_user_id <= 0) {
+			return false;
+		}
+
+		return $current_user_id === $schema_owner_id
+			|| $this->hasCapability(self::CAP_MANAGE_SCHEMAS);
+	}
+
 	public function canUpdateFeedback(int $current_user_id, int $schema_owner_id): bool
 	{
-		return $this->canViewSchema($current_user_id, $schema_owner_id);
+		return $this->canViewAndEditSchema($current_user_id, $schema_owner_id);
 	}
 
 	public function canUpdateCoachFields(int $current_user_id): bool

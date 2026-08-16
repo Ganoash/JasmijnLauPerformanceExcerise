@@ -15,6 +15,7 @@ use LauPerformanceTraining\Services\SchemaCreationService;
 use LauPerformanceTraining\Services\SchemaEditorService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
+use LauPerformanceTraining\Validation\DateValidator;
 use LauPerformanceTraining\Validation\SchemaRequestValidator;
 use LauPerformanceTraining\Validation\TrainingTypeValidator;
 
@@ -99,6 +100,7 @@ if (class_exists('WP_UnitTestCase')) {
 					$schemaCreation,
 					new SchemaEditorService($trainings, $trainingTypes, new SchemaAccess()),
 					new SchemaRequestValidator(),
+					new DateValidator(),
 					$dateFactory,
 					new Nonce()
 				),

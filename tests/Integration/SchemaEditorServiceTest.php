@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace LauPerformanceTraining\Tests\Integration;
 
+use InvalidArgumentException;
 use LauPerformanceTraining\Activation\DatabaseInstaller;
 use LauPerformanceTraining\Permissions\SchemaAccess;
 use LauPerformanceTraining\Repositories\SchemaRepository;
@@ -45,6 +46,7 @@ if (class_exists('WP_UnitTestCase')) {
 			);
 			$service->saveWeek(
 				1,
+				$schema_id,
 				[
 					[
 						'training_id'              => $training->id,
@@ -116,7 +118,7 @@ if (class_exists('WP_UnitTestCase')) {
 				$training_types,
 				new SchemaAccess(static fn (): bool => true)
 			);
-			$service->saveWeek(1, $rows);
+			$service->saveWeek(1, $schema_id, $rows);
 
 			$filled = $trainings->findById($slots[0]->id);
 			$empty  = $trainings->findById($slots[1]->id);
@@ -126,6 +128,83 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertSame([$strength_id, $mobility_id], $trainings->linkedTypeIds($slots[0]->id));
 			self::assertSame('', $empty?->description);
 			self::assertNull($empty?->primaryTrainingTypeId);
+		}
+
+		public function test_rejects_training_rows_from_another_schema(): void
+		{
+			$user_a_id = self::factory()->user->create();
+			$user_b_id = self::factory()->user->create();
+			$schemas = new SchemaRepository();
+			$trainings = new TrainingRepository();
+			$schema_creation = new SchemaCreationService($schemas, $trainings, new DateFactory());
+			$schema_a_id = $schema_creation->createForUserWeek($user_a_id, '2026-08-17');
+			$schema_b_id = $schema_creation->createForUserWeek($user_b_id, '2026-08-17');
+			$foreign_training = $trainings->findBySchema($schema_b_id)[0];
+
+			$service = new SchemaEditorService(
+				$trainings,
+				new TrainingTypeRepository(),
+				new SchemaAccess(static fn (): bool => true)
+			);
+
+			$this->expectException(InvalidArgumentException::class);
+			$this->expectExceptionMessage('Training hoort niet bij dit schema.');
+
+			$service->saveWeek(
+				1,
+				$schema_a_id,
+				[
+					[
+						'training_id'              => $foreign_training->id,
+						'description'              => 'Verkeerd schema',
+						'primary_training_type_id' => null,
+						'linked_training_type_ids' => [],
+						'coach_comment'            => '',
+					],
+				]
+			);
+		}
+
+		public function test_rejects_inactive_primary_training_type_that_is_not_already_used(): void
+		{
+			$user_id = self::factory()->user->create();
+			$schemas = new SchemaRepository();
+			$trainings = new TrainingRepository();
+			$training_types = new TrainingTypeRepository();
+			$schema_id = (new SchemaCreationService($schemas, $trainings, new DateFactory()))->createForUserWeek($user_id, '2026-08-17');
+			$training = $trainings->findBySchema($schema_id)[0];
+			$inactive_type_id = $training_types->create(
+				[
+					'name'       => 'Verborgen training',
+					'category'   => 'running',
+					'unit'       => 'kilometers',
+					'linked_url' => '',
+					'active'     => false,
+				]
+			);
+
+			$service = new SchemaEditorService(
+				$trainings,
+				$training_types,
+				new SchemaAccess(static fn (): bool => true)
+			);
+
+			$this->expectException(InvalidArgumentException::class);
+			$this->expectExceptionMessage('Ongeldige primaire oefening.');
+
+			$service->saveWeek(
+				1,
+				$schema_id,
+				[
+					[
+						'training_id'              => $training->id,
+						'description'              => 'Training',
+						'primary_training_type_id' => $inactive_type_id,
+						'linked_training_type_ids' => [],
+						'coach_comment'            => '',
+					],
+				]
+			);
 		}
 	}
 }
