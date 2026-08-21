@@ -101,7 +101,12 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 
 				<div class="lpt-feedback-fields">
 					<label>
-						<span>Afstand</span>
+                        <span>
+                            Afstand
+                            <?php if ($primary_type) : ?>
+                                <?php echo esc_html('(' . $primary_type->unit . ')'); ?>
+                            <?php endif; ?>
+                        </span>
 						<input data-field="actual_distance" type="number" step="0.01" min="0" value="<?php echo esc_attr($training->actualDistance === null ? '' : (string) $training->actualDistance); ?>">
 					</label>
 					<label>
