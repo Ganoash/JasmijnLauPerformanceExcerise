@@ -55,17 +55,19 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 							<?php if ($primary_type) : ?>
 								<li>
 									<?php if ($primary_type->linkedUrl !== '') : ?>
-										<a href="<?php echo esc_url($primary_type->linkedUrl); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr('Info over ' . $primary_type->name); ?>">i</a>
+										<a href="<?php echo esc_url($primary_type->linkedUrl); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr('Info over ' . $primary_type->name); ?>">
 									<?php endif; ?>
 									<?php echo esc_html($primary_type->name); ?>
+									</a>
 								</li>
 							<?php endif; ?>
 							<?php foreach ($linked_types[$training->id] ?? [] as $type) : ?>
 								<li>
 									<?php if ($type->linkedUrl !== '') : ?>
-										<a href="<?php echo esc_url($type->linkedUrl); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr('Info over ' . $type->name); ?>">i</a>
+										<a href="<?php echo esc_url($type->linkedUrl); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr('Info over ' . $type->name); ?>">
 									<?php endif; ?>
 									<?php echo esc_html($type->name); ?>
+									    </a>
 								</li>
 							<?php endforeach; ?>
 						</ul>
@@ -82,7 +84,7 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 						<textarea data-field="execution_comment" rows="3"><?php echo esc_textarea($training->executionComment); ?></textarea>
 					</label>
 					<label>
-						<span>Blessure</span>
+						<span>Klachten/ Blessures</span>
 						<textarea data-field="injury_comment" rows="3"><?php echo esc_textarea($training->injuryComment); ?></textarea>
 					</label>
 					<span class="lpt-save-status" aria-live="polite"></span>
