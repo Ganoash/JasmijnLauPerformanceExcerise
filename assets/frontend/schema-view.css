@@ -64,12 +64,18 @@
 
 .lpt-training-row {
   display: grid;
-  grid-template-columns: 150px minmax(220px, 1fr) minmax(260px, 340px);
+  grid-template-columns: minmax(280px, 1fr) minmax(260px, 340px);
+  align-items: start;
   gap: 18px;
   padding: 16px;
   border: 1px solid #d8dee4;
   border-radius: 6px;
   background: #fff;
+}
+
+.lpt-training-main {
+  display: grid;
+  gap: 14px;
 }
 
 .lpt-training-date {
@@ -82,15 +88,32 @@
   color: #4b5563;
 }
 
+.lpt-training-content {
+  display: grid;
+  gap: 12px;
+}
+
+.lpt-field-heading {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #202124;
+}
+
 .lpt-description p {
-  margin-top: 0;
+  margin: 0 0 8px;
+}
+
+.lpt-description p:last-child {
+  margin-bottom: 0;
 }
 
 .lpt-type-links {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 12px;
-  margin: 12px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -122,7 +145,7 @@
 }
 
 .lpt-coach-comment {
-  grid-column: 2 / -1;
+  grid-column: 1 / -1;
   padding-top: 12px;
   border-top: 1px solid #edf0f3;
 }

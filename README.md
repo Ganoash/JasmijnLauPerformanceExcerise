@@ -3,6 +3,10 @@
 WordPress plugin for weekly Lau Performance training schemas.
 
 ## Development
+Command used to run inside docker environment
+```sh
+docker exec -it -w /var/www/html/wp-content/plugins/lau-performance-training jasmijn_lau_performance-www-1
+```
 
 ```sh
 composer install

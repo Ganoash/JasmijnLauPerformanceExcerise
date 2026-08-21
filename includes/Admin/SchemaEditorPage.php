@@ -36,6 +36,7 @@ final class SchemaEditorPage
 	public function register(): void
 	{
 		add_action('admin_post_lpt_save_schema', [$this, 'save']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueueScripts']);
 	}
 
 	public function render(): void
@@ -164,6 +165,40 @@ final class SchemaEditorPage
 
 		return $map;
 	}
+
+    /**
+     * @param string $hook_suffix
+     * @return void
+     */
+    public function enqueueScripts(string $hook_suffix): void
+    {
+        if (
+            ! isset($_GET['page'])
+            || 'lpt-schema-editor' !== $_GET['page']
+        ) {
+            return;
+        }
+
+        $user_id = isset($_GET['user_id'])
+            ? absint($_GET['user_id'])
+            : get_current_user_id();
+
+        wp_enqueue_script(
+            'lpt-schema-editor',
+            LPT_PLUGIN_URL . 'assets/admin/schema-view.js',
+            [],
+            LPT_VERSION,
+            true
+        );
+
+        wp_localize_script(
+            'lpt-schema-editor',
+            'lptSchemaEditor',
+            [
+                'userId' => (string) $user_id,
+            ]
+        );
+    }
 
 	/**
 	 * @return TrainingType[]

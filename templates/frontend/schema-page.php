@@ -39,39 +39,49 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 				data-category="<?php echo esc_attr($primary_type?->category ?? ''); ?>"
 				data-unit="<?php echo esc_attr($primary_type?->unit ?? ''); ?>"
 			>
-				<div class="lpt-training-date">
-					<strong><?php echo esc_html($day_names[$training->dayIndex]); ?></strong>
-					<span><?php echo esc_html(date_i18n('d-m-Y', strtotime($week->dayDate($training->dayIndex)))); ?></span>
-					<span><?php echo esc_html($time_names[$training->timeOfDay] ?? $training->timeOfDay); ?></span>
-				</div>
-
-				<div class="lpt-training-content">
-					<div class="lpt-description">
-						<?php echo $training->description !== '' ? wp_kses_post(wpautop($training->description)) : '<p>Rust</p>'; ?>
+				<div class="lpt-training-main">
+					<div class="lpt-training-date">
+						<span><strong><?php echo esc_html($day_names[$training->dayIndex]); ?></strong>
+						<?php echo esc_html(date_i18n('d-m-Y', strtotime($week->dayDate($training->dayIndex)))); ?>
+						<?php echo esc_html($time_names[$training->timeOfDay] ?? $training->timeOfDay); ?></span>
 					</div>
 
-					<?php if ($primary_type || ($linked_types[$training->id] ?? []) !== []) : ?>
-						<ul class="lpt-type-links">
-							<?php if ($primary_type) : ?>
-								<li>
-									<?php if ($primary_type->linkedUrl !== '') : ?>
-										<a href="<?php echo esc_url($primary_type->linkedUrl); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr('Info over ' . $primary_type->name); ?>">
+					<div class="lpt-training-content">
+						<div class="lpt-description">
+							<strong class="lpt-field-heading">Beschrijving</strong>
+							<?php echo $training->description !== '' ? wp_kses_post(wpautop($training->description)) : '<p>Rust</p>'; ?>
+						</div>
+
+						<?php if ($primary_type || ($linked_types[$training->id] ?? []) !== []) : ?>
+							<div class="lpt-training-types">
+								<strong class="lpt-field-heading">Type</strong>
+								<ul class="lpt-type-links">
+									<?php if ($primary_type) : ?>
+										<li>
+											<?php if ($primary_type->linkedUrl !== '') : ?>
+												<a href="<?php echo esc_url($primary_type->linkedUrl); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr('Info over ' . $primary_type->name); ?>">
+													<?php echo esc_html($primary_type->name); ?>
+												</a>
+											<?php else : ?>
+												<?php echo esc_html($primary_type->name); ?>
+											<?php endif; ?>
+										</li>
 									<?php endif; ?>
-									<?php echo esc_html($primary_type->name); ?>
-									</a>
-								</li>
-							<?php endif; ?>
-							<?php foreach ($linked_types[$training->id] ?? [] as $type) : ?>
-								<li>
-									<?php if ($type->linkedUrl !== '') : ?>
-										<a href="<?php echo esc_url($type->linkedUrl); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr('Info over ' . $type->name); ?>">
-									<?php endif; ?>
-									<?php echo esc_html($type->name); ?>
-									    </a>
-								</li>
-							<?php endforeach; ?>
-						</ul>
-					<?php endif; ?>
+									<?php foreach ($linked_types[$training->id] ?? [] as $type) : ?>
+										<li>
+											<?php if ($type->linkedUrl !== '') : ?>
+												<a href="<?php echo esc_url($type->linkedUrl); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr('Info over ' . $type->name); ?>">
+													<?php echo esc_html($type->name); ?>
+												</a>
+											<?php else : ?>
+												<?php echo esc_html($type->name); ?>
+											<?php endif; ?>
+										</li>
+									<?php endforeach; ?>
+								</ul>
+							</div>
+						<?php endif; ?>
+					</div>
 				</div>
 
 				<div class="lpt-feedback-fields">
@@ -92,7 +102,7 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 
 				<?php if ($training->coachComment !== '') : ?>
 					<div class="lpt-coach-comment">
-						<strong>Coachopmerking</strong>
+						<strong>Opmerking Jasmijn</strong>
 						<p><?php echo esc_html($training->coachComment); ?></p>
 					</div>
 				<?php endif; ?>

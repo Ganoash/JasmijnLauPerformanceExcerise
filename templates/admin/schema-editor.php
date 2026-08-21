@@ -20,7 +20,22 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 	<h1>Schema voor <?php echo esc_html($user->display_name); ?></h1>
 
 	<p>
-		<strong><?php echo esc_html('Week ' . $week->isoWeekNumber() . ', ' . date_i18n('d-m-Y', strtotime($week->startDate())) . ' - ' . date_i18n('d-m-Y', strtotime($week->endDate()))); ?></strong>
+        <label for="lpt-week-picker">
+            <strong>
+                Week <?php echo esc_html((string) $week->isoWeekNumber()); ?>,
+            </strong>
+	    </label>
+
+	<input
+		type="date"
+		id="lpt-week-picker"
+		value="<?php echo esc_attr($week->startDate()); ?>"
+		style="font-weight: 600;"
+	>
+
+	<strong>
+		- <?php echo esc_html(date_i18n('d-m-Y', strtotime($week->endDate()))); ?>
+	</strong>
 	</p>
 
 	<p>

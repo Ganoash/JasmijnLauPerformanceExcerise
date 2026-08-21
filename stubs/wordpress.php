@@ -160,3 +160,13 @@ function wp_send_json_error(mixed $value = null, int $status_code = null, int $f
 function wp_send_json_success(mixed $value = null, int $status_code = null, int $flags = 0): never { exit; }
 function wp_unslash(mixed $value): mixed { return $value; }
 function wp_verify_nonce(string $nonce, string|int $action = -1): int|false { return 1; }
+
+function absint(mixed $maybeint): int
+{
+	return abs((int) $maybeint);
+}
+
+function plugin_dir_url(string $file): string
+{
+	return '';
+}

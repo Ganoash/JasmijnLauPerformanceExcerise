@@ -11,6 +11,7 @@ export default [
         document: "readonly",
         fetch: "readonly",
         FormData: "readonly",
+        URL: "readonly",
         window: "readonly",
       },
     },
