@@ -83,6 +83,40 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertNotFalse(has_action('admin_post_lpt_save_schema'));
 		}
 
+    public function test_schema_editor_scripts_are_localized(): void
+    {
+        $schemas = new SchemaRepository();
+        $trainings = new TrainingRepository();
+        $training_types = new TrainingTypeRepository();
+        $date_factory = new DateFactory();
+        $schema_creation = new SchemaCreationService($schemas, $trainings, $date_factory);
+
+        $page = new SchemaEditorPage(
+            $schemas,
+            $trainings,
+            $training_types,
+            $schema_creation,
+            new SchemaEditorService($trainings, $training_types, new SchemaAccess()),
+            new SchemaRequestValidator(),
+            new DateValidator(),
+            $date_factory,
+            new Nonce()
+        );
+
+        $_GET['page'] = 'lpt-schema-editor';
+        $_GET['user_id'] = '123';
+
+        $page->enqueueScripts('admin_page_lpt-schema-editor');
+
+        self::assertTrue(wp_script_is('lpt-schema-editor', 'enqueued'));
+
+        $localized_data = wp_scripts()->get_data('lpt-schema-editor', 'data');
+
+        self::assertIsString($localized_data);
+        self::assertStringContainsString('var lptSchemaEditor =', $localized_data);
+        self::assertStringContainsString('"userId":"123"', $localized_data);
+    }
+
 		private function adminMenu(): AdminMenu
 		{
 			$schemas = new SchemaRepository();
