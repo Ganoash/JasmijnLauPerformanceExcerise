@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace LauPerformanceTraining\Frontend;
 
 use InvalidArgumentException;
+use LauPerformanceTraining\Domain\Training;
 use LauPerformanceTraining\Domain\TrainingType;
 use LauPerformanceTraining\Domain\Week;
 use LauPerformanceTraining\Permissions\SchemaAccess;
@@ -12,6 +13,7 @@ use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Repositories\TrainingTypeRepository;
 use LauPerformanceTraining\Services\DistanceTotalService;
 use LauPerformanceTraining\Services\SchemaCreationService;
+use LauPerformanceTraining\Services\UserTrainingPreferenceService;
 use LauPerformanceTraining\Support\Nonce;
 use LauPerformanceTraining\Support\View;
 use LauPerformanceTraining\Validation\DateValidator;
@@ -26,7 +28,8 @@ final class SchemaPage
 		private readonly SchemaAccess $access,
 		private readonly DistanceTotalService $distance_totals,
 		private readonly DateValidator $date_validator,
-		private readonly Nonce $nonce
+		private readonly Nonce $nonce,
+		private readonly ?UserTrainingPreferenceService $user_preferences = null
 	) {
 	}
 
@@ -82,14 +85,17 @@ final class SchemaPage
 			]
 		);
 
-		$trainings     = $this->trainings->findBySchema($schema_id);
+		$show_time_of_day = $this->userPreferences()->trainingsPerDay($user_id) === 2;
+		$trainings     = $this->visibleTrainings($schema_id, $show_time_of_day);
 		$primary_types = $this->primaryTypesByTraining($schema_id);
+		$linked_types  = $this->linkedTypesByTraining($schema_id);
 		$content       = $this->schemaContent(
 			[
-				'linked_types'  => $this->linkedTypesByTraining($schema_id),
+				'linked_types'  => $linked_types,
 				'primary_types' => $primary_types,
 				'schema'        => $schema,
-				'totals'        => $this->distance_totals->calculate($trainings, $primary_types),
+				'show_time_of_day' => $show_time_of_day,
+				'totals'        => $this->distance_totals->calculate($trainings, $primary_types, $linked_types),
 				'trainings'     => $trainings,
 				'user'          => $user,
 				'week'          => $week,
@@ -181,5 +187,28 @@ final class SchemaPage
 		}
 
 		return $map;
+	}
+
+	private function userPreferences(): UserTrainingPreferenceService
+	{
+		return $this->user_preferences ?? new UserTrainingPreferenceService();
+	}
+
+	/**
+	 * @return Training[]
+	 */
+	private function visibleTrainings(int $schema_id, bool $show_time_of_day): array
+	{
+		$trainings = $this->trainings->findBySchema($schema_id);
+		if ($show_time_of_day) {
+			return $trainings;
+		}
+
+		return array_values(
+			array_filter(
+				$trainings,
+				static fn (Training $training): bool => $training->timeOfDay === TrainingRepository::TIME_AFTERNOON
+			)
+		);
 	}
 }

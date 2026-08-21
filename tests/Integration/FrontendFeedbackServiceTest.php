@@ -39,6 +39,23 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertSame('', $updated->injuryComment);
 		}
 
+		public function test_updates_sport_specific_distance_field(): void
+		{
+			$user_id   = self::factory()->user->create();
+			$schemas   = new SchemaRepository();
+			$trainings = new TrainingRepository();
+			$schema_id = (new SchemaCreationService($schemas, $trainings, new DateFactory()))->createForUserWeek($user_id, '2026-08-17');
+			$training  = $trainings->findBySchema($schema_id)[0];
+			$service   = new FrontendFeedbackService($trainings, $schemas, new SchemaAccess(static fn (): bool => false), new DistanceValidator());
+
+			$service->updateField($user_id, $training->id, FrontendFeedbackService::FIELD_ACTUAL_CYCLING_DISTANCE, '42.5');
+			$updated = $trainings->findById($training->id);
+
+			self::assertSame(42.5, $updated?->actualCyclingDistance);
+			self::assertNull($updated?->actualRunningDistance);
+			self::assertNull($updated?->actualSwimmingDistance);
+		}
+
 		public function test_rejects_unauthorized_schema_access(): void
 		{
 			$owner_id    = self::factory()->user->create();

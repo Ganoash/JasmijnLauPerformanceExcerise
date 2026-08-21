@@ -3,6 +3,7 @@
  * @var array<int,\LauPerformanceTraining\Domain\TrainingType[]> $linked_types
  * @var array<int,\LauPerformanceTraining\Domain\TrainingType|null> $primary_types
  * @var \LauPerformanceTraining\Domain\Schema $schema
+ * @var bool $show_time_of_day
  * @var \LauPerformanceTraining\Domain\DistanceTotals $totals
  * @var \LauPerformanceTraining\Domain\Training[] $trainings
  * @var WP_User $user
@@ -31,6 +32,42 @@ function lpt_hex_to_rgba(string $hex, float $alpha = 0.12): string
 		$blue,
 		$alpha
 	);
+}
+
+/**
+ * @param \LauPerformanceTraining\Domain\TrainingType|null $primary_type
+ * @param \LauPerformanceTraining\Domain\TrainingType[] $linked_types
+ * @return array<string,array{label:string,unit:string,field:string,value:float|null}>
+ */
+function lpt_distance_fields_for_training(
+	\LauPerformanceTraining\Domain\Training $training,
+	?\LauPerformanceTraining\Domain\TrainingType $primary_type,
+	array $linked_types
+): array {
+	$fields = [];
+	foreach (array_filter([$primary_type, ...$linked_types]) as $type) {
+		$category = strtolower($type->category);
+		if (! in_array($category, ['running', 'cycling', 'swimming'], true) || isset($fields[$category])) {
+			continue;
+		}
+
+		$fields[$category] = [
+			'label' => match ($category) {
+				'running' => 'Lopen',
+				'cycling' => 'Fietsen',
+				default => 'Zwemmen',
+			},
+			'unit'  => $type->unit,
+			'field' => 'actual_' . $category . '_distance',
+			'value' => match ($category) {
+				'running' => $training->actualRunningDistance,
+				'cycling' => $training->actualCyclingDistance,
+				default => $training->actualSwimmingDistance,
+			},
+		];
+	}
+
+	return $fields;
 }
 ?>
 <main class="lpt-schema-page">
@@ -69,6 +106,8 @@ function lpt_hex_to_rgba(string $hex, float $alpha = 0.12): string
 	<section class="lpt-training-list" aria-label="Trainingen">
 		<?php foreach ($trainings as $training) : ?>
 			<?php $primary_type = $primary_types[$training->id] ?? null; ?>
+			<?php $training_linked_types = $linked_types[$training->id] ?? []; ?>
+			<?php $distance_fields = lpt_distance_fields_for_training($training, $primary_type, $training_linked_types); ?>
 			<?php
                 $background_color = $primary_type
                     ? lpt_hex_to_rgba($primary_type->color, 0.12)
@@ -77,15 +116,15 @@ function lpt_hex_to_rgba(string $hex, float $alpha = 0.12): string
 			<article
 				class="lpt-training-row"
 				data-training-id="<?php echo esc_attr((string) $training->id); ?>"
-				data-category="<?php echo esc_attr($primary_type?->category ?? ''); ?>"
-				data-unit="<?php echo esc_attr($primary_type?->unit ?? ''); ?>"
                 style="background-color: <?php echo esc_attr($background_color); ?>;"
 			>
 				<div class="lpt-training-main">
 					<div class="lpt-training-date">
 						<span><strong><?php echo esc_html($day_names[$training->dayIndex]); ?></strong>
 						<?php echo esc_html(date_i18n('d-m-Y', strtotime($week->dayDate($training->dayIndex)))); ?>
-						<?php echo esc_html($time_names[$training->timeOfDay] ?? $training->timeOfDay); ?></span>
+						<?php if ($show_time_of_day) : ?>
+							<?php echo esc_html($time_names[$training->timeOfDay] ?? $training->timeOfDay); ?>
+						<?php endif; ?></span>
 					</div>
 
 					<div class="lpt-training-content">
@@ -94,7 +133,7 @@ function lpt_hex_to_rgba(string $hex, float $alpha = 0.12): string
 							<?php echo $training->description !== '' ? wp_kses_post(wpautop($training->description)) : '<p>Rust</p>'; ?>
 						</div>
 
-						<?php if ($primary_type || ($linked_types[$training->id] ?? []) !== []) : ?>
+						<?php if ($primary_type || $training_linked_types !== []) : ?>
 							<div class="lpt-training-types">
 								<strong class="lpt-field-heading">Type</strong>
 								<ul class="lpt-type-links">
@@ -109,7 +148,7 @@ function lpt_hex_to_rgba(string $hex, float $alpha = 0.12): string
 											<?php endif; ?>
 										</li>
 									<?php endif; ?>
-									<?php foreach ($linked_types[$training->id] ?? [] as $type) : ?>
+									<?php foreach ($training_linked_types as $type) : ?>
 										<li>
 											<?php if ($type->linkedUrl !== '') : ?>
 												<a href="<?php echo esc_url($type->linkedUrl); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr('Info over ' . $type->name); ?>">
@@ -127,15 +166,20 @@ function lpt_hex_to_rgba(string $hex, float $alpha = 0.12): string
 				</div>
 
 				<div class="lpt-feedback-fields">
-					<label>
-                        <span>
-                            Afstand
-                            <?php if ($primary_type) : ?>
-                                <?php echo esc_html('(' . $primary_type->unit . ')'); ?>
-                            <?php endif; ?>
-                        </span>
-						<input data-field="actual_distance" type="number" step="0.01" min="0" value="<?php echo esc_attr($training->actualDistance === null ? '' : (string) $training->actualDistance); ?>">
-					</label>
+					<?php foreach ($distance_fields as $category => $field) : ?>
+						<label>
+							<span><?php echo esc_html($field['label'] . ' (' . $field['unit'] . ')'); ?></span>
+							<input
+								data-field="<?php echo esc_attr($field['field']); ?>"
+								data-category="<?php echo esc_attr($category); ?>"
+								data-unit="<?php echo esc_attr($field['unit']); ?>"
+								type="number"
+								step="0.01"
+								min="0"
+								value="<?php echo esc_attr($field['value'] === null ? '' : (string) $field['value']); ?>"
+							>
+						</label>
+					<?php endforeach; ?>
 					<label>
 						<span>Uitvoering</span>
 						<textarea data-field="execution_comment" rows="3"><?php echo esc_textarea($training->executionComment); ?></textarea>

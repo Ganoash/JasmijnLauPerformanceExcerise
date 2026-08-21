@@ -11,6 +11,7 @@ use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Repositories\TrainingTypeRepository;
 use LauPerformanceTraining\Services\SchemaCreationService;
 use LauPerformanceTraining\Services\SchemaEditorService;
+use LauPerformanceTraining\Services\UserTrainingPreferenceService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
 use LauPerformanceTraining\Validation\DateValidator;
@@ -25,7 +26,7 @@ if (class_exists('WP_UnitTestCase')) {
 			(new DatabaseInstaller())->install();
 		}
 
-		public function test_extra_exercises_render_as_strength_checkboxes(): void
+		public function test_extra_exercises_render_as_checkboxes_for_all_training_types(): void
 		{
 			$user_id = self::factory()->user->create(['display_name' => 'Schema Athlete']);
 			wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
@@ -43,10 +44,10 @@ if (class_exists('WP_UnitTestCase')) {
 			$html = (string) ob_get_clean();
 
 			self::assertStringNotContainsString('<select multiple', $html);
+			self::assertMatchesRegularExpression($this->extraExerciseCheckboxPattern($running_id), $html);
 			self::assertMatchesRegularExpression($this->extraExerciseCheckboxPattern($strength_id), $html);
 			self::assertMatchesRegularExpression($this->extraExerciseCheckboxPattern($mobility_id), $html);
-			self::assertDoesNotMatchRegularExpression($this->extraExerciseCheckboxPattern($running_id), $html);
-			self::assertStringContainsString('Selecteer een of meerdere krachtoefeningen', $html);
+			self::assertStringContainsString('Selecteer een of meerdere oefeningen', $html);
 		}
 
 		public function test_invalid_week_date_renders_admin_notice(): void
@@ -65,7 +66,30 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertStringContainsString('Schema Athlete', $html);
 		}
 
-		private function schemaEditorPage(TrainingTypeRepository $training_types): SchemaEditorPage
+		public function test_one_training_per_day_hides_time_of_day_labels(): void
+		{
+			$user_id = self::factory()->user->create(['display_name' => 'Schema Athlete']);
+			wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
+
+			$preferences = new UserTrainingPreferenceService();
+			$preferences->setTrainingsPerDay($user_id, 1);
+
+			$_GET['user_id'] = (string) $user_id;
+			$_GET['week_start_date'] = '2026-08-17';
+
+			ob_start();
+			$this->schemaEditorPage(new TrainingTypeRepository(), $preferences)->render();
+			$html = (string) ob_get_clean();
+
+			self::assertSame(7, substr_count($html, '][training_id]"'));
+			self::assertStringNotContainsString('ochtend', $html);
+			self::assertStringNotContainsString('middag', $html);
+		}
+
+		private function schemaEditorPage(
+			TrainingTypeRepository $training_types,
+			?UserTrainingPreferenceService $preferences = null
+		): SchemaEditorPage
 		{
 			$schemas = new SchemaRepository();
 			$trainings = new TrainingRepository();
@@ -81,7 +105,8 @@ if (class_exists('WP_UnitTestCase')) {
 				new SchemaRequestValidator(),
 				new DateValidator(),
 				$date_factory,
-				new Nonce()
+				new Nonce(),
+				$preferences
 			);
 		}
 

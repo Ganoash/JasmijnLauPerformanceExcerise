@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace LauPerformanceTraining\Admin;
 
 use InvalidArgumentException;
+use LauPerformanceTraining\Domain\Training;
 use LauPerformanceTraining\Domain\TrainingType;
 use LauPerformanceTraining\Domain\Week;
 use LauPerformanceTraining\Repositories\SchemaRepository;
@@ -11,6 +12,7 @@ use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Repositories\TrainingTypeRepository;
 use LauPerformanceTraining\Services\SchemaCreationService;
 use LauPerformanceTraining\Services\SchemaEditorService;
+use LauPerformanceTraining\Services\UserTrainingPreferenceService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
 use LauPerformanceTraining\Support\View;
@@ -29,7 +31,8 @@ final class SchemaEditorPage
 		private readonly SchemaRequestValidator $validator,
 		private readonly DateValidator $date_validator,
 		private readonly DateFactory $date_factory,
-		private readonly Nonce $nonce
+		private readonly Nonce $nonce,
+		private readonly ?UserTrainingPreferenceService $user_preferences = null
 	) {
 	}
 
@@ -66,6 +69,7 @@ final class SchemaEditorPage
 
 		$schema_id = $this->schema_creation_service->createForUserWeek($user_id, $week);
 		$schema    = $this->schemas->findById($schema_id);
+		$show_time_of_day = $this->userPreferences()->trainingsPerDay($user_id) === 2;
 
 		View::render(
 			'admin/schema-editor.php',
@@ -77,8 +81,9 @@ final class SchemaEditorPage
 				'linked_training_types' => $this->linkedTrainingTypesForEditor($schema_id),
 				'nonce'                 => $this->nonce->create(Nonce::ADMIN_SCHEMA_ACTION),
 				'schema'                => $schema,
+				'show_time_of_day'      => $show_time_of_day,
 				'training_types'        => $this->trainingTypesForEditor($schema_id),
-				'trainings'             => $this->trainings->findBySchema($schema_id),
+				'trainings'             => $this->visibleTrainings($schema_id, $show_time_of_day),
 				'user'                  => $user,
 				'week'                  => $week,
 			]
@@ -217,8 +222,7 @@ final class SchemaEditorPage
 		return array_values(
 			array_filter(
 				$this->training_types->all(false),
-				static fn (TrainingType $type): bool => strtolower($type->category) === 'strength'
-					&& ($type->active || in_array($type->id, $used_ids, true))
+				static fn (TrainingType $type): bool => $type->active || in_array($type->id, $used_ids, true)
 			)
 		);
 	}
@@ -245,6 +249,29 @@ final class SchemaEditorPage
 			array_filter(
 				$this->training_types->all(false),
 				static fn (TrainingType $type): bool => $type->active || in_array($type->id, $used_ids, true)
+			)
+		);
+	}
+
+	private function userPreferences(): UserTrainingPreferenceService
+	{
+		return $this->user_preferences ?? new UserTrainingPreferenceService();
+	}
+
+	/**
+	 * @return Training[]
+	 */
+	private function visibleTrainings(int $schema_id, bool $show_time_of_day): array
+	{
+		$trainings = $this->trainings->findBySchema($schema_id);
+		if ($show_time_of_day) {
+			return $trainings;
+		}
+
+		return array_values(
+			array_filter(
+				$trainings,
+				static fn (Training $training): bool => $training->timeOfDay === TrainingRepository::TIME_AFTERNOON
 			)
 		);
 	}

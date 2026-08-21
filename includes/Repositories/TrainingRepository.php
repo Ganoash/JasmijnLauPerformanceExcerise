@@ -13,15 +13,27 @@ final class TrainingRepository
 	/**
 	 * @return array<int,array{day_index:int,time_of_day:string}>
 	 */
-	public static function fixedSlots(): array
+	public static function fixedSlots(int $trainings_per_day = 2): array
 	{
 		$slots = [];
 		for ($day = 0; $day <= 6; $day++) {
-			$slots[] = ['day_index' => $day, 'time_of_day' => self::TIME_MORNING];
+			if ($trainings_per_day === 2) {
+				$slots[] = ['day_index' => $day, 'time_of_day' => self::TIME_MORNING];
+			}
 			$slots[] = ['day_index' => $day, 'time_of_day' => self::TIME_AFTERNOON];
 		}
 
 		return $slots;
+	}
+
+	/**
+	 * @param array<int,array{day_index:int,time_of_day:string}> $slots
+	 */
+	public function ensureSchemaSlots(int $schema_id, array $slots): void
+	{
+		foreach ($slots as $slot) {
+			$this->createSlot($schema_id, $slot['day_index'], $slot['time_of_day']);
+		}
 	}
 
 	public function createSlot(int $schema_id, int $day_index, string $time_of_day): int
@@ -113,7 +125,7 @@ final class TrainingRepository
 	}
 
 	/**
-	 * @param array{actual_distance:float|null,execution_comment:string,injury_comment:string} $fields
+	 * @param array{actual_running_distance:float|null,actual_cycling_distance:float|null,actual_swimming_distance:float|null,execution_comment:string,injury_comment:string} $fields
 	 */
 	public function updateFeedbackFields(int $training_id, array $fields): void
 	{
@@ -122,13 +134,15 @@ final class TrainingRepository
 		$wpdb->update(
 			$this->table(),
 			[
-				'actual_distance'   => $fields['actual_distance'],
-				'execution_comment' => $fields['execution_comment'],
-				'injury_comment'    => $fields['injury_comment'],
-				'updated_at'        => current_time('mysql'),
+				'actual_running_distance'  => $fields['actual_running_distance'],
+				'actual_cycling_distance'  => $fields['actual_cycling_distance'],
+				'actual_swimming_distance' => $fields['actual_swimming_distance'],
+				'execution_comment'        => $fields['execution_comment'],
+				'injury_comment'           => $fields['injury_comment'],
+				'updated_at'               => current_time('mysql'),
 			],
 			['id' => $training_id],
-			['%f', '%s', '%s', '%s'],
+			['%f', '%f', '%f', '%s', '%s', '%s'],
 			['%d']
 		);
 	}

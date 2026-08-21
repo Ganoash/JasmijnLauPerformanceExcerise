@@ -52,7 +52,7 @@ final class SchemaEditorService
 					'coach_comment'            => $row['coach_comment'],
 				]
 			);
-			$this->trainings->replaceLinkedTypes($row['training_id'], $this->strengthTrainingTypeIds($row['linked_training_type_ids']));
+			$this->trainings->replaceLinkedTypes($row['training_id'], $this->editableLinkedTrainingTypeIds($row['linked_training_type_ids'], $editable_type_ids));
 		}
 	}
 
@@ -98,16 +98,15 @@ final class SchemaEditorService
 	 * @param int[] $training_type_ids
 	 * @return int[]
 	 */
-	private function strengthTrainingTypeIds(array $training_type_ids): array
+	private function editableLinkedTrainingTypeIds(array $training_type_ids, array $editable_type_ids): array
 	{
-		$strength_ids = [];
+		$linked_ids = [];
 		foreach (array_unique(array_filter(array_map('intval', $training_type_ids))) as $training_type_id) {
-			$type = $this->training_types->find($training_type_id);
-			if ($type && strtolower($type->category) === 'strength') {
-				$strength_ids[] = $training_type_id;
+			if (in_array($training_type_id, $editable_type_ids, true)) {
+				$linked_ids[] = $training_type_id;
 			}
 		}
 
-		return $strength_ids;
+		return $linked_ids;
 	}
 }

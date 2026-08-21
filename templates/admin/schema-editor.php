@@ -7,6 +7,7 @@
  * @var \LauPerformanceTraining\Domain\TrainingType[] $linked_training_types
  * @var string $nonce
  * @var \LauPerformanceTraining\Domain\Schema $schema
+ * @var bool $show_time_of_day
  * @var \LauPerformanceTraining\Domain\TrainingType[] $training_types
  * @var \LauPerformanceTraining\Domain\Training[] $trainings
  * @var WP_User $user
@@ -79,8 +80,10 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 					<tr>
 						<td>
 							<strong><?php echo esc_html($day_names[$training->dayIndex]); ?></strong><br>
-							<?php echo esc_html(date_i18n('d-m-Y', strtotime($week->dayDate($training->dayIndex)))); ?><br>
-							<?php echo esc_html($time_names[$training->timeOfDay] ?? $training->timeOfDay); ?>
+							<?php echo esc_html(date_i18n('d-m-Y', strtotime($week->dayDate($training->dayIndex)))); ?>
+							<?php if ($show_time_of_day) : ?>
+								<br><?php echo esc_html($time_names[$training->timeOfDay] ?? $training->timeOfDay); ?>
+							<?php endif; ?>
 							<input type="hidden" name="trainings[<?php echo esc_attr((string) $index); ?>][training_id]" value="<?php echo esc_attr((string) $training->id); ?>">
 						</td>
 						<td>
@@ -111,16 +114,18 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 									</label><br>
 								<?php endforeach; ?>
 								<?php if ($linked_training_types === []) : ?>
-									<span class="description">Maak eerst een actieve krachtoefening aan.</span>
+									<span class="description">Maak eerst een actieve oefening aan.</span>
 								<?php endif; ?>
 							</fieldset>
-							<p class="description">Selecteer een of meerdere krachtoefeningen naast de primaire training.</p>
+							<p class="description">Selecteer een of meerdere oefeningen naast de primaire training.</p>
 						</td>
 						<td>
 							<textarea name="trainings[<?php echo esc_attr((string) $index); ?>][coach_comment]" rows="4" class="large-text"><?php echo esc_textarea($training->coachComment); ?></textarea>
 						</td>
 						<td>
-							Afstand: <?php echo esc_html($training->actualDistance === null ? '-' : (string) $training->actualDistance); ?><br>
+							Lopen: <?php echo esc_html($training->actualRunningDistance === null ? '-' : (string) $training->actualRunningDistance); ?><br>
+							Fietsen: <?php echo esc_html($training->actualCyclingDistance === null ? '-' : (string) $training->actualCyclingDistance); ?><br>
+							Zwemmen: <?php echo esc_html($training->actualSwimmingDistance === null ? '-' : (string) $training->actualSwimmingDistance); ?><br>
 							Uitvoering: <?php echo esc_html($training->executionComment !== '' ? $training->executionComment : '-'); ?><br>
 							Blessure: <?php echo esc_html($training->injuryComment !== '' ? $training->injuryComment : '-'); ?>
 						</td>

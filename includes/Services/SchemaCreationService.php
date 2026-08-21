@@ -22,9 +22,7 @@ final class SchemaCreationService
 		$week_start_date = $week instanceof Week ? $week->startDate() : Week::fromDateString($week)->startDate();
 		$schema_id       = $this->schemas->create($user_id, $week_start_date);
 
-		foreach (TrainingRepository::fixedSlots() as $slot) {
-			$this->trainings->createSlot($schema_id, $slot['day_index'], $slot['time_of_day']);
-		}
+		$this->trainings->ensureSchemaSlots($schema_id, TrainingRepository::fixedSlots());
 
 		return $schema_id;
 	}

@@ -58,18 +58,19 @@
     }
 
     rows.forEach((row) => {
-      const input = row.querySelector('[data-field="actual_distance"]');
-      const category = String(row.dataset.category || "").toLowerCase();
-      const unit = String(row.dataset.unit || "").toLowerCase();
-      const value = parseDistance(input ? input.value : "");
+      row.querySelectorAll("[data-category][data-unit]").forEach((input) => {
+        const category = String(input.dataset.category || "").toLowerCase();
+        const unit = String(input.dataset.unit || "").toLowerCase();
+        const value = parseDistance(input.value);
 
-      if (category === "running") {
-        totals.running += value;
-      } else if (category === "cycling") {
-        totals.cycling += value;
-      } else if (category === "swimming") {
-        totals.swimming += unit === "meters" || unit === "meter" ? value / 1000 : value;
-      }
+        if (category === "running") {
+          totals.running += value;
+        } else if (category === "cycling") {
+          totals.cycling += value;
+        } else if (category === "swimming") {
+          totals.swimming += unit === "meters" || unit === "meter" ? value / 1000 : value;
+        }
+      });
     });
 
     Object.entries(totals).forEach(([key, value]) => {
@@ -142,13 +143,13 @@
   rows.forEach((row) => {
     row.querySelectorAll("[data-field]").forEach((field) => {
       field.addEventListener("input", () => {
-        if (field.dataset.field === "actual_distance") {
+        if (field.dataset.category) {
           updateTotals();
         }
       });
 
       field.addEventListener("blur", () => {
-        if (field.dataset.field === "actual_distance") {
+        if (field.dataset.category) {
           updateTotals();
         }
         saveField(row, field.dataset.field, field.value, 1);

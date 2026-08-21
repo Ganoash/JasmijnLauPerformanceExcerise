@@ -24,7 +24,7 @@ final class CoachSchemaEditorContext extends BaseAcceptanceContext
 			new SchemaAccess(),
 			new DistanceValidator()
 		);
-		$service->updateField($this->state->currentUserId, $this->state->trainingId, FrontendFeedbackService::FIELD_ACTUAL_DISTANCE, '8.5');
+		$service->updateField($this->state->currentUserId, $this->state->trainingId, FrontendFeedbackService::FIELD_ACTUAL_RUNNING_DISTANCE, '8.5');
 		$service->updateField($this->state->currentUserId, $this->state->trainingId, FrontendFeedbackService::FIELD_EXECUTION_COMMENT, 'Ging goed');
 	}
 
@@ -80,7 +80,7 @@ final class CoachSchemaEditorContext extends BaseAcceptanceContext
 		$training = $this->state->trainings->findById($this->state->trainingId);
 
 		Assert::assertNotNull($training);
-		Assert::assertSame(8.5, $training->actualDistance);
+		Assert::assertSame(8.5, $training->actualRunningDistance);
 		Assert::assertSame('Ging goed', $training->executionComment);
 	}
 }

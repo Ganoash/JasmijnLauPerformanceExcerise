@@ -44,6 +44,20 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertSame(0, $training->dayIndex);
 		}
 
+		public function test_ensuring_visible_slots_does_not_delete_hidden_trainings(): void
+		{
+			$user_id    = self::factory()->user->create();
+			$schema_id  = (new SchemaRepository())->create($user_id, '2026-08-17');
+			$repository = new TrainingRepository();
+
+			$repository->ensureSchemaSlots($schema_id, TrainingRepository::fixedSlots());
+			$repository->ensureSchemaSlots($schema_id, TrainingRepository::fixedSlots(1));
+
+			self::assertCount(14, $repository->findBySchema($schema_id));
+			self::assertNotNull($repository->findBySlot($schema_id, 0, TrainingRepository::TIME_MORNING));
+			self::assertNotNull($repository->findBySlot($schema_id, 0, TrainingRepository::TIME_AFTERNOON));
+		}
+
 		public function test_training_type_repository_keeps_inactive_types_queryable(): void
 		{
 			$repository = new TrainingTypeRepository();

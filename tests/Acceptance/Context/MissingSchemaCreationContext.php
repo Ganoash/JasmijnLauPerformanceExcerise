@@ -68,7 +68,9 @@ final class MissingSchemaCreationContext extends BaseAcceptanceContext
 		foreach ($trainings as $training) {
 			Assert::assertSame('', $training->description);
 			Assert::assertNull($training->primaryTrainingTypeId);
-			Assert::assertNull($training->actualDistance);
+			Assert::assertNull($training->actualRunningDistance);
+			Assert::assertNull($training->actualCyclingDistance);
+			Assert::assertNull($training->actualSwimmingDistance);
 			Assert::assertSame('', $training->executionComment);
 			Assert::assertSame('', $training->injuryComment);
 			Assert::assertSame('', $training->coachComment);

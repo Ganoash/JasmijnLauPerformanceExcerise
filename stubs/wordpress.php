@@ -131,6 +131,7 @@ function get_option(string $option, mixed $default_value = false): mixed { retur
 function get_query_var(string $query_var, mixed $default_value = ''): mixed { return $default_value; }
 function get_role(string $role): ?WP_Role { return new WP_Role(); }
 function get_user_by(string $field, int|string $value): WP_User|false { return new WP_User(); }
+function get_user_meta(int $user_id, string $key = '', bool $single = false): mixed { return ''; }
 function get_users(array $args = []): array { return []; }
 function home_url(string $path = '', ?string $scheme = null): string { return $path; }
 function is_user_logged_in(): bool { return true; }
@@ -142,6 +143,7 @@ function sanitize_text_field(string $str): string { return trim(strip_tags($str)
 function sanitize_textarea_field(string $str): string { return trim(strip_tags($str)); }
 function status_header(int $code, string $description = ''): void {}
 function update_option(string $option, mixed $value, bool|string|null $autoload = null): bool { return true; }
+function update_user_meta(int $user_id, string $meta_key, mixed $meta_value, mixed $prev_value = ''): int|bool { return true; }
 function wp_clear_scheduled_hook(string $hook, array $args = [], bool $wp_error = false): int|false { return 0; }
 function wp_create_nonce(string|int $action = -1): string { return 'nonce'; }
 function wp_die(string $message = '', string $title = '', array|string $args = []): never { exit($message); }

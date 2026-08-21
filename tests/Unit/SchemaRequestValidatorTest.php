@@ -18,13 +18,13 @@ final class SchemaRequestValidatorTest extends TestCase
 					'primary_training_type_id' => '2',
 					'linked_training_type_ids' => ['2', '3', '3'],
 					'coach_comment'            => 'Let op techniek',
-					'actual_distance'          => '99',
+					'actual_running_distance'  => '99',
 				],
 			]
 		);
 
 		self::assertSame(10, $rows[0]['training_id']);
 		self::assertSame([2, 3], $rows[0]['linked_training_type_ids']);
-		self::assertArrayNotHasKey('actual_distance', $rows[0]);
+		self::assertArrayNotHasKey('actual_running_distance', $rows[0]);
 	}
 }

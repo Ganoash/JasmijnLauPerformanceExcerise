@@ -20,6 +20,7 @@ use LauPerformanceTraining\Services\DistanceTotalService;
 use LauPerformanceTraining\Services\FrontendFeedbackService;
 use LauPerformanceTraining\Services\SchemaCreationService;
 use LauPerformanceTraining\Services\SchemaEditorService;
+use LauPerformanceTraining\Services\UserTrainingPreferenceService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
 use LauPerformanceTraining\Validation\DateValidator;
@@ -35,6 +36,7 @@ final class Plugin
 		$schema_repository       = new SchemaRepository();
 		$training_repository     = new TrainingRepository();
 		$training_type_repository = new TrainingTypeRepository();
+		$user_preferences        = new UserTrainingPreferenceService();
 		$schema_creation_service = new SchemaCreationService(
 			$schema_repository,
 			$training_repository,
@@ -58,10 +60,15 @@ final class Plugin
 			new SchemaRequestValidator(),
 			$date_validator,
 			$date_factory,
-			$nonce
+			$nonce,
+			$user_preferences
 		);
 
-		(new AdminMenu(new UserOverviewPage($date_factory), $schema_editor_page, $training_type_page))->register();
+		(new AdminMenu(
+			new UserOverviewPage($date_factory, $user_preferences, $nonce),
+			$schema_editor_page,
+			$training_type_page
+		))->register();
 		(new SchemaCreationJob($schema_creation_service))->register();
 		(new DashboardSchemaBlock($date_factory))->register();
 		(new FrontendTrainingSaveAction(
@@ -82,7 +89,8 @@ final class Plugin
 				$schema_access,
 				new DistanceTotalService(),
 				$date_validator,
-				$nonce
+				$nonce,
+				$user_preferences
 			)
 		))->register();
 

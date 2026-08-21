@@ -33,9 +33,11 @@ if (class_exists('WP_UnitTestCase')) {
 			$trainings->updateFeedbackFields(
 				$training->id,
 				[
-					'actual_distance'   => 8.5,
-					'execution_comment' => 'Ging goed',
-					'injury_comment'    => 'Geen pijn',
+					'actual_running_distance'  => 8.5,
+					'actual_cycling_distance'  => null,
+					'actual_swimming_distance' => null,
+					'execution_comment'        => 'Ging goed',
+					'injury_comment'           => 'Geen pijn',
 				]
 			);
 
@@ -61,7 +63,7 @@ if (class_exists('WP_UnitTestCase')) {
 			$updated = $trainings->findById($training->id);
 
 			self::assertSame('Nieuwe training', $updated->description);
-			self::assertSame(8.5, $updated->actualDistance);
+			self::assertSame(8.5, $updated->actualRunningDistance);
 			self::assertSame('Ging goed', $updated->executionComment);
 			self::assertSame('Geen pijn', $updated->injuryComment);
 		}
@@ -128,7 +130,7 @@ if (class_exists('WP_UnitTestCase')) {
 
 			self::assertSame('Rustige duurloop', $filled?->description);
 			self::assertSame($type_id, $filled?->primaryTrainingTypeId);
-			self::assertSame([$strength_id, $mobility_id], $trainings->linkedTypeIds($slots[0]->id));
+			self::assertSame([$type_id, $strength_id, $mobility_id], $trainings->linkedTypeIds($slots[0]->id));
 			self::assertSame('', $empty?->description);
 			self::assertNull($empty?->primaryTrainingTypeId);
 		}

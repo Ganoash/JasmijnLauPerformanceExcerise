@@ -19,6 +19,7 @@ final class AdminMenu
 	{
 		add_action('admin_menu', [$this, 'registerMenus']);
 		add_action('admin_head', [$this, 'hideInternalSchemaEditorSubmenu']);
+		$this->user_overview_page->register();
 		$this->schema_editor_page->register();
 		$this->training_type_page->register();
 	}

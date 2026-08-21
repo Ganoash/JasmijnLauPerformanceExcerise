@@ -8,6 +8,7 @@ final class Nonce
 	public const FRONTEND_FEEDBACK_ACTION = 'lpt_frontend_feedback';
 	public const ADMIN_SCHEMA_ACTION      = 'lpt_admin_schema';
 	public const TRAINING_TYPE_ACTION     = 'lpt_training_type';
+	public const USER_TRAINING_PREFERENCE_ACTION = 'lpt_user_training_preference';
 
 	public function create(string $action): string
 	{

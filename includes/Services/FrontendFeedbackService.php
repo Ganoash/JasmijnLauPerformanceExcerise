@@ -13,12 +13,16 @@ use RuntimeException;
 
 final class FrontendFeedbackService
 {
-	public const FIELD_ACTUAL_DISTANCE   = 'actual_distance';
-	public const FIELD_EXECUTION_COMMENT = 'execution_comment';
-	public const FIELD_INJURY_COMMENT    = 'injury_comment';
+	public const FIELD_ACTUAL_RUNNING_DISTANCE  = 'actual_running_distance';
+	public const FIELD_ACTUAL_CYCLING_DISTANCE  = 'actual_cycling_distance';
+	public const FIELD_ACTUAL_SWIMMING_DISTANCE = 'actual_swimming_distance';
+	public const FIELD_EXECUTION_COMMENT        = 'execution_comment';
+	public const FIELD_INJURY_COMMENT           = 'injury_comment';
 
 	private const ALLOWED_FIELDS = [
-		self::FIELD_ACTUAL_DISTANCE,
+		self::FIELD_ACTUAL_RUNNING_DISTANCE,
+		self::FIELD_ACTUAL_CYCLING_DISTANCE,
+		self::FIELD_ACTUAL_SWIMMING_DISTANCE,
 		self::FIELD_EXECUTION_COMMENT,
 		self::FIELD_INJURY_COMMENT,
 	];
@@ -48,12 +52,14 @@ final class FrontendFeedbackService
 		}
 
 		$fields = [
-			self::FIELD_ACTUAL_DISTANCE   => $training->actualDistance,
-			self::FIELD_EXECUTION_COMMENT => $training->executionComment,
-			self::FIELD_INJURY_COMMENT    => $training->injuryComment,
+			self::FIELD_ACTUAL_RUNNING_DISTANCE  => $training->actualRunningDistance,
+			self::FIELD_ACTUAL_CYCLING_DISTANCE  => $training->actualCyclingDistance,
+			self::FIELD_ACTUAL_SWIMMING_DISTANCE => $training->actualSwimmingDistance,
+			self::FIELD_EXECUTION_COMMENT        => $training->executionComment,
+			self::FIELD_INJURY_COMMENT           => $training->injuryComment,
 		];
 
-		if ($field === self::FIELD_ACTUAL_DISTANCE) {
+		if (in_array($field, $this->distanceFields(), true)) {
 			$fields[$field] = $this->distance_validator->normalize($value);
 		} else {
 			$fields[$field] = sanitize_textarea_field((string) $value);
@@ -67,5 +73,17 @@ final class FrontendFeedbackService
 		}
 
 		return $updated;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	private function distanceFields(): array
+	{
+		return [
+			self::FIELD_ACTUAL_RUNNING_DISTANCE,
+			self::FIELD_ACTUAL_CYCLING_DISTANCE,
+			self::FIELD_ACTUAL_SWIMMING_DISTANCE,
+		];
 	}
 }

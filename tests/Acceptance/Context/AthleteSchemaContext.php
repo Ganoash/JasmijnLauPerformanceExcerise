@@ -42,11 +42,11 @@ final class AthleteSchemaContext extends BaseAcceptanceContext
 		$service->updateField(
 			$this->state->currentUserId,
 			$this->state->trainingId,
-			FrontendFeedbackService::FIELD_ACTUAL_DISTANCE,
+			FrontendFeedbackService::FIELD_ACTUAL_RUNNING_DISTANCE,
 			$distance
 		);
 
-		$this->state->savedField = FrontendFeedbackService::FIELD_ACTUAL_DISTANCE;
+		$this->state->savedField = FrontendFeedbackService::FIELD_ACTUAL_RUNNING_DISTANCE;
 		$this->state->latestRunningTotal = $this->runningTotal();
 	}
 
