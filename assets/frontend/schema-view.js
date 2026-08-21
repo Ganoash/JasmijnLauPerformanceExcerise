@@ -1,5 +1,6 @@
 (function () {
   const config = window.lptSchemaView || {};
+  const picker = document.getElementById("lpt-week-picker");
   const rows = Array.from(document.querySelectorAll(".lpt-training-row"));
 
   function parseDistance(value) {
@@ -21,12 +22,40 @@
     status.classList.toggle("is-error", Boolean(isError));
   }
 
+  function weekStartDate(value) {
+    const selectedDate = new Date(`${value}T12:00:00`);
+    const day = selectedDate.getDay();
+    const daysSinceMonday = (day + 6) % 7;
+
+    selectedDate.setDate(selectedDate.getDate() - daysSinceMonday);
+
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+    const date = String(selectedDate.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${date}`;
+  }
+
   function updateTotals() {
     const totals = {
       running: 0,
       cycling: 0,
       swimming: 0,
     };
+
+    if (picker) {
+      picker.addEventListener("change", () => {
+        if (!picker.value || !config.userId || !config.schemaUrl) {
+          console.log("picker")
+          return;
+        }
+
+        const startDate = weekStartDate(picker.value);
+        const baseUrl = String(config.schemaUrl).replace(/\/$/, "");
+
+        window.location.href = `${baseUrl}/${config.userId}/${startDate}/`;
+      });
+    }
 
     rows.forEach((row) => {
       const input = row.querySelector('[data-field="actual_distance"]');

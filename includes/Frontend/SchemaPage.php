@@ -77,6 +77,8 @@ final class SchemaPage
 			[
 				'ajaxUrl' => admin_url('admin-ajax.php'),
 				'nonce'   => $this->nonce->create(Nonce::FRONTEND_FEEDBACK_ACTION),
+                'userId'    => (string) $user_id,
+		        'schemaUrl' => home_url('/training-schema/'),
 			]
 		);
 

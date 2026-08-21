@@ -18,10 +18,25 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 			<h1>Training schema</h1>
 			<p><?php echo esc_html($user->display_name); ?></p>
 		</div>
-		<div class="lpt-week-label">
-			<?php echo esc_html('Week ' . $week->isoWeekNumber()); ?><br>
-			<?php echo esc_html(date_i18n('d-m-Y', strtotime($week->startDate())) . ' - ' . date_i18n('d-m-Y', strtotime($week->endDate()))); ?>
-		</div>
+    <div class="lpt-week-label">
+        <?php echo esc_html('Week ' . $week->isoWeekNumber()); ?><br>
+        <label for="lpt-week-picker" class="screen-reader-text">
+            <?php esc_html_e('Selecteer week', 'lau-performance-training'); ?>
+        </label>
+        <input
+            id="lpt-week-picker"
+            type="date"
+            value="<?php echo esc_attr($week->startDate()); ?>"
+        >
+        <span>
+            <?php
+            echo esc_html(
+                ' - '
+                . date_i18n('d-m-Y', strtotime($week->endDate()))
+            );
+            ?>
+        </span>
+    </div>
 	</header>
 
 	<section class="lpt-totals" aria-label="Totalen">
