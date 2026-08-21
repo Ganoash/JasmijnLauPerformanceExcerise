@@ -11,6 +11,27 @@
 
 $day_names = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
 $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
+
+function lpt_hex_to_rgba(string $hex, float $alpha = 0.12): string
+{
+	$hex = ltrim($hex, '#');
+
+	if (strlen($hex) !== 6) {
+		return 'rgba(255, 255, 255, 1)';
+	}
+
+	$red   = hexdec(substr($hex, 0, 2));
+	$green = hexdec(substr($hex, 2, 2));
+	$blue  = hexdec(substr($hex, 4, 2));
+
+	return sprintf(
+		'rgba(%d, %d, %d, %.2f)',
+		$red,
+		$green,
+		$blue,
+		$alpha
+	);
+}
 ?>
 <main class="lpt-schema-page">
 	<header class="lpt-schema-header">
@@ -48,11 +69,17 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 	<section class="lpt-training-list" aria-label="Trainingen">
 		<?php foreach ($trainings as $training) : ?>
 			<?php $primary_type = $primary_types[$training->id] ?? null; ?>
+			<?php
+                $background_color = $primary_type
+                    ? lpt_hex_to_rgba($primary_type->color, 0.12)
+                    : 'transparent';
+            ?>
 			<article
 				class="lpt-training-row"
 				data-training-id="<?php echo esc_attr((string) $training->id); ?>"
 				data-category="<?php echo esc_attr($primary_type?->category ?? ''); ?>"
 				data-unit="<?php echo esc_attr($primary_type?->unit ?? ''); ?>"
+                style="background-color: <?php echo esc_attr($background_color); ?>;"
 			>
 				<div class="lpt-training-main">
 					<div class="lpt-training-date">
