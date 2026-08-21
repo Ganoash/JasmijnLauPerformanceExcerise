@@ -17,8 +17,8 @@ final class DistanceTotalServiceTest extends TestCase
 			new Training(2, 1, 0, 'afternoon', '', 2, 2500.0, '', '', ''),
 		];
 		$types = [
-			1 => new TrainingType(1, 'Lopen', 'running', 'kilometers', '', true),
-			2 => new TrainingType(2, 'Zwemmen', 'swimming', 'meters', '', true),
+			1 => new TrainingType(1, 'Lopen', 'running', 'kilometers', '#ffffff', '', true),
+			2 => new TrainingType(2, 'Zwemmen', 'swimming', 'meters', '#ffffff', '', true),
 		];
 
 		$totals = (new DistanceTotalService())->calculate($trainings, $types);

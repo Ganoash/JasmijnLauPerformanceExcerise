@@ -95,6 +95,7 @@ if (class_exists('WP_UnitTestCase')) {
 					'name'       => $name,
 					'category'   => $category,
 					'unit'       => 'kilometers',
+                    'color'      => '#ffffff',
 					'linked_url' => '',
 					'active'     => true,
 				]

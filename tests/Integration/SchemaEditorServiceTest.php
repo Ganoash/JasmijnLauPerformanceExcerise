@@ -79,6 +79,7 @@ if (class_exists('WP_UnitTestCase')) {
 					'name'       => 'Duurloop',
 					'category'   => 'running',
 					'unit'       => 'kilometers',
+                    'color'      => '#ffffff',
 					'linked_url' => '',
 					'active'     => true,
 				]
@@ -88,6 +89,7 @@ if (class_exists('WP_UnitTestCase')) {
 					'name'       => 'Core stability',
 					'category'   => 'strength',
 					'unit'       => 'sets',
+                    'color'      => '#ffffff',
 					'linked_url' => '',
 					'active'     => true,
 				]
@@ -97,6 +99,7 @@ if (class_exists('WP_UnitTestCase')) {
 					'name'       => 'Mobiliteit',
 					'category'   => 'strength',
 					'unit'       => 'sets',
+                    'color'      => '#ffffff',
 					'linked_url' => '',
 					'active'     => true,
 				]
@@ -178,6 +181,7 @@ if (class_exists('WP_UnitTestCase')) {
 					'name'       => 'Verborgen training',
 					'category'   => 'running',
 					'unit'       => 'kilometers',
+                    'color'      => '#ffffff',
 					'linked_url' => '',
 					'active'     => false,
 				]

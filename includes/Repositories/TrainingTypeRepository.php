@@ -36,7 +36,7 @@ final class TrainingTypeRepository
 	}
 
 	/**
-	 * @param array{name:string,category:string,unit:string,linked_url:string,active:bool} $fields
+	 * @param array{name:string,category:string,unit:string,color:string,linked_url:string,active:bool} $fields
 	 */
 	public function create(array $fields): int
 	{
@@ -49,19 +49,20 @@ final class TrainingTypeRepository
 				'name'       => $fields['name'],
 				'category'   => $fields['category'],
 				'unit'       => $fields['unit'],
+				'color'      => $fields['color'],
 				'linked_url' => $fields['linked_url'],
 				'active'     => $fields['active'] ? 1 : 0,
 				'created_at' => $now,
 				'updated_at' => $now,
 			],
-			['%s', '%s', '%s', '%s', '%d', '%s', '%s']
+			['%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s']
 		);
 
 		return (int) $wpdb->insert_id;
 	}
 
 	/**
-	 * @param array{name:string,category:string,unit:string,linked_url:string,active:bool} $fields
+	 * @param array{name:string,category:string,unit:string,color:string,linked_url:string,active:bool} $fields
 	 */
 	public function update(int $training_type_id, array $fields): void
 	{
@@ -73,12 +74,13 @@ final class TrainingTypeRepository
 				'name'       => $fields['name'],
 				'category'   => $fields['category'],
 				'unit'       => $fields['unit'],
+                'color'      => $fields['color'],
 				'linked_url' => $fields['linked_url'],
 				'active'     => $fields['active'] ? 1 : 0,
 				'updated_at' => current_time('mysql'),
 			],
 			['id' => $training_type_id],
-			['%s', '%s', '%s', '%s', '%d', '%s'],
+			['%s', '%s', '%s', '%s', '%s', '%d', '%s'],
 			['%d']
 		);
 	}

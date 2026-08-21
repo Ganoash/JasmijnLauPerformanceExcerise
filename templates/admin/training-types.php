@@ -49,6 +49,18 @@
 						<p class="description">Meetwaarde voor geplande en uitgevoerde afstand. Zwemmen met meters wordt automatisch omgerekend naar kilometers in de totalen.</p>
 					</td>
 				</tr>
+                <tr>
+                    <th scope="row"><label for="lpt-color">Kleur</label></th>
+                    <td>
+                        <input
+                            id="lpt-color"
+                            name="color"
+                            type="color"
+                            value="<?php echo esc_attr($editing?->color ?? '#ffffff'); ?>"
+                        >
+                        <p class="description">Kleur die bij deze oefening wordt weergegeven in het schema.</p>
+                    </td>
+                </tr>
 				<tr>
 					<th scope="row"><label for="lpt-linked-url">Link</label></th>
 					<td>
@@ -78,6 +90,7 @@
 				<th>Naam</th>
 				<th>Categorie</th>
 				<th>Eenheid</th>
+				<th>Kleur</th>
 				<th>Link</th>
 				<th>Actief</th>
 				<th></th>
@@ -89,6 +102,21 @@
 					<td><?php echo esc_html($type->name); ?></td>
 					<td><?php echo esc_html($type->category); ?></td>
 					<td><?php echo esc_html($type->unit); ?></td>
+                    <td>
+                        <span
+                            style="
+                                display: inline-block;
+                                width: 20px;
+                                height: 20px;
+                                margin-right: 6px;
+                                border: 1px solid #ccc;
+                                border-radius: 3px;
+                                background-color: <?php echo esc_attr($type->color); ?>;
+                                vertical-align: middle;
+                            "
+                        ></span>
+                        <?php echo esc_html($type->color); ?>
+                    </td>
 					<td>
 						<?php if ($type->linkedUrl !== '') : ?>
 							<a href="<?php echo esc_url($type->linkedUrl); ?>" target="_blank" rel="noopener">Open</a>

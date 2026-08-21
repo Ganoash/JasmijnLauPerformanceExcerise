@@ -53,6 +53,7 @@ if (class_exists('WP_UnitTestCase')) {
 					'name'       => 'Zwemmen rustig',
 					'category'   => 'swimming',
 					'unit'       => 'meters',
+					'color'      => '#ffffff',
 					'linked_url' => 'https://example.test/zwemmen',
 					'active'     => false,
 				]
@@ -61,5 +62,23 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertNotNull($repository->find($type_id));
 			self::assertCount(0, $repository->all(true));
 		}
+
+        public function test_training_type_serializes_color_correctly(): void
+        {
+            $repository = new TrainingTypeRepository();
+
+			$type_id = $repository->create(
+				[
+					'name'       => 'Zwemmen rustig',
+					'category'   => 'swimming',
+					'unit'       => 'meters',
+					'color'      => '#ffffff',
+					'linked_url' => 'https://example.test/zwemmen',
+					'active'     => true,
+				]
+			);
+
+			self::assertSame($repository->find($type_id)->color,'#ffffff');
+        }
 	}
 }

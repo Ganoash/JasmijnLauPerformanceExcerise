@@ -36,6 +36,7 @@ final class DatabaseInstaller
 				name VARCHAR(190) NOT NULL,
 				category VARCHAR(80) NOT NULL,
 				unit VARCHAR(40) NOT NULL,
+				color VARCHAR(7) NOT NULL DEFAULT '#ffffff',
 				linked_url TEXT NULL,
 				active TINYINT(1) NOT NULL DEFAULT 1,
 				created_at DATETIME NOT NULL,

@@ -170,3 +170,8 @@ function plugin_dir_url(string $file): string
 {
 	return '';
 }
+
+function sanitize_hex_color(string $color): ?string
+{
+    return '';
+}

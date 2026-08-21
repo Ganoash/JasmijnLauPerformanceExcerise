@@ -96,6 +96,7 @@ abstract class BaseAcceptanceContext implements Context
 				'name'       => $name,
 				'category'   => $category,
 				'unit'       => $unit,
+				'color'      => '#ffffff',
 				'linked_url' => '',
 				'active'     => $active,
 			]

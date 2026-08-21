@@ -10,6 +10,7 @@ final class TrainingType
 		public readonly string $name,
 		public readonly string $category,
 		public readonly string $unit,
+		public readonly string $color,
 		public readonly string $linkedUrl,
 		public readonly bool $active,
 	) {
@@ -25,6 +26,7 @@ final class TrainingType
 			(string) $row['name'],
 			(string) $row['category'],
 			(string) $row['unit'],
+			(string) $row['color'],
 			(string) ($row['linked_url'] ?? ''),
 			(bool) (int) $row['active']
 		);

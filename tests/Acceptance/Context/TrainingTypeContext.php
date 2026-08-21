@@ -73,6 +73,7 @@ final class TrainingTypeContext extends BaseAcceptanceContext
 				'name'       => $name,
 				'category'   => $category,
 				'unit'       => $unit,
+                'color'      => '#ffffff',
 				'linked_url' => 'https://example.test/exercises/' . sanitize_title($name),
 				'active'     => '1',
 			]

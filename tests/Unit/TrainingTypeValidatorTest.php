@@ -24,11 +24,13 @@ final class TrainingTypeValidatorTest extends TestCase
 				'category'   => 'running',
 				'unit'       => 'kilometers',
 				'linked_url' => 'https://example.test/duurloop',
+				'color'      => '#ffffff',
 				'active'     => '1',
 			]
 		);
 
 		self::assertSame('Duurloop', $result['name']);
 		self::assertTrue($result['active']);
+		self::assertSame('#ffffff', $result['color']);
 	}
 }
