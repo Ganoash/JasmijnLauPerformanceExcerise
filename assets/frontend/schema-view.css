@@ -37,6 +37,28 @@
   gap: 14px;
 }
 
+.lpt-schema-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin: -6px 0 16px;
+}
+
+.lpt-schema-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.lpt-schema-controls input {
+  margin: 0;
+}
+
+.lpt-training-row.is-filtered {
+  display: none;
+}
+
 .lpt-totals {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

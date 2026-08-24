@@ -1,6 +1,7 @@
 (function () {
   const config = window.lptSchemaView || {};
   const picker = document.getElementById("lpt-week-picker");
+  const restFilter = document.getElementById("lpt-hide-rest-days");
   const rows = Array.from(document.querySelectorAll(".lpt-training-row"));
 
   function parseDistance(value) {
@@ -43,20 +44,6 @@
       swimming: 0,
     };
 
-    if (picker) {
-      picker.addEventListener("change", () => {
-        if (!picker.value || !config.userId || !config.schemaUrl) {
-          console.log("picker")
-          return;
-        }
-
-        const startDate = weekStartDate(picker.value);
-        const baseUrl = String(config.schemaUrl).replace(/\/$/, "");
-
-        window.location.href = `${baseUrl}/${config.userId}/${startDate}/`;
-      });
-    }
-
     rows.forEach((row) => {
       row.querySelectorAll("[data-category][data-unit]").forEach((input) => {
         const category = String(input.dataset.category || "").toLowerCase();
@@ -78,6 +65,14 @@
       if (target) {
         target.textContent = value.toFixed(2);
       }
+    });
+  }
+
+  function updateRestFilter() {
+    const hideRestDays = Boolean(restFilter && restFilter.checked);
+
+    rows.forEach((row) => {
+      row.classList.toggle("is-filtered", hideRestDays && row.dataset.isRest === "1");
     });
   }
 
@@ -140,6 +135,23 @@
       });
   }
 
+  if (picker) {
+    picker.addEventListener("change", () => {
+      if (!picker.value || !config.userId || !config.schemaUrl) {
+        return;
+      }
+
+      const startDate = weekStartDate(picker.value);
+      const baseUrl = String(config.schemaUrl).replace(/\/$/, "");
+
+      window.location.href = `${baseUrl}/${config.userId}/${startDate}/`;
+    });
+  }
+
+  if (restFilter) {
+    restFilter.addEventListener("change", updateRestFilter);
+  }
+
   rows.forEach((row) => {
     row.querySelectorAll("[data-field]").forEach((field) => {
       field.addEventListener("input", () => {
@@ -157,5 +169,6 @@
     });
   });
 
+  updateRestFilter();
   updateTotals();
 })();

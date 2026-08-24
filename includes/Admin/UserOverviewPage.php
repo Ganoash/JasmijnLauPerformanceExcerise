@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace LauPerformanceTraining\Admin;
 
+use LauPerformanceTraining\Domain\Training;
 use LauPerformanceTraining\Domain\Week;
+use LauPerformanceTraining\Repositories\SchemaRepository;
+use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Services\UserTrainingPreferenceService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
@@ -14,7 +17,9 @@ final class UserOverviewPage
 	public function __construct(
 		private readonly DateFactory $date_factory,
 		private readonly ?UserTrainingPreferenceService $user_preferences = null,
-		private readonly ?Nonce $nonce = null
+		private readonly ?Nonce $nonce = null,
+		private readonly ?SchemaRepository $schemas = null,
+		private readonly ?TrainingRepository $trainings = null
 	) {
 	}
 
@@ -40,11 +45,14 @@ final class UserOverviewPage
 			]
 		);
 
+		$current_week = Week::fromDate($this->date_factory->now())->startDate();
+
 		View::render(
 			'admin/user-overview.php',
 			[
 				'action_url'      => admin_url('admin-post.php'),
-				'current_week'    => Week::fromDate($this->date_factory->now())->startDate(),
+				'current_week'    => $current_week,
+				'injury_comments' => $this->injuryCommentsByUser($users, $current_week),
 				'nonce'           => $this->nonce()->create(Nonce::USER_TRAINING_PREFERENCE_ACTION),
 				'search'          => $search,
 				'training_counts' => $this->trainingCounts($users),
@@ -89,6 +97,38 @@ final class UserOverviewPage
 		return $counts;
 	}
 
+	/**
+	 * @param \WP_User[] $users
+	 * @return array<int,array<int,array{day:string,time_of_day:string,comment:string}>>
+	 */
+	private function injuryCommentsByUser(array $users, string $week_start_date): array
+	{
+		$comments = [];
+		foreach ($users as $user) {
+			$schema = $this->schemas()->findByUserAndWeek((int) $user->ID, $week_start_date);
+			if (! $schema) {
+				$comments[(int) $user->ID] = [];
+				continue;
+			}
+
+			$comments[(int) $user->ID] = array_values(
+				array_map(
+					static fn (Training $training): array => [
+						'day'         => (string) $training->dayIndex,
+						'time_of_day' => $training->timeOfDay,
+						'comment'     => $training->injuryComment,
+					],
+					array_filter(
+						$this->trainings()->findBySchema($schema->id),
+						static fn (Training $training): bool => $training->injuryComment !== ''
+					)
+				)
+			);
+		}
+
+		return $comments;
+	}
+
 	private function userPreferences(): UserTrainingPreferenceService
 	{
 		return $this->user_preferences ?? new UserTrainingPreferenceService();
@@ -97,5 +137,15 @@ final class UserOverviewPage
 	private function nonce(): Nonce
 	{
 		return $this->nonce ?? new Nonce();
+	}
+
+	private function schemas(): SchemaRepository
+	{
+		return $this->schemas ?? new SchemaRepository();
+	}
+
+	private function trainings(): TrainingRepository
+	{
+		return $this->trainings ?? new TrainingRepository();
 	}
 }

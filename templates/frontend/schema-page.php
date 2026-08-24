@@ -13,25 +13,27 @@
 $day_names = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
 $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 
-function lpt_hex_to_rgba(string $hex, float $alpha = 0.12): string
-{
-	$hex = ltrim($hex, '#');
+if (! function_exists('lpt_hex_to_rgba')) {
+	function lpt_hex_to_rgba(string $hex, float $alpha = 0.12): string
+	{
+		$hex = ltrim($hex, '#');
 
-	if (strlen($hex) !== 6) {
-		return 'rgba(255, 255, 255, 1)';
+		if (strlen($hex) !== 6) {
+			return 'rgba(255, 255, 255, 1)';
+		}
+
+		$red   = hexdec(substr($hex, 0, 2));
+		$green = hexdec(substr($hex, 2, 2));
+		$blue  = hexdec(substr($hex, 4, 2));
+
+		return sprintf(
+			'rgba(%d, %d, %d, %.2f)',
+			$red,
+			$green,
+			$blue,
+			$alpha
+		);
 	}
-
-	$red   = hexdec(substr($hex, 0, 2));
-	$green = hexdec(substr($hex, 2, 2));
-	$blue  = hexdec(substr($hex, 4, 2));
-
-	return sprintf(
-		'rgba(%d, %d, %d, %.2f)',
-		$red,
-		$green,
-		$blue,
-		$alpha
-	);
 }
 
 /**
@@ -39,35 +41,52 @@ function lpt_hex_to_rgba(string $hex, float $alpha = 0.12): string
  * @param \LauPerformanceTraining\Domain\TrainingType[] $linked_types
  * @return array<string,array{label:string,unit:string,field:string,value:float|null}>
  */
-function lpt_distance_fields_for_training(
-	\LauPerformanceTraining\Domain\Training $training,
-	?\LauPerformanceTraining\Domain\TrainingType $primary_type,
-	array $linked_types
-): array {
-	$fields = [];
-	foreach (array_filter([$primary_type, ...$linked_types]) as $type) {
-		$category = strtolower($type->category);
-		if (! in_array($category, ['running', 'cycling', 'swimming'], true) || isset($fields[$category])) {
-			continue;
+if (! function_exists('lpt_distance_fields_for_training')) {
+	function lpt_distance_fields_for_training(
+		\LauPerformanceTraining\Domain\Training $training,
+		?\LauPerformanceTraining\Domain\TrainingType $primary_type,
+		array $linked_types
+	): array {
+		$fields = [];
+		foreach (array_filter([$primary_type, ...$linked_types]) as $type) {
+			$category = strtolower($type->category);
+			if (! in_array($category, ['running', 'cycling', 'swimming'], true) || isset($fields[$category])) {
+				continue;
+			}
+
+			$fields[$category] = [
+				'label' => match ($category) {
+					'running' => 'Lopen',
+					'cycling' => 'Fietsen',
+					default => 'Zwemmen',
+				},
+				'unit'  => $type->unit,
+				'field' => 'actual_' . $category . '_distance',
+				'value' => match ($category) {
+					'running' => $training->actualRunningDistance,
+					'cycling' => $training->actualCyclingDistance,
+					default => $training->actualSwimmingDistance,
+				},
+			];
 		}
 
-		$fields[$category] = [
-			'label' => match ($category) {
-				'running' => 'Lopen',
-				'cycling' => 'Fietsen',
-				default => 'Zwemmen',
-			},
-			'unit'  => $type->unit,
-			'field' => 'actual_' . $category . '_distance',
-			'value' => match ($category) {
-				'running' => $training->actualRunningDistance,
-				'cycling' => $training->actualCyclingDistance,
-				default => $training->actualSwimmingDistance,
-			},
-		];
+		return $fields;
 	}
+}
 
-	return $fields;
+/**
+ * @param \LauPerformanceTraining\Domain\TrainingType[] $linked_types
+ */
+if (! function_exists('lpt_is_rest_training')) {
+	function lpt_is_rest_training(
+		\LauPerformanceTraining\Domain\Training $training,
+		?\LauPerformanceTraining\Domain\TrainingType $primary_type,
+		array $linked_types
+	): bool {
+		return $training->description === ''
+			&& $primary_type === null
+			&& $linked_types === [];
+	}
 }
 ?>
 <main class="lpt-schema-page">
@@ -103,11 +122,19 @@ function lpt_distance_fields_for_training(
 		<div><span>Zwemmen: </span><strong data-total="swimming"><?php echo esc_html(number_format_i18n($totals->swimmingKm, 2)); ?></strong><small>km</small></div>
 	</section>
 
+	<div class="lpt-schema-controls">
+		<label>
+			<input type="checkbox" id="lpt-hide-rest-days">
+			<span>Alleen trainingsdagen</span>
+		</label>
+	</div>
+
 	<section class="lpt-training-list" aria-label="Trainingen">
 		<?php foreach ($trainings as $training) : ?>
 			<?php $primary_type = $primary_types[$training->id] ?? null; ?>
 			<?php $training_linked_types = $linked_types[$training->id] ?? []; ?>
 			<?php $distance_fields = lpt_distance_fields_for_training($training, $primary_type, $training_linked_types); ?>
+			<?php $is_rest_training = lpt_is_rest_training($training, $primary_type, $training_linked_types); ?>
 			<?php
                 $background_color = $primary_type
                     ? lpt_hex_to_rgba($primary_type->color, 0.12)
@@ -116,6 +143,7 @@ function lpt_distance_fields_for_training(
 			<article
 				class="lpt-training-row"
 				data-training-id="<?php echo esc_attr((string) $training->id); ?>"
+				data-is-rest="<?php echo esc_attr($is_rest_training ? '1' : '0'); ?>"
                 style="background-color: <?php echo esc_attr($background_color); ?>;"
 			>
 				<div class="lpt-training-main">

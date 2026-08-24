@@ -4,6 +4,11 @@ declare(strict_types=1);
 namespace LauPerformanceTraining\Tests\Integration;
 
 use LauPerformanceTraining\Activation\DatabaseInstaller;
+use LauPerformanceTraining\Domain\DistanceTotals;
+use LauPerformanceTraining\Domain\Schema;
+use LauPerformanceTraining\Domain\Training;
+use LauPerformanceTraining\Domain\TrainingType;
+use LauPerformanceTraining\Domain\Week;
 use LauPerformanceTraining\Frontend\SchemaPage;
 use LauPerformanceTraining\Permissions\SchemaAccess;
 use LauPerformanceTraining\Repositories\SchemaRepository;
@@ -13,6 +18,7 @@ use LauPerformanceTraining\Services\DistanceTotalService;
 use LauPerformanceTraining\Services\SchemaCreationService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
+use LauPerformanceTraining\Support\View;
 use LauPerformanceTraining\Validation\DateValidator;
 
 if (class_exists('WP_UnitTestCase')) {
@@ -73,6 +79,39 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertStringContainsString('lpt-schema-page', $html);
 			self::assertStringContainsString('Schema Athlete', $html);
 			self::assertStringContainsString('Week 33', $html);
+		}
+
+		public function test_schema_page_renders_rest_day_filter_and_row_markers(): void
+		{
+			$user = self::factory()->user->create_and_get(['display_name' => 'Schema Athlete']);
+
+			ob_start();
+			View::render(
+				'frontend/schema-page.php',
+				[
+					'linked_types'      => [
+						2 => [],
+					],
+					'primary_types'     => [
+						1 => null,
+						2 => new TrainingType(1, 'Duurloop', 'running', 'kilometers', '#ffffff', '', true),
+					],
+					'schema'            => new Schema(1, (int) $user->ID, '2026-08-17'),
+					'show_time_of_day'  => true,
+					'totals'            => new DistanceTotals(0.0, 0.0, 0.0),
+					'trainings'         => [
+						new Training(1, 1, 0, 'morning', '', null, '', '', ''),
+						new Training(2, 1, 0, 'afternoon', 'Rustige duurloop', 1, '', '', ''),
+					],
+					'user'              => $user,
+					'week'              => Week::fromDateString('2026-08-17'),
+				]
+			);
+			$html = (string) ob_get_clean();
+
+			self::assertStringContainsString('id="lpt-hide-rest-days"', $html);
+			self::assertStringContainsString('data-is-rest="1"', $html);
+			self::assertStringContainsString('data-is-rest="0"', $html);
 		}
 
 		private function schemaPage(): SchemaPage

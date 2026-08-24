@@ -65,7 +65,7 @@ final class Plugin
 		);
 
 		(new AdminMenu(
-			new UserOverviewPage($date_factory, $user_preferences, $nonce),
+			new UserOverviewPage($date_factory, $user_preferences, $nonce, $schema_repository, $training_repository),
 			$schema_editor_page,
 			$training_type_page
 		))->register();
