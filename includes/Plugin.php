@@ -101,6 +101,16 @@ final class Plugin
 			}
 		);
 
+		add_filter( 'login_redirect', static function ( $redirect_to, $request, $user ) {
+            if ( isset( $user->roles ) && is_array( $user->roles ) ) {
+                if ( in_array( 'administrator', $user->roles ) ) {
+                    return $redirect_to; // Admins go to the dashboard
+                }
+            }
+            return home_url(); // Everyone else goes to the home page
+        }, 10, 3 );
+
+
 		add_action(
 			'delete_user',
 			static function (int $user_id) use ($schema_repository): void {
