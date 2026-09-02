@@ -32,6 +32,42 @@
   font-weight: 600;
 }
 
+.lpt-week-summary {
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+}
+
+.lpt-week-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.lpt-week-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  border: 1px solid #b8c0cc;
+  border-radius: 4px;
+  padding: 6px 12px;
+  background: #fff;
+  color: #202124;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  min-width: 150px;
+  justify-content: center;
+}
+
+.lpt-week-button:hover,
+.lpt-week-button:focus {
+  border-color: #202124;
+  color: #202124;
+  text-decoration: none;
+}
+
 .lpt-training-list {
   display: grid;
   gap: 14px;
@@ -195,6 +231,14 @@
 
   .lpt-week-label {
     text-align: left;
+  }
+
+  .lpt-week-summary {
+    justify-items: start;
+  }
+
+  .lpt-week-navigation {
+    justify-content: flex-start;
   }
 
   .lpt-coach-comment {

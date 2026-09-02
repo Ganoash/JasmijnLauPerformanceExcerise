@@ -12,6 +12,8 @@
 
 $day_names = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
 $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
+$previous_week_url = home_url('/training-schema/' . $user->ID . '/' . rawurlencode($week->plusWeeks(-1)->startDate()) . '/');
+$next_week_url = home_url('/training-schema/' . $user->ID . '/' . rawurlencode($week->plusWeeks(1)->startDate()) . '/');
 
 if (! function_exists('lpt_hex_to_rgba')) {
 	function lpt_hex_to_rgba(string $hex, float $alpha = 0.12): string
@@ -95,25 +97,31 @@ if (! function_exists('lpt_is_rest_training')) {
 			<h1>Training schema</h1>
 			<p><?php echo esc_html($user->display_name); ?></p>
 		</div>
-    <div class="lpt-week-label">
-        <?php echo esc_html('Week ' . $week->isoWeekNumber()); ?><br>
-        <label for="lpt-week-picker" class="screen-reader-text">
-            <?php esc_html_e('Selecteer week', 'lau-performance-training'); ?>
-        </label>
-        <input
-            id="lpt-week-picker"
-            type="date"
-            value="<?php echo esc_attr($week->startDate()); ?>"
-        >
-        <span>
-            <?php
-            echo esc_html(
-                ' - '
-                . date_i18n('d-m-Y', strtotime($week->endDate()))
-            );
-            ?>
-        </span>
-    </div>
+		<div class="lpt-week-summary">
+			<div class="lpt-week-label">
+				<?php echo esc_html('Week ' . $week->isoWeekNumber()); ?><br>
+				<label for="lpt-week-picker" class="screen-reader-text">
+					<?php esc_html_e('Selecteer week', 'lau-performance-training'); ?>
+				</label>
+				<input
+					id="lpt-week-picker"
+					type="date"
+					value="<?php echo esc_attr($week->startDate()); ?>"
+				>
+				<span>
+					<?php
+					echo esc_html(
+						' - '
+						. date_i18n('d-m-Y', strtotime($week->endDate()))
+					);
+					?>
+				</span>
+			</div>
+			<nav class="lpt-week-navigation" aria-label="<?php echo esc_attr__('Weeknavigatie', 'lau-performance-training'); ?>">
+				<a class="lpt-week-button" href="<?php echo esc_url($previous_week_url); ?>"><?php esc_html_e('Vorige week', 'lau-performance-training'); ?></a>
+				<a class="lpt-week-button" href="<?php echo esc_url($next_week_url); ?>"><?php esc_html_e('Volgende week', 'lau-performance-training'); ?></a>
+			</nav>
+		</div>
 	</header>
 
 	<section class="lpt-totals" aria-label="Totalen">

@@ -112,6 +112,16 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertStringContainsString('id="lpt-hide-rest-days"', $html);
 			self::assertStringContainsString('data-is-rest="1"', $html);
 			self::assertStringContainsString('data-is-rest="0"', $html);
+			self::assertStringContainsString('Vorige week', $html);
+			self::assertStringContainsString('Volgende week', $html);
+			self::assertStringContainsString(
+				'href="' . esc_url(home_url('/training-schema/' . $user->ID . '/2026-08-10/')) . '"',
+				$html
+			);
+			self::assertStringContainsString(
+				'href="' . esc_url(home_url('/training-schema/' . $user->ID . '/2026-08-24/')) . '"',
+				$html
+			);
 		}
 
 		private function schemaPage(): SchemaPage
