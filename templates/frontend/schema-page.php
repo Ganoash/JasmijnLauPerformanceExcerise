@@ -164,10 +164,6 @@ if (! function_exists('lpt_is_rest_training')) {
 					</div>
 
 					<div class="lpt-training-content">
-						<div class="lpt-description">
-							<strong class="lpt-field-heading">Beschrijving</strong>
-							<?php echo $training->description !== '' ? wp_kses_post(wpautop($training->description)) : '<p>Rust</p>'; ?>
-						</div>
 
 						<?php if ($primary_type || $training_linked_types !== []) : ?>
 							<div class="lpt-training-types">
@@ -198,6 +194,10 @@ if (! function_exists('lpt_is_rest_training')) {
 								</ul>
 							</div>
 						<?php endif; ?>
+                        <div class="lpt-description">
+							<strong class="lpt-field-heading">Beschrijving</strong>
+							<?php echo $training->description !== '' ? wp_kses_post(wpautop($training->description)) : '<p>Rust</p>'; ?>
+						</div>
 					</div>
 				</div>
 
