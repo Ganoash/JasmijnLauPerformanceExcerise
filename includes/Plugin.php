@@ -111,6 +111,20 @@ final class Plugin
         }, 10, 3 );
 
 
+    add_action( 'login_enqueue_scripts', static function () { ?>
+                <style type="text/css">
+                    #login h1 a, .login h1 a {
+                        background-image: url(https://jasmijnlauperformance.nl/wp-content/uploads/2026/09/Orange-White-Bold-Running-Event-Poster-1.png);
+                        height: 80px;
+                        width: 320px;
+                        background-size: contain;
+                        background-repeat: no-repeat;
+                        padding-bottom: 10px;
+                    }
+                </style>
+        <?php });
+
+
 		add_action(
 			'delete_user',
 			static function (int $user_id) use ($schema_repository): void {
