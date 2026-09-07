@@ -45,18 +45,20 @@ final class UserOverviewPage
 			]
 		);
 
-		$current_week = Week::fromDate($this->date_factory->now())->startDate();
+		$current_week = Week::fromDate($this->date_factory->now());
+		$last_week    = $current_week->plusWeeks(-1);
 
 		View::render(
 			'admin/user-overview.php',
 			[
-				'action_url'      => admin_url('admin-post.php'),
-				'current_week'    => $current_week,
-				'injury_comments' => $this->injuryCommentsByUser($users, $current_week),
-				'nonce'           => $this->nonce()->create(Nonce::USER_TRAINING_PREFERENCE_ACTION),
-				'search'          => $search,
-				'training_counts' => $this->trainingCounts($users),
-				'users'           => $users,
+				'action_url'                => admin_url('admin-post.php'),
+				'current_week'              => $current_week->startDate(),
+				'injury_comments'           => $this->injuryCommentsByUser($users, $current_week->startDate()),
+				'last_week_injury_comments' => $this->injuryCommentsByUser($users, $last_week->startDate()),
+				'nonce'                     => $this->nonce()->create(Nonce::USER_TRAINING_PREFERENCE_ACTION),
+				'search'                    => $search,
+				'training_counts'           => $this->trainingCounts($users),
+				'users'                     => $users,
 			]
 		);
 	}

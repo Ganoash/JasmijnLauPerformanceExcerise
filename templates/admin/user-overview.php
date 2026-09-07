@@ -3,6 +3,7 @@
  * @var string $action_url
  * @var string $current_week
  * @var array<int,array<int,array{day:string,time_of_day:string,comment:string}>> $injury_comments
+ * @var array<int,array<int,array{day:string,time_of_day:string,comment:string}>> $last_week_injury_comments
  * @var string $nonce
  * @var string $search
  * @var array<int,int> $training_counts
@@ -28,6 +29,7 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 			<tr>
 				<th>Naam</th>
 				<th>E-mail</th>
+                <th>Klachten vorige week</th>
 				<th>Klachten deze week</th>
 				<th>Trainingen per dag</th>
 				<th></th>
@@ -38,6 +40,22 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 				<tr>
 					<td><?php echo esc_html($user->display_name); ?></td>
 					<td><?php echo esc_html($user->user_email); ?></td>
+					<td>
+						<?php if (($last_week_injury_comments[$user->ID] ?? []) === []) : ?>
+							-
+						<?php else : ?>
+							<ul>
+								<?php foreach ($last_week_injury_comments[$user->ID] as $comment) : ?>
+									<li>
+										<strong>
+											<?php echo esc_html(($day_names[(int) $comment['day']] ?? $comment['day']) . ' ' . ($time_names[$comment['time_of_day']] ?? $comment['time_of_day'])); ?>
+										</strong>:
+										<?php echo esc_html($comment['comment']); ?>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						<?php endif; ?>
+					</td>
 					<td>
 						<?php if (($injury_comments[$user->ID] ?? []) === []) : ?>
 							-
