@@ -6,7 +6,7 @@ const ARRAY_A = 'ARRAY_A';
 const HOUR_IN_SECONDS = 3600;
 const LPT_PLUGIN_DIR = '';
 const LPT_PLUGIN_URL = '';
-const LPT_VERSION = '0.1.0';
+const LPT_VERSION = '0.2.0';
 
 class WP_User
 {
@@ -111,6 +111,7 @@ function add_query_arg(string|array $key, mixed $value = null, ?string $url = nu
 function add_rewrite_rule(string $regex, string|array $query, string $after = 'bottom'): void {}
 function add_rewrite_tag(string $tag, string $regex, string $query = ''): void {}
 function add_role(string $role, string $display_name, array $capabilities = []): ?WP_Role { return new WP_Role(); }
+function add_shortcode(string $tag, callable $callback): void {}
 function add_submenu_page(string $parent_slug, string $page_title, string $menu_title, string $capability, string $menu_slug, callable|array|string $callback = '', int|float|null $position = null): string|false { return ''; }
 function admin_url(string $path = '', string $scheme = 'admin'): string { return $path; }
 function auth_redirect(): void {}
@@ -121,7 +122,9 @@ function current_time(string $type, int|bool $gmt = 0): string { return '2026-08
 function current_user_can(string $capability, mixed ...$args): bool { return false; }
 function dbDelta(string|array $queries = '', bool $execute = true): array { return []; }
 function delete_option(string $option): bool { return true; }
+function esc_html(string $text): string { return $text; }
 function esc_html__(string $text, string $domain = 'default'): string { return $text; }
+function esc_url(string $url, array $protocols = [], ?string $_context = 'display'): string { return $url; }
 function esc_url_raw(string $url, array $protocols = []): string { return $url; }
 function flush_rewrite_rules(bool $hard = true): void {}
 function get_current_user_id(): int { return 0; }

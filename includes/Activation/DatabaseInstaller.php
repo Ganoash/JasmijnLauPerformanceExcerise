@@ -9,13 +9,19 @@ final class DatabaseInstaller
 	{
 		global $wpdb;
 
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		if (! function_exists('dbDelta')) {
+			$upgrade_file = ABSPATH . 'wp-admin/includes/upgrade.php';
+			if (is_readable($upgrade_file)) {
+				require_once $upgrade_file;
+			}
+		}
 
 		$charset_collate = $wpdb->get_charset_collate();
 		$schemas         = $wpdb->prefix . 'lpt_schemas';
 		$trainings       = $wpdb->prefix . 'lpt_trainings';
 		$links           = $wpdb->prefix . 'lpt_training_type_links';
 		$types           = $wpdb->prefix . 'lpt_training_types';
+		$goals           = $wpdb->prefix . 'lpt_goals';
 
 		dbDelta(
 			"CREATE TABLE {$schemas} (
@@ -79,7 +85,43 @@ final class DatabaseInstaller
 			) {$charset_collate};"
 		);
 
+		dbDelta(
+			"CREATE TABLE {$goals} (
+				id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+				user_id BIGINT UNSIGNED NOT NULL,
+				name VARCHAR(190) NOT NULL,
+				description TEXT NULL,
+				goal_date DATE NOT NULL,
+				target_time VARCHAR(80) NULL,
+				actual_time VARCHAR(8) NULL,
+				active TINYINT(1) NOT NULL DEFAULT 1,
+				created_at DATETIME NOT NULL,
+				updated_at DATETIME NOT NULL,
+				PRIMARY KEY  (id),
+				UNIQUE KEY user_goal_date (user_id, goal_date),
+				KEY user_id (user_id),
+				KEY active (active),
+				KEY goal_date (goal_date)
+			) {$charset_collate};"
+		);
+
 		add_option('lpt_weeks_ahead', 2, '', false);
 		update_option('lpt_db_version', LPT_VERSION, false);
+	}
+
+	public function maybeUpgrade(): void
+	{
+		if ((string) get_option('lpt_db_version', '') !== LPT_VERSION || ! $this->goalsTableExists()) {
+			$this->install();
+		}
+	}
+
+	private function goalsTableExists(): bool
+	{
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'lpt_goals';
+
+		return (string) $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) === $table;
 	}
 }

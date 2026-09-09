@@ -1,6 +1,7 @@
 <?php
 /**
  * @var string $action_url
+ * @var array<int,\LauPerformanceTraining\Domain\Goal[]> $active_goals_by_user
  * @var string $current_week
  * @var array<int,array<int,array{day:string,time_of_day:string,comment:string}>> $injury_comments
  * @var array<int,array<int,array{day:string,time_of_day:string,comment:string}>> $last_week_injury_comments
@@ -9,8 +10,11 @@
  * @var array<int,int> $training_counts
  * @var WP_User[] $users
  */
+use LauPerformanceTraining\Support\GoalFormatter;
+
 $day_names  = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
 $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
+$active_goals_by_user = $active_goals_by_user ?? [];
 ?>
 <div class="wrap">
 	<h1>Schema’s bewerken</h1>
@@ -31,6 +35,7 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 				<th>E-mail</th>
                 <th>Klachten vorige week</th>
 				<th>Klachten deze week</th>
+				<th>Doelen</th>
 				<th>Trainingen per dag</th>
 				<th></th>
 			</tr>
@@ -71,6 +76,26 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 								<?php endforeach; ?>
 							</ul>
 						<?php endif; ?>
+					</td>
+					<td>
+						<?php if (($active_goals_by_user[$user->ID] ?? []) === []) : ?>
+							-
+						<?php else : ?>
+							<ul>
+								<?php foreach ($active_goals_by_user[$user->ID] as $goal) : ?>
+									<li>
+										<?php
+										echo esc_html(
+											$goal->name . ', '
+											. GoalFormatter::date($goal->goalDate) . ', '
+											. GoalFormatter::targetTime($goal->targetTime)
+										);
+										?>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						<?php endif; ?>
+						<a href="<?php echo esc_url(home_url('/training-goals/' . $user->ID . '/')); ?>">Doelen beheren</a>
 					</td>
 					<td>
 						<form method="post" action="<?php echo esc_url($action_url); ?>">

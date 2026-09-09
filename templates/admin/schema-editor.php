@@ -3,6 +3,7 @@
  * @var string $action_url
  * @var string|null $error_message
  * @var string $frontend_url
+ * @var array<string,\LauPerformanceTraining\Domain\Goal[]> $goals_by_date
  * @var array<int,int[]> $linked_types
  * @var \LauPerformanceTraining\Domain\TrainingType[] $linked_training_types
  * @var string $nonce
@@ -14,8 +15,12 @@
  * @var \LauPerformanceTraining\Domain\Week $week
  */
 
+use LauPerformanceTraining\Support\GoalFormatter;
+
 $day_names = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
 $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
+$goals_by_date = $goals_by_date ?? [];
+$rendered_goal_days = [];
 ?>
 <div class="wrap">
 	<h1>Schema voor <?php echo esc_html($user->display_name); ?></h1>
@@ -77,12 +82,26 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 			</thead>
 			<tbody>
 				<?php foreach ($trainings as $index => $training) : ?>
+					<?php
+					$training_date = $week->dayDate($training->dayIndex);
+					$show_goals = ! isset($rendered_goal_days[$training->dayIndex]);
+					$rendered_goal_days[$training->dayIndex] = true;
+					?>
 					<tr>
 						<td>
 							<strong><?php echo esc_html($day_names[$training->dayIndex]); ?></strong><br>
-							<?php echo esc_html(date_i18n('d-m-Y', strtotime($week->dayDate($training->dayIndex)))); ?>
+							<?php echo esc_html(date_i18n('d-m-Y', strtotime($training_date))); ?>
 							<?php if ($show_time_of_day) : ?>
 								<br><?php echo esc_html($time_names[$training->timeOfDay] ?? $training->timeOfDay); ?>
+							<?php endif; ?>
+							<?php if ($show_goals && ($goals_by_date[$training_date] ?? []) !== []) : ?>
+								<div class="lpt-goal-badges">
+									<?php foreach ($goals_by_date[$training_date] as $goal) : ?>
+										<span class="lpt-goal-badge">
+											<?php echo esc_html($goal->name . ' - ' . GoalFormatter::targetTime($goal->targetTime)); ?>
+										</span>
+									<?php endforeach; ?>
+								</div>
 							<?php endif; ?>
 							<input type="hidden" name="trainings[<?php echo esc_attr((string) $index); ?>][training_id]" value="<?php echo esc_attr((string) $training->id); ?>">
 						</td>

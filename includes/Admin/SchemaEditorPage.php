@@ -4,9 +4,11 @@ declare(strict_types=1);
 namespace LauPerformanceTraining\Admin;
 
 use InvalidArgumentException;
+use LauPerformanceTraining\Domain\Goal;
 use LauPerformanceTraining\Domain\Training;
 use LauPerformanceTraining\Domain\TrainingType;
 use LauPerformanceTraining\Domain\Week;
+use LauPerformanceTraining\Repositories\GoalRepository;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Repositories\TrainingTypeRepository;
@@ -32,7 +34,8 @@ final class SchemaEditorPage
 		private readonly DateValidator $date_validator,
 		private readonly DateFactory $date_factory,
 		private readonly Nonce $nonce,
-		private readonly ?UserTrainingPreferenceService $user_preferences = null
+		private readonly ?UserTrainingPreferenceService $user_preferences = null,
+		private readonly ?GoalRepository $goals = null
 	) {
 	}
 
@@ -77,6 +80,7 @@ final class SchemaEditorPage
 				'action_url'            => admin_url('admin-post.php'),
 				'error_message'         => $error_message,
 				'frontend_url'          => home_url('/training-schema/' . $user_id . '/' . $week->startDate() . '/'),
+				'goals_by_date'         => $this->goalsByDate($user_id, $week),
 				'linked_types'          => $this->linkedTypeMap($schema_id),
 				'linked_training_types' => $this->linkedTrainingTypesForEditor($schema_id),
 				'nonce'                 => $this->nonce->create(Nonce::ADMIN_SCHEMA_ACTION),
@@ -256,6 +260,25 @@ final class SchemaEditorPage
 	private function userPreferences(): UserTrainingPreferenceService
 	{
 		return $this->user_preferences ?? new UserTrainingPreferenceService();
+	}
+
+	/**
+	 * @return array<string,Goal[]>
+	 */
+	private function goalsByDate(int $user_id, Week $week): array
+	{
+		$map = [];
+		foreach ($this->goalRepository()->findByUserAndDateRange($user_id, $week->startDate(), $week->endDate()) as $goal) {
+			$map[$goal->goalDate] ??= [];
+			$map[$goal->goalDate][] = $goal;
+		}
+
+		return $map;
+	}
+
+	private function goalRepository(): GoalRepository
+	{
+		return $this->goals ?? new GoalRepository();
 	}
 
 	/**

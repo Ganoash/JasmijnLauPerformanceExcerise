@@ -4,10 +4,12 @@ declare(strict_types=1);
 namespace LauPerformanceTraining\Frontend;
 
 use InvalidArgumentException;
+use LauPerformanceTraining\Domain\Goal;
 use LauPerformanceTraining\Domain\Training;
 use LauPerformanceTraining\Domain\TrainingType;
 use LauPerformanceTraining\Domain\Week;
 use LauPerformanceTraining\Permissions\SchemaAccess;
+use LauPerformanceTraining\Repositories\GoalRepository;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Repositories\TrainingTypeRepository;
@@ -29,7 +31,8 @@ final class SchemaPage
 		private readonly DistanceTotalService $distance_totals,
 		private readonly DateValidator $date_validator,
 		private readonly Nonce $nonce,
-		private readonly ?UserTrainingPreferenceService $user_preferences = null
+		private readonly ?UserTrainingPreferenceService $user_preferences = null,
+		private readonly ?GoalRepository $goals = null
 	) {
 	}
 
@@ -92,6 +95,7 @@ final class SchemaPage
 		$content       = $this->schemaContent(
 			[
 				'linked_types'  => $linked_types,
+				'goals_by_date' => $this->goalsByDate($user_id, $week),
 				'primary_types' => $primary_types,
 				'schema'        => $schema,
 				'show_time_of_day' => $show_time_of_day,
@@ -192,6 +196,25 @@ final class SchemaPage
 	private function userPreferences(): UserTrainingPreferenceService
 	{
 		return $this->user_preferences ?? new UserTrainingPreferenceService();
+	}
+
+	/**
+	 * @return array<string,Goal[]>
+	 */
+	private function goalsByDate(int $user_id, Week $week): array
+	{
+		$map = [];
+		foreach ($this->goalRepository()->findByUserAndDateRange($user_id, $week->startDate(), $week->endDate()) as $goal) {
+			$map[$goal->goalDate] ??= [];
+			$map[$goal->goalDate][] = $goal;
+		}
+
+		return $map;
+	}
+
+	private function goalRepository(): GoalRepository
+	{
+		return $this->goals ?? new GoalRepository();
 	}
 
 	/**

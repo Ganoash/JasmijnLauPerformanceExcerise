@@ -146,6 +146,27 @@
   color: #4b5563;
 }
 
+.lpt-goal-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.lpt-goal-badge {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  border: 1px solid #d97706;
+  border-radius: 4px;
+  padding: 3px 7px;
+  background: #fff7ed;
+  color: #92400e;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
 .lpt-training-content {
   display: grid;
   gap: 12px;

@@ -1,6 +1,7 @@
 <?php
 /**
  * @var array<int,\LauPerformanceTraining\Domain\TrainingType[]> $linked_types
+ * @var array<string,\LauPerformanceTraining\Domain\Goal[]> $goals_by_date
  * @var array<int,\LauPerformanceTraining\Domain\TrainingType|null> $primary_types
  * @var \LauPerformanceTraining\Domain\Schema $schema
  * @var bool $show_time_of_day
@@ -10,8 +11,11 @@
  * @var \LauPerformanceTraining\Domain\Week $week
  */
 
+use LauPerformanceTraining\Support\GoalFormatter;
+
 $day_names = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
 $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
+$goals_by_date = $goals_by_date ?? [];
 $previous_week_url = home_url('/training-schema/' . $user->ID . '/' . rawurlencode($week->plusWeeks(-1)->startDate()) . '/');
 $next_week_url = home_url('/training-schema/' . $user->ID . '/' . rawurlencode($week->plusWeeks(1)->startDate()) . '/');
 
@@ -90,6 +94,27 @@ if (! function_exists('lpt_is_rest_training')) {
 			&& $linked_types === [];
 	}
 }
+
+/**
+ * @param \LauPerformanceTraining\Domain\Goal[] $goals
+ */
+if (! function_exists('lpt_render_schedule_goal_badges')) {
+	function lpt_render_schedule_goal_badges(array $goals): void
+	{
+		if ($goals === []) {
+			return;
+		}
+		?>
+		<div class="lpt-goal-badges">
+			<?php foreach ($goals as $goal) : ?>
+				<span class="lpt-goal-badge">
+					<?php echo esc_html($goal->name . ' - ' . GoalFormatter::targetTime($goal->targetTime)); ?>
+				</span>
+			<?php endforeach; ?>
+		</div>
+		<?php
+	}
+}
 ?>
 <main class="lpt-schema-page">
 	<header class="lpt-schema-header">
@@ -143,6 +168,7 @@ if (! function_exists('lpt_is_rest_training')) {
 			<?php $training_linked_types = $linked_types[$training->id] ?? []; ?>
 			<?php $distance_fields = lpt_distance_fields_for_training($training, $primary_type, $training_linked_types); ?>
 			<?php $is_rest_training = lpt_is_rest_training($training, $primary_type, $training_linked_types); ?>
+			<?php $training_goals = $goals_by_date[$week->dayDate($training->dayIndex)] ?? []; ?>
 			<?php
                 $background_color = $primary_type
                     ? lpt_hex_to_rgba($primary_type->color, 0.12)
@@ -161,6 +187,7 @@ if (! function_exists('lpt_is_rest_training')) {
 						<?php if ($show_time_of_day) : ?>
 							<?php echo esc_html($time_names[$training->timeOfDay] ?? $training->timeOfDay); ?>
 						<?php endif; ?></span>
+						<?php lpt_render_schedule_goal_badges($training_goals); ?>
 					</div>
 
 					<div class="lpt-training-content">

@@ -12,5 +12,5 @@ Feature: Missing schema creation
   Scenario: Coach opens a missing athlete week in admin
     Given an athlete exists
     And a coach is logged in
-    When the coach opens the athlete schema editor for week "2026-09-14"
+    When the coach opens the athlete schema editor for week "2026-06-29"
     Then an empty schema with fourteen training slots is created

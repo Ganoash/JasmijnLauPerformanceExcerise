@@ -5,6 +5,7 @@ namespace LauPerformanceTraining\Admin;
 
 use LauPerformanceTraining\Domain\Training;
 use LauPerformanceTraining\Domain\Week;
+use LauPerformanceTraining\Repositories\GoalRepository;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Services\UserTrainingPreferenceService;
@@ -19,7 +20,8 @@ final class UserOverviewPage
 		private readonly ?UserTrainingPreferenceService $user_preferences = null,
 		private readonly ?Nonce $nonce = null,
 		private readonly ?SchemaRepository $schemas = null,
-		private readonly ?TrainingRepository $trainings = null
+		private readonly ?TrainingRepository $trainings = null,
+		private readonly ?GoalRepository $goals = null
 	) {
 	}
 
@@ -52,6 +54,7 @@ final class UserOverviewPage
 			'admin/user-overview.php',
 			[
 				'action_url'                => admin_url('admin-post.php'),
+				'active_goals_by_user'      => $this->activeGoalsByUser($users),
 				'current_week'              => $current_week->startDate(),
 				'injury_comments'           => $this->injuryCommentsByUser($users, $current_week->startDate()),
 				'last_week_injury_comments' => $this->injuryCommentsByUser($users, $last_week->startDate()),
@@ -149,5 +152,24 @@ final class UserOverviewPage
 	private function trainings(): TrainingRepository
 	{
 		return $this->trainings ?? new TrainingRepository();
+	}
+
+	/**
+	 * @param \WP_User[] $users
+	 * @return array<int,\LauPerformanceTraining\Domain\Goal[]>
+	 */
+	private function activeGoalsByUser(array $users): array
+	{
+		$goals = [];
+		foreach ($users as $user) {
+			$goals[(int) $user->ID] = $this->goalRepository()->findActiveByUser((int) $user->ID);
+		}
+
+		return $goals;
+	}
+
+	private function goalRepository(): GoalRepository
+	{
+		return $this->goals ?? new GoalRepository();
 	}
 }
