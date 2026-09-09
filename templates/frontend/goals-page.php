@@ -76,7 +76,15 @@ $form_goal = $edit_goal;
 			<?php echo esc_html($error_message); ?>
 		</div>
 	<?php endif; ?>
+    <section class="lpt-goals-section">
+		<h2>Actieve doelen</h2>
+			<?php lpt_render_goals_page_list($active_goals, $action_url, $nonce, $target_user_id, $page_url); ?>
+	</section>
 
+	<section class="lpt-goals-section">
+		<h2>Inactieve doelen</h2>
+			<?php lpt_render_goals_page_list($inactive_goals, $action_url, $nonce, $target_user_id, $page_url); ?>
+	</section>
 	<section class="lpt-goal-form-section">
 		<form method="post" action="<?php echo esc_url($action_url); ?>" class="lpt-goal-form">
 			<input type="hidden" name="action" value="lpt_save_goal">
@@ -121,15 +129,5 @@ $form_goal = $edit_goal;
 				<?php endif; ?>
 			</div>
 		</form>
-	</section>
-
-	<section class="lpt-goals-section">
-		<h2>Actieve doelen</h2>
-			<?php lpt_render_goals_page_list($active_goals, $action_url, $nonce, $target_user_id, $page_url); ?>
-	</section>
-
-	<section class="lpt-goals-section">
-		<h2>Inactieve doelen</h2>
-			<?php lpt_render_goals_page_list($inactive_goals, $action_url, $nonce, $target_user_id, $page_url); ?>
 	</section>
 </main>
