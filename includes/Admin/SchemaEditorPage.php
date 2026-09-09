@@ -78,6 +78,7 @@ final class SchemaEditorPage
 			'admin/schema-editor.php',
 			[
 				'action_url'            => admin_url('admin-post.php'),
+				'active_goals'          => $this->goalRepository()->findActiveByUser($user_id),
 				'error_message'         => $error_message,
 				'frontend_url'          => home_url('/training-schema/' . $user_id . '/' . $week->startDate() . '/'),
 				'goals_by_date'         => $this->goalsByDate($user_id, $week),

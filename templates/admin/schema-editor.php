@@ -1,6 +1,7 @@
 <?php
 /**
  * @var string $action_url
+ * @var \LauPerformanceTraining\Domain\Goal[] $active_goals
  * @var string|null $error_message
  * @var string $frontend_url
  * @var array<string,\LauPerformanceTraining\Domain\Goal[]> $goals_by_date
@@ -19,6 +20,7 @@ use LauPerformanceTraining\Support\GoalFormatter;
 
 $day_names = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
 $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
+$active_goals = $active_goals ?? [];
 $goals_by_date = $goals_by_date ?? [];
 $rendered_goal_days = [];
 ?>
@@ -61,6 +63,17 @@ $rendered_goal_days = [];
 
 	<?php if ($error_message !== null) : ?>
 		<div class="notice notice-error"><p><?php echo esc_html($error_message); ?></p></div>
+	<?php endif; ?>
+
+	<h2>Doelen</h2>
+	<?php if ($active_goals === []) : ?>
+		<p>Geen actieve doelen.</p>
+	<?php else : ?>
+		<ul class="ul-disc">
+			<?php foreach ($active_goals as $goal) : ?>
+				<li><?php echo esc_html($goal->name . ', ' . GoalFormatter::date($goal->goalDate)); ?></li>
+			<?php endforeach; ?>
+		</ul>
 	<?php endif; ?>
 
 	<form method="post" action="<?php echo esc_url($action_url); ?>">

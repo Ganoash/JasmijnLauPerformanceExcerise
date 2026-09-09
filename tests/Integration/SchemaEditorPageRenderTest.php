@@ -6,6 +6,7 @@ namespace LauPerformanceTraining\Tests\Integration;
 use LauPerformanceTraining\Admin\SchemaEditorPage;
 use LauPerformanceTraining\Activation\DatabaseInstaller;
 use LauPerformanceTraining\Permissions\SchemaAccess;
+use LauPerformanceTraining\Repositories\GoalRepository;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Repositories\TrainingTypeRepository;
@@ -86,9 +87,31 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertStringNotContainsString('middag', $html);
 		}
 
+		public function test_active_goal_overview_renders_name_and_formatted_date(): void
+		{
+			$user_id = self::factory()->user->create(['display_name' => 'Schema Athlete']);
+			wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
+
+			$goals = new GoalRepository();
+			$goals->create($user_id, $this->goalFields('Damloop', '2026-09-09', true));
+			$goals->create($user_id, $this->goalFields('Oude wedstrijd', '2026-08-01', false));
+
+			$_GET['user_id'] = (string) $user_id;
+			$_GET['week_start_date'] = '2026-09-07';
+
+			ob_start();
+			$this->schemaEditorPage(new TrainingTypeRepository(), null, $goals)->render();
+			$html = (string) ob_get_clean();
+
+			self::assertStringContainsString('Doelen', $html);
+			self::assertStringContainsString('Damloop, 09 sep 2026', $html);
+			self::assertStringNotContainsString('Oude wedstrijd', $html);
+		}
+
 		private function schemaEditorPage(
 			TrainingTypeRepository $training_types,
-			?UserTrainingPreferenceService $preferences = null
+			?UserTrainingPreferenceService $preferences = null,
+			?GoalRepository $goals = null
 		): SchemaEditorPage
 		{
 			$schemas = new SchemaRepository();
@@ -106,7 +129,8 @@ if (class_exists('WP_UnitTestCase')) {
 				new DateValidator(),
 				$date_factory,
 				new Nonce(),
-				$preferences
+				$preferences,
+				$goals
 			);
 		}
 
@@ -133,6 +157,21 @@ if (class_exists('WP_UnitTestCase')) {
 				'/<input[^>]+type="checkbox"[^>]+name="trainings\\[0\\]\\[linked_training_type_ids\\]\\[\\]"[^>]+value="%d"/s',
 				$training_type_id
 			);
+		}
+
+		/**
+		 * @return array{name:string,description:string,goal_date:string,target_time:string,actual_time:string,active:bool}
+		 */
+		private function goalFields(string $name, string $date, bool $active): array
+		{
+			return [
+				'name'        => $name,
+				'description' => '',
+				'goal_date'   => $date,
+				'target_time' => 'Onder 45 minuten',
+				'actual_time' => '',
+				'active'      => $active,
+			];
 		}
 	}
 }
