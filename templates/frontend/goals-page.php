@@ -40,7 +40,7 @@ if (! function_exists('lpt_render_goals_page_list')) {
 							<p><?php echo esc_html($goal->description); ?></p>
 						<?php endif; ?>
 						<?php if ($goal->actualTime !== '') : ?>
-							<p class="lpt-goal-actual">Werkelijke tijd: <?php echo esc_html($goal->actualTime); ?></p>
+							<p class="lpt-goal-actual">Behaalde tijd: <?php echo esc_html($goal->actualTime); ?></p>
 						<?php endif; ?>
 					</div>
 					<div class="lpt-goal-card-actions">
