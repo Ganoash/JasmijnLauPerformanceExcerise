@@ -46,7 +46,7 @@ final class GoalService
 		}
 
 		if ($this->goals->dateExistsForUser($target_user_id, $fields['goal_date'], $goal_id)) {
-			throw new InvalidArgumentException('Er bestaat al een doel op deze datum.');
+			throw new InvalidArgumentException('Er bestaat al een wedstrijd op deze datum.');
 		}
 
 		$completed = $fields['actual_time'] !== '' && (! $existing instanceof Goal || $existing->actualTime === '');
@@ -88,7 +88,7 @@ final class GoalService
 	{
 		$goal = $this->goals->findById($goal_id);
 		if (! $goal || $goal->userId !== $target_user_id) {
-			throw new InvalidArgumentException('Doel niet gevonden.');
+			throw new InvalidArgumentException('Wedstrijd niet gevonden.');
 		}
 
 		return $goal;

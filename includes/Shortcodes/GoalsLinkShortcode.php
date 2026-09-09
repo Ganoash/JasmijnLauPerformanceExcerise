@@ -43,10 +43,10 @@ final class GoalsLinkShortcode
 						</li>
 					<?php endforeach; ?>
 				</ul>
-				<a href="<?php echo esc_url(home_url('/training-goals/')); ?>">Mijn doelen bekijken</a>
+				<a href="<?php echo esc_url(home_url('/training-goals/')); ?>">Mijn Wedstrijden bekijken</a>
 			<?php else : ?>
 				<p>Stel een doel in voor je volgende wedstrijd.</p>
-				<a href="<?php echo esc_url(home_url('/training-goals/')); ?>">Doel instellen</a>
+				<a href="<?php echo esc_url(home_url('/training-goals/')); ?>">Wedstrijd instellen</a>
 			<?php endif; ?>
 		</div>
 		<?php

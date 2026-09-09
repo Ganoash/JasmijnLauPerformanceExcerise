@@ -3,7 +3,7 @@
 
   document.querySelectorAll("[data-lpt-delete-goal]").forEach((form) => {
     form.addEventListener("submit", (event) => {
-      if (!window.confirm("Doel definitief verwijderen?")) {
+      if (!window.confirm("Wedstrijd definitief verwijderen?")) {
         event.preventDefault();
       }
     });

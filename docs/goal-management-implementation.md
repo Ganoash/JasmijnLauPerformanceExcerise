@@ -84,12 +84,12 @@ In `templates/admin/user-overview.php`, add a goals column.
 
 ### Goals page UI
 
-Page title: `Doelen`.
+Page title: `Wedstrijden`.
 
 Sections:
 
-- `Actieve doelen`
-- `Inactieve doelen`
+- `Actieve Wedstrijden`
+- `Inactieve Wedstrijden`
 
 Form behavior:
 

@@ -22,7 +22,7 @@ if (! function_exists('lpt_render_goals_page_list')) {
 	{
 		if ($goals === []) {
 			?>
-			<p class="lpt-empty-goals">Geen doelen.</p>
+			<p class="lpt-empty-goals">Geen wedstrijden.</p>
 			<?php
 			return;
 		}
@@ -66,7 +66,7 @@ $form_goal = $edit_goal;
 <main class="lpt-goals-page" data-goal-completed="<?php echo esc_attr($completed ? '1' : '0'); ?>">
 	<header class="lpt-goals-header">
 		<div>
-			<h1>Doelen</h1>
+			<h1>Wedstrijden</h1>
 			<p><?php echo esc_html($user->display_name); ?></p>
 		</div>
 	</header>
@@ -123,7 +123,7 @@ $form_goal = $edit_goal;
 			</label>
 
 			<div class="lpt-goal-actions">
-				<button type="submit"><?php echo esc_html($form_goal ? 'Doel opslaan' : 'Doel toevoegen'); ?></button>
+				<button type="submit"><?php echo esc_html($form_goal ? 'Wedstrijd opslaan' : 'Wedstrijd toevoegen'); ?></button>
 				<?php if ($form_goal) : ?>
 					<a class="lpt-goal-secondary" href="<?php echo esc_url($page_url); ?>">Annuleren</a>
 				<?php endif; ?>

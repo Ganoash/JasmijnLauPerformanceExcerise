@@ -24,18 +24,18 @@ if (class_exists('WP_UnitTestCase')) {
 
 		public function test_goals_page_template_renders_active_and_inactive_sections(): void
 		{
-			$user = self::factory()->user->create_and_get(['display_name' => 'Doel Atleet']);
+			$user = self::factory()->user->create_and_get(['display_name' => 'Wedstrijd Atleet']);
 
 			ob_start();
 			View::render(
 				'frontend/goals-page.php',
 				[
 					'action_url'     => admin_url('admin-post.php'),
-					'active_goals'   => [$this->goal(1, (int) $user->ID, 'Actief doel', '2026-09-09', true, '')],
+					'active_goals'   => [$this->goal(1, (int) $user->ID, 'Actieve wedstrijd', '2026-09-09', true, '')],
 					'completed'      => false,
 					'edit_goal'      => null,
 					'error_message'  => '',
-					'inactive_goals' => [$this->goal(2, (int) $user->ID, 'Inactief doel', '2026-10-09', false, '00:45:00')],
+					'inactive_goals' => [$this->goal(2, (int) $user->ID, 'Inactieve wedstrijd', '2026-10-09', false, '00:45:00')],
 					'nonce'          => (new Nonce())->create(Nonce::GOAL_ACTION),
 					'own_goals'      => true,
 					'target_user_id' => (int) $user->ID,
@@ -46,8 +46,8 @@ if (class_exists('WP_UnitTestCase')) {
 
 			self::assertStringContainsString('Actieve doelen', $html);
 			self::assertStringContainsString('Inactieve doelen', $html);
-			self::assertStringContainsString('Actief doel', $html);
-			self::assertStringContainsString('Inactief doel', $html);
+			self::assertStringContainsString('Actieve wedstrijd', $html);
+			self::assertStringContainsString('Inactieve wedstrijd', $html);
 		}
 
 		public function test_frontend_schedule_shows_goal_badge_in_each_visible_row_without_actual_time(): void
@@ -114,12 +114,12 @@ if (class_exists('WP_UnitTestCase')) {
 
 		public function test_user_overview_shows_active_goals_only(): void
 		{
-			$user_id = self::factory()->user->create(['display_name' => 'Doel Atleet']);
+			$user_id = self::factory()->user->create(['display_name' => 'Wedstrijd Atleet']);
 			wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
 
 			$goals = new GoalRepository();
-			$goals->create($user_id, $this->fields('Actief doel', '2026-09-09', true, ''));
-			$goals->create($user_id, $this->fields('Inactief doel', '2026-09-10', false, 'Onder 50 minuten'));
+			$goals->create($user_id, $this->fields('Actieve Wedstrijd', '2026-09-09', true, ''));
+			$goals->create($user_id, $this->fields('Inactieve Wedstrijd', '2026-09-10', false, 'Onder 50 minuten'));
 
 			ob_start();
 			View::render(
@@ -138,9 +138,9 @@ if (class_exists('WP_UnitTestCase')) {
 			);
 			$html = (string) ob_get_clean();
 
-			self::assertStringContainsString('Doelen', $html);
-			self::assertStringContainsString('Actief doel, 09 sep 2026, Geen streeftijd', $html);
-			self::assertStringNotContainsString('Inactief doel', $html);
+			self::assertStringContainsString('Wedstrijden', $html);
+			self::assertStringContainsString('Actieve Wedstrijd, 09 sep 2026, Geen streeftijd', $html);
+			self::assertStringNotContainsString('Inactieve wedstrijd', $html);
 			self::assertStringContainsString('/training-goals/' . $user_id . '/', $html);
 		}
 

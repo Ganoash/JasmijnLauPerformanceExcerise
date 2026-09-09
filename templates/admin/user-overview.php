@@ -35,7 +35,7 @@ $active_goals_by_user = $active_goals_by_user ?? [];
 				<th>E-mail</th>
                 <th>Klachten vorige week</th>
 				<th>Klachten deze week</th>
-				<th>Doelen</th>
+				<th>Wedstrijden</th>
 				<th>Trainingen per dag</th>
 				<th></th>
 			</tr>
