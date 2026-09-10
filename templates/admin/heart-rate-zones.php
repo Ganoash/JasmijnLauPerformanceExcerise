@@ -30,7 +30,7 @@
 		</p>
 	<?php else : ?>
 		<p>
-			<a class="button" href="<?php echo esc_url(admin_url('admin.php?page=lpt-heart-rate-zones')); ?>">
+			<a class="button" href="<?php echo esc_url(admin_url('admin.php?page=lpt-training')); ?>">
 				Terug naar gebruikers
 			</a>
 		</p>
