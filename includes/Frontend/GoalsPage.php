@@ -76,7 +76,6 @@ final class GoalsPage
 
 		get_header();
 		echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		get_footer();
 	}
 
 	public function save(): void
@@ -184,7 +183,6 @@ final class GoalsPage
 		<div class="wp-site-blocks">
 			<?php block_template_part('header'); ?>
 			<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			<?php block_template_part('footer'); ?>
 		</div>
 		<?php wp_footer(); ?>
 		</body>
