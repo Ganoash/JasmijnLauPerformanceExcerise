@@ -48,7 +48,7 @@ final class HeartRateZones
 		$ranges = [
 			[
 				'zone'  => 1,
-				'label' => sprintf('Zone 1: tot en met %d bpm', $this->zone1Upper),
+				'label' => sprintf('Zone 1: ≤ %d bpm', $this->zone1Upper),
 				'color' => 'grey',
 			],
 		];
@@ -84,7 +84,7 @@ final class HeartRateZones
 		];
 		$ranges[] = [
 			'zone'  => 5,
-			'label' => sprintf('Zone 5: vanaf %d bpm', $this->zone4Upper + 1),
+			'label' => sprintf('Zone 5: ≥ %d bpm', $this->zone4Upper + 1),
 			'color' => 'red',
 		];
 
