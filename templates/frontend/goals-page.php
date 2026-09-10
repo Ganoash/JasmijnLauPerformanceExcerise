@@ -106,7 +106,7 @@ $form_goal = $edit_goal;
 					<input name="target_time" value="<?php echo esc_attr($form_goal ? $form_goal->targetTime : ''); ?>">
 				</label>
 				<label>
-					<span>Werkelijke tijd</span>
+					<span>Behaalde eindtijd</span>
 					<input name="actual_time" pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}" placeholder="HH:MM:SS" value="<?php echo esc_attr($form_goal ? $form_goal->actualTime : ''); ?>">
 				</label>
 			</div>

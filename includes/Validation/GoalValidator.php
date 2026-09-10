@@ -23,7 +23,7 @@ final class GoalValidator
 		}
 
 		if ($actual_time !== '' && ! preg_match('/^\d{2}:\d{2}:\d{2}$/', $actual_time)) {
-			throw new InvalidArgumentException('Werkelijke tijd moet HH:MM:SS zijn.');
+			throw new InvalidArgumentException('Behaalde eindtijd moet HH:MM:SS zijn.');
 		}
 
 		return [
