@@ -53,20 +53,46 @@ final class HeartRateZonesBlock
 
 		wp_enqueue_style('lpt-heart-rate-zones-block');
 
-		$user_id = get_current_user_id();
-		$zones = $user_id > 0 ? $this->heart_rate_zones->findLatestByUser($user_id) : null;
+		$user_id = $this->getUserId();
+		$zones = $user_id > 0
+			? $this->heart_rate_zones->findLatestByUser($user_id)
+			: null;
 
 		ob_start();
+
 		View::render(
 			'frontend/heart-rate-zones-block.php',
 			[
 				'lactate_test_url' => home_url('/hartslag-zones/lactaattest/'),
 				'login_url'        => wp_login_url((string) get_permalink()),
-				'logged_in'        => $user_id > 0,
+				'logged_in'        => get_current_user_id() > 0,
 				'zones'            => $zones,
 			]
 		);
 
 		return (string) ob_get_clean();
+	}
+
+	private function getUserId(): int
+	{
+		$request_path = wp_parse_url(
+			isset($_SERVER['REQUEST_URI'])
+				? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI']))
+				: '',
+			PHP_URL_PATH
+		);
+
+		if (
+			is_string($request_path)
+			&& preg_match(
+				'#^/training-schema/(\d+)/[^/]+/?$#',
+				$request_path,
+				$matches
+			) === 1
+		) {
+			return (int) $matches[1];
+		}
+
+		return get_current_user_id();
 	}
 }
