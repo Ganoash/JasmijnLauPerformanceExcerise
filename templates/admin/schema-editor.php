@@ -75,7 +75,7 @@ $rendered_goal_days = [];
 			<?php endforeach; ?>
 		</ul>
 	<?php endif; ?>
-	<a href="<?php echo esc_url(home_url('/training-goals/' . $user->ID . '/')) ?>" >Doelen aanpassen</a>
+	<a href="<?php echo esc_url(home_url('/training-goals/' . $user->ID . '/')) ?>" >Wedstrijden aanpassen</a>
 
 	<form method="post" action="<?php echo esc_url($action_url); ?>">
 		<input type="hidden" name="action" value="lpt_save_schema">
