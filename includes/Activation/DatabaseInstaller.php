@@ -22,6 +22,7 @@ final class DatabaseInstaller
 		$links           = $wpdb->prefix . 'lpt_training_type_links';
 		$types           = $wpdb->prefix . 'lpt_training_types';
 		$goals           = $wpdb->prefix . 'lpt_goals';
+		$heart_zones     = $wpdb->prefix . 'lpt_heart_rate_zones';
 
 		dbDelta(
 			"CREATE TABLE {$schemas} (
@@ -104,13 +105,31 @@ final class DatabaseInstaller
 			) {$charset_collate};"
 		);
 
+		dbDelta(
+			"CREATE TABLE {$heart_zones} (
+				id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+				user_id BIGINT UNSIGNED NOT NULL,
+				lactate_test_date DATE NOT NULL,
+				zone_1_upper SMALLINT UNSIGNED NULL,
+				zone_2_upper SMALLINT UNSIGNED NULL,
+				zone_3_upper SMALLINT UNSIGNED NULL,
+				zone_4_upper SMALLINT UNSIGNED NULL,
+				created_at DATETIME NOT NULL,
+				updated_at DATETIME NOT NULL,
+				PRIMARY KEY  (id),
+				UNIQUE KEY user_test_date (user_id, lactate_test_date),
+				KEY user_id (user_id),
+				KEY lactate_test_date (lactate_test_date)
+			) {$charset_collate};"
+		);
+
 		add_option('lpt_weeks_ahead', 2, '', false);
 		update_option('lpt_db_version', LPT_VERSION, false);
 	}
 
 	public function maybeUpgrade(): void
 	{
-		if ((string) get_option('lpt_db_version', '') !== LPT_VERSION || ! $this->goalsTableExists()) {
+		if ((string) get_option('lpt_db_version', '') !== LPT_VERSION || ! $this->goalsTableExists() || ! $this->heartRateZonesTableExists()) {
 			$this->install();
 		}
 	}
@@ -120,6 +139,15 @@ final class DatabaseInstaller
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'lpt_goals';
+
+		return (string) $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) === $table;
+	}
+
+	private function heartRateZonesTableExists(): bool
+	{
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'lpt_heart_rate_zones';
 
 		return (string) $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) === $table;
 	}

@@ -4,12 +4,14 @@ declare(strict_types=1);
 namespace LauPerformanceTraining;
 
 use LauPerformanceTraining\Admin\AdminMenu;
+use LauPerformanceTraining\Admin\HeartRateZonesPage;
 use LauPerformanceTraining\Admin\SchemaEditorPage;
 use LauPerformanceTraining\Admin\TrainingTypePage;
 use LauPerformanceTraining\Admin\UserOverviewPage;
 use LauPerformanceTraining\Activation\DatabaseInstaller;
 use LauPerformanceTraining\Ajax\FrontendTrainingSaveAction;
 use LauPerformanceTraining\Blocks\DashboardSchemaBlock;
+use LauPerformanceTraining\Blocks\HeartRateZonesBlock;
 use LauPerformanceTraining\Cron\SchemaCreationJob;
 use LauPerformanceTraining\Frontend\GoalsPage;
 use LauPerformanceTraining\Frontend\RewriteRoutes;
@@ -17,6 +19,7 @@ use LauPerformanceTraining\Frontend\SchemaPage;
 use LauPerformanceTraining\Permissions\GoalAccess;
 use LauPerformanceTraining\Permissions\SchemaAccess;
 use LauPerformanceTraining\Repositories\GoalRepository;
+use LauPerformanceTraining\Repositories\HeartRateZonesRepository;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Repositories\TrainingTypeRepository;
@@ -32,6 +35,7 @@ use LauPerformanceTraining\Support\Nonce;
 use LauPerformanceTraining\Validation\DateValidator;
 use LauPerformanceTraining\Validation\DistanceValidator;
 use LauPerformanceTraining\Validation\GoalValidator;
+use LauPerformanceTraining\Validation\HeartRateZonesValidator;
 use LauPerformanceTraining\Validation\SchemaRequestValidator;
 use LauPerformanceTraining\Validation\TrainingTypeValidator;
 
@@ -42,6 +46,7 @@ final class Plugin
 		$database_installer       = new DatabaseInstaller();
 		$date_factory            = new DateFactory();
 		$goal_repository         = new GoalRepository();
+		$heart_rate_zones        = new HeartRateZonesRepository();
 		$schema_repository       = new SchemaRepository();
 		$training_repository     = new TrainingRepository();
 		$training_type_repository = new TrainingTypeRepository();
@@ -56,6 +61,11 @@ final class Plugin
 		$goal_service  = new GoalService($goal_repository, new GoalValidator(), $goal_access);
 		$date_validator = new DateValidator();
 		$nonce         = new Nonce();
+		$heart_rate_zones_page = new HeartRateZonesPage(
+			$heart_rate_zones,
+			new HeartRateZonesValidator(),
+			$nonce
+		);
 
 		add_action('init', [$database_installer, 'maybeUpgrade'], 5);
 
@@ -80,14 +90,16 @@ final class Plugin
 		$goals_page = new GoalsPage($goal_repository, $goal_service, $goal_access, $nonce);
 
 		(new AdminMenu(
-			new UserOverviewPage($date_factory, $user_preferences, $nonce, $schema_repository, $training_repository, $goal_repository),
+			new UserOverviewPage($date_factory, $user_preferences, $nonce, $schema_repository, $training_repository),
 			$schema_editor_page,
-			$training_type_page
+			$training_type_page,
+			$heart_rate_zones_page
 		))->register();
 		$goals_page->register();
 		(new GoalsLinkShortcode($goal_repository))->register();
 		(new SchemaCreationJob($schema_creation_service))->register();
 		(new DashboardSchemaBlock($date_factory))->register();
+		(new HeartRateZonesBlock($heart_rate_zones))->register();
 		(new FrontendTrainingSaveAction(
 			new FrontendFeedbackService(
 				$training_repository,
@@ -146,9 +158,10 @@ final class Plugin
 
 		add_action(
 			'delete_user',
-			static function (int $user_id) use ($schema_repository, $goal_repository): void {
+			static function (int $user_id) use ($schema_repository, $goal_repository, $heart_rate_zones): void {
 				$schema_repository->deleteByUser($user_id);
 				$goal_repository->deleteByUser($user_id);
+				$heart_rate_zones->deleteByUser($user_id);
 			}
 		);
 

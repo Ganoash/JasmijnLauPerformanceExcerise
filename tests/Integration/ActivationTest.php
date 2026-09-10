@@ -20,6 +20,7 @@ if (class_exists('WP_UnitTestCase')) {
 				$wpdb->prefix . 'lpt_trainings',
 				$wpdb->prefix . 'lpt_training_types',
 				$wpdb->prefix . 'lpt_training_type_links',
+				$wpdb->prefix . 'lpt_heart_rate_zones',
 			];
 
 			foreach ($tables as $table) {

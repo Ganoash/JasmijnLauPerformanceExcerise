@@ -9,6 +9,7 @@ final class Nonce
 	public const ADMIN_SCHEMA_ACTION      = 'lpt_admin_schema';
 	public const GOAL_ACTION              = 'lpt_goal';
 	public const TRAINING_TYPE_ACTION     = 'lpt_training_type';
+	public const HEART_RATE_ZONES_ACTION  = 'lpt_heart_rate_zones';
 	public const USER_TRAINING_PREFERENCE_ACTION = 'lpt_user_training_preference';
 
 	public function create(string $action): string

@@ -90,6 +90,9 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 						<a class="button" href="<?php echo esc_url(admin_url('admin.php?page=lpt-schema-editor&user_id=' . $user->ID . '&week_start_date=' . rawurlencode($current_week))); ?>">
 							Schema openen
 						</a>
+						<a class="button" href="<?php echo esc_url(admin_url('admin.php?page=lpt-heart-rate-zones&user_id=' . $user->ID)); ?>">
+							Hartslagzones
+						</a>
 					</td>
 				</tr>
 			<?php endforeach; ?>

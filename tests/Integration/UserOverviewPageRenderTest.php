@@ -67,6 +67,8 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertStringContainsString('Blessure Atleet', $html);
 			self::assertStringContainsString('Knie zeurt', $html);
 			self::assertStringContainsString('Enkel stijf', $html);
+			self::assertStringContainsString('Hartslagzones', $html);
+			self::assertStringContainsString('page=lpt-heart-rate-zones&#038;user_id=' . $athlete_id, $html);
 		}
 	}
 }

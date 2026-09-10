@@ -59,12 +59,4 @@ final class GoalValidator
 		return trim(strip_tags((string) $value));
 	}
 
-	private function textarea(mixed $value): string
-	{
-		if (function_exists('sanitize_textarea_field')) {
-			return sanitize_textarea_field((string) $value);
-		}
-
-		return trim(strip_tags((string) $value));
-	}
 }

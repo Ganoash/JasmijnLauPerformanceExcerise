@@ -7,11 +7,13 @@ final class AdminMenu
 {
 	private const MENU_SLUG          = 'lpt-training';
 	private const SCHEMA_EDITOR_SLUG = 'lpt-schema-editor';
+	private const HEART_RATE_ZONES_SLUG = 'lpt-heart-rate-zones';
 
 	public function __construct(
 		private readonly UserOverviewPage $user_overview_page,
 		private readonly SchemaEditorPage $schema_editor_page,
-		private readonly TrainingTypePage $training_type_page
+		private readonly TrainingTypePage $training_type_page,
+		private readonly HeartRateZonesPage $heart_rate_zones_page
 	) {
 	}
 
@@ -22,6 +24,7 @@ final class AdminMenu
 		$this->user_overview_page->register();
 		$this->schema_editor_page->register();
 		$this->training_type_page->register();
+		$this->heart_rate_zones_page->register();
 	}
 
 	public function registerMenus(): void
@@ -62,6 +65,15 @@ final class AdminMenu
 			'lpt-training-types',
 			[$this->training_type_page, 'render']
 		);
+
+		add_submenu_page(
+			self::MENU_SLUG,
+			'Hartslagzones',
+			'Hartslagzones',
+			'manage_training_schemas',
+			self::HEART_RATE_ZONES_SLUG,
+			[$this->heart_rate_zones_page, 'render']
+		);
 	}
 
 	public function hideInternalSchemaEditorSubmenu(): void
@@ -75,7 +87,11 @@ final class AdminMenu
 		$submenu[self::MENU_SLUG] = array_values(
 			array_filter(
 				$submenu[self::MENU_SLUG],
-				static fn (array $item): bool => ($item[2] ?? '') !== self::SCHEMA_EDITOR_SLUG
+				static fn (array $item): bool => ! in_array(
+					$item[2] ?? '',
+					[self::SCHEMA_EDITOR_SLUG, self::HEART_RATE_ZONES_SLUG],
+					true
+				)
 			)
 		);
 	}

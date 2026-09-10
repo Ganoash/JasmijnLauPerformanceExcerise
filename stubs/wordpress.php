@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const ABSPATH = '/var/www/html/';
+const ABSPATH = __DIR__ . '/../../../../';
 const ARRAY_A = 'ARRAY_A';
 const HOUR_IN_SECONDS = 3600;
 const LPT_PLUGIN_DIR = '';
@@ -131,6 +131,7 @@ function get_current_user_id(): int { return 0; }
 function get_footer(?string $name = null, array $args = []): void {}
 function get_header(?string $name = null, array $args = []): void {}
 function get_option(string $option, mixed $default_value = false): mixed { return $default_value; }
+function get_permalink(int|\WP_Post|null $post = null, bool $leavename = false): string|false { return ''; }
 function get_query_var(string $query_var, mixed $default_value = ''): mixed { return $default_value; }
 function get_role(string $role): ?WP_Role { return new WP_Role(); }
 function get_user_by(string $field, int|string $value): WP_User|false { return new WP_User(); }
@@ -156,6 +157,7 @@ function wp_footer(): void {}
 function wp_head(): void {}
 function wp_body_open(): void {}
 function wp_localize_script(string $handle, string $object_name, array $l10n): bool { return true; }
+function wp_login_url(string $redirect = '', bool $force_reauth = false): string { return ''; }
 function wp_next_scheduled(string $hook, array $args = []): int|false { return false; }
 function wp_register_script(string $handle, string|false $src, array $deps = [], string|bool|null $ver = false, array|bool $args = []): bool { return true; }
 function wp_register_style(string $handle, string|false $src, array $deps = [], string|bool|null $ver = false, string $media = 'all'): bool { return true; }
@@ -164,6 +166,7 @@ function wp_schedule_event(int $timestamp, string $recurrence, string $hook, arr
 function wp_send_json_error(mixed $value = null, int $status_code = null, int $flags = 0): never { exit; }
 function wp_send_json_success(mixed $value = null, int $status_code = null, int $flags = 0): never { exit; }
 function wp_unslash(mixed $value): mixed { return $value; }
+function wp_timezone(): DateTimeZone { return new DateTimeZone('Europe/Amsterdam'); }
 function wp_verify_nonce(string $nonce, string|int $action = -1): int|false { return 1; }
 
 function absint(mixed $maybeint): int

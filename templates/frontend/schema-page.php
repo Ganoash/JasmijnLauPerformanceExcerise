@@ -162,6 +162,7 @@ if (! function_exists('lpt_render_schedule_goal_badges')) {
 		</label>
 	</div>
 
+
 	<section class="lpt-training-list" aria-label="Trainingen">
 		<?php foreach ($trainings as $training) : ?>
 			<?php $primary_type = $primary_types[$training->id] ?? null; ?>
@@ -262,5 +263,6 @@ if (! function_exists('lpt_render_schedule_goal_badges')) {
 				<?php endif; ?>
 			</article>
 		<?php endforeach; ?>
+					    <?php echo render_block(["blockName" => "lau-performance-training/heart-rate-zones"]); ?>
 	</section>
 </main>

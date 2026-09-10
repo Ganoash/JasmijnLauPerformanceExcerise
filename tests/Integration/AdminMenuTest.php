@@ -4,10 +4,12 @@ declare(strict_types=1);
 namespace LauPerformanceTraining\Tests\Integration;
 
 use LauPerformanceTraining\Admin\AdminMenu;
+use LauPerformanceTraining\Admin\HeartRateZonesPage;
 use LauPerformanceTraining\Admin\SchemaEditorPage;
 use LauPerformanceTraining\Admin\TrainingTypePage;
 use LauPerformanceTraining\Admin\UserOverviewPage;
 use LauPerformanceTraining\Permissions\SchemaAccess;
+use LauPerformanceTraining\Repositories\HeartRateZonesRepository;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
 use LauPerformanceTraining\Repositories\TrainingTypeRepository;
@@ -16,6 +18,7 @@ use LauPerformanceTraining\Services\SchemaEditorService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
 use LauPerformanceTraining\Validation\DateValidator;
+use LauPerformanceTraining\Validation\HeartRateZonesValidator;
 use LauPerformanceTraining\Validation\SchemaRequestValidator;
 use LauPerformanceTraining\Validation\TrainingTypeValidator;
 
@@ -48,8 +51,13 @@ if (class_exists('WP_UnitTestCase')) {
 				$visible
 			);
 			self::assertNotContains('lpt-schema-editor', array_column($visible, 1));
+			self::assertNotContains('lpt-heart-rate-zones', array_column($visible, 1));
 			self::assertArrayHasKey(
 				get_plugin_page_hookname('lpt-schema-editor', 'lpt-training'),
+				$_registered_pages
+			);
+			self::assertArrayHasKey(
+				get_plugin_page_hookname('lpt-heart-rate-zones', 'lpt-training'),
 				$_registered_pages
 			);
 		}
@@ -81,6 +89,13 @@ if (class_exists('WP_UnitTestCase')) {
 			$this->adminMenu()->register();
 
 			self::assertNotFalse(has_action('admin_post_lpt_save_schema'));
+		}
+
+		public function test_heart_rate_zones_save_action_is_registered(): void
+		{
+			$this->adminMenu()->register();
+
+			self::assertNotFalse(has_action('admin_post_lpt_save_heart_rate_zones'));
 		}
 
     public function test_schema_editor_scripts_are_localized(): void
@@ -141,6 +156,11 @@ if (class_exists('WP_UnitTestCase')) {
 				new TrainingTypePage(
 					$trainingTypes,
 					new TrainingTypeValidator(),
+					new Nonce()
+				),
+				new HeartRateZonesPage(
+					new HeartRateZonesRepository(),
+					new HeartRateZonesValidator(),
 					new Nonce()
 				)
 			);

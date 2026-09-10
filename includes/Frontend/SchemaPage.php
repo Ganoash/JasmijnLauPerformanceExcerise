@@ -113,6 +113,7 @@ final class SchemaPage
 
 		get_header();
 		echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
 		get_footer();
 	}
 
@@ -123,6 +124,7 @@ final class SchemaPage
 	{
 		ob_start();
 		View::render('frontend/schema-page.php', $data);
+
 
 		return (string) ob_get_clean();
 	}
