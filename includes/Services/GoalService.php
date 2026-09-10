@@ -42,7 +42,7 @@ final class GoalService
 		}
 
 		if ($fields['active'] && $this->goals->activeCountForUser($target_user_id, $goal_id) >= 3) {
-			throw new InvalidArgumentException('Een gebruiker kan maximaal 3 actieve doelen hebben.');
+			throw new InvalidArgumentException('Een gebruiker kan maximaal 3 actieve wedstrijden hebben.');
 		}
 
 		if ($this->goals->dateExistsForUser($target_user_id, $fields['goal_date'], $goal_id)) {
@@ -80,7 +80,7 @@ final class GoalService
 		}
 
 		if (! $this->access->canManageGoalUser($current_user_id, $target_user_id)) {
-			throw new RuntimeException('Je hebt geen toegang tot deze doelen.');
+			throw new RuntimeException('Je hebt geen toegang tot deze wedstrijden.');
 		}
 	}
 

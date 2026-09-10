@@ -39,12 +39,12 @@ final class GoalValidator
 	{
 		$date = $this->text($value);
 		if ($date === '') {
-			throw new InvalidArgumentException('Doeldatum is verplicht.');
+			throw new InvalidArgumentException('Wedstrijddatum is verplicht.');
 		}
 
 		$parsed = DateTimeImmutable::createFromFormat('!Y-m-d', $date);
 		if (! $parsed || $parsed->format('Y-m-d') !== $date) {
-			throw new InvalidArgumentException('Ongeldige doeldatum.');
+			throw new InvalidArgumentException('Ongeldige wedstrijddatum.');
 		}
 
 		return $date;

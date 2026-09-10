@@ -59,7 +59,7 @@ Shortcode:
 
 - Add a shortcode that renders a compact active-goal overview and a link to the goals page.
 - The overview shows active goals only.
-- If active goals exist, show the current goals and link text like `Mijn doelen bekijken`.
+- If active goals exist, show the current goals and link text like `Mijn wedstrijden bekijken`.
 - If there are no active goals, invite the user to set a goal.
 
 ### Schedule display
@@ -295,7 +295,6 @@ Render data:
 
 - Build `active_goals_by_user`.
 - Pass to template.
-- Add a `Doelen` column.
 - For each user, show active goals as `name, 09 sep 2026, target`.
 - Use `Geen streeftijd` when target time is empty.
 - Include a button/link to `/training-goals/{user_id}/`.

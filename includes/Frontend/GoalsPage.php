@@ -39,7 +39,7 @@ final class GoalsPage
 
 		if (! $this->access->canManageGoalUser($current_user_id, $user_id)) {
 			status_header(403);
-			wp_die(esc_html__('Je hebt geen toegang tot deze doelen.', 'lau-performance-training'));
+			wp_die(esc_html__('Je hebt geen toegang tot deze wedstrijden.', 'lau-performance-training'));
 		}
 
 		$user = get_user_by('id', $user_id);
