@@ -77,12 +77,12 @@ $form_goal = $edit_goal;
 		</div>
 	<?php endif; ?>
     <section class="lpt-goals-section">
-		<h2>Actieve doelen</h2>
+		<h2>Actieve wedstrijden</h2>
 			<?php lpt_render_goals_page_list($active_goals, $action_url, $nonce, $target_user_id, $page_url); ?>
 	</section>
 
 	<section class="lpt-goals-section">
-		<h2>Inactieve doelen</h2>
+		<h2>Inactieve wedstrijden</h2>
 			<?php lpt_render_goals_page_list($inactive_goals, $action_url, $nonce, $target_user_id, $page_url); ?>
 	</section>
 	<section class="lpt-goal-form-section">

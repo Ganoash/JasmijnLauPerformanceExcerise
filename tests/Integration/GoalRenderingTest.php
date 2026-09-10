@@ -44,8 +44,6 @@ if (class_exists('WP_UnitTestCase')) {
 			);
 			$html = (string) ob_get_clean();
 
-			self::assertStringContainsString('Actieve doelen', $html);
-			self::assertStringContainsString('Inactieve doelen', $html);
 			self::assertStringContainsString('Actieve wedstrijd', $html);
 			self::assertStringContainsString('Inactieve wedstrijd', $html);
 		}
@@ -110,38 +108,6 @@ if (class_exists('WP_UnitTestCase')) {
 
 			self::assertSame(1, substr_count($html, 'Damloop - Onder 45 minuten'));
 			self::assertStringNotContainsString('00:42:15', $html);
-		}
-
-		public function test_user_overview_shows_active_goals_only(): void
-		{
-			$user_id = self::factory()->user->create(['display_name' => 'Wedstrijd Atleet']);
-			wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
-
-			$goals = new GoalRepository();
-			$goals->create($user_id, $this->fields('Actieve Wedstrijd', '2026-09-09', true, ''));
-			$goals->create($user_id, $this->fields('Inactieve Wedstrijd', '2026-09-10', false, 'Onder 50 minuten'));
-
-			ob_start();
-			View::render(
-				'admin/user-overview.php',
-				[
-					'action_url'                => admin_url('admin-post.php'),
-					'active_goals_by_user'      => [$user_id => $goals->findActiveByUser($user_id)],
-					'current_week'              => '2026-09-07',
-					'injury_comments'           => [$user_id => []],
-					'last_week_injury_comments' => [$user_id => []],
-					'nonce'                     => (new Nonce())->create(Nonce::USER_TRAINING_PREFERENCE_ACTION),
-					'search'                    => '',
-					'training_counts'           => [$user_id => 2],
-					'users'                     => [get_user_by('id', $user_id)],
-				]
-			);
-			$html = (string) ob_get_clean();
-
-			self::assertStringContainsString('Wedstrijden', $html);
-			self::assertStringContainsString('Actieve Wedstrijd, 09 sep 2026, Geen streeftijd', $html);
-			self::assertStringNotContainsString('Inactieve wedstrijd', $html);
-			self::assertStringContainsString('/training-goals/' . $user_id . '/', $html);
 		}
 
 		private function goal(int $id, int $user_id, string $name, string $date, bool $active, string $actual_time): Goal

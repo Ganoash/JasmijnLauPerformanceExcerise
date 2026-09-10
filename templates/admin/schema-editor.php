@@ -65,9 +65,9 @@ $rendered_goal_days = [];
 		<div class="notice notice-error"><p><?php echo esc_html($error_message); ?></p></div>
 	<?php endif; ?>
 
-	<h2>Doelen</h2>
+	<h2>Wedstrijden</h2>
 	<?php if ($active_goals === []) : ?>
-		<p>Geen actieve doelen.</p>
+		<p>Geen actieve Wedstrijden.</p>
 	<?php else : ?>
 		<ul class="ul-disc">
 			<?php foreach ($active_goals as $goal) : ?>

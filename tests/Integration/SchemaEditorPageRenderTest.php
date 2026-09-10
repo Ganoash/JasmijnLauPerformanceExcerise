@@ -103,7 +103,7 @@ if (class_exists('WP_UnitTestCase')) {
 			$this->schemaEditorPage(new TrainingTypeRepository(), null, $goals)->render();
 			$html = (string) ob_get_clean();
 
-			self::assertStringContainsString('Doelen', $html);
+			self::assertStringContainsString('Wedstrijd', $html);
 			self::assertStringContainsString('Damloop, 09 sep 2026', $html);
 			self::assertStringNotContainsString('Oude wedstrijd', $html);
 		}
