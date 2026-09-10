@@ -50,7 +50,7 @@ if (! function_exists('lpt_render_goals_page_list')) {
 							<input type="hidden" name="_lpt_nonce" value="<?php echo esc_attr($nonce); ?>">
 							<input type="hidden" name="user_id" value="<?php echo esc_attr((string) $target_user_id); ?>">
 							<input type="hidden" name="goal_id" value="<?php echo esc_attr((string) $goal->id); ?>">
-							<button type="submit">Verwijderen</button>
+							<button type="submit" class="lpt-delete-button">Verwijderen</button>
 						</form>
 					</div>
 				</article>
