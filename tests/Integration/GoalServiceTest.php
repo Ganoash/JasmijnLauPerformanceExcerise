@@ -93,7 +93,7 @@ if (class_exists('WP_UnitTestCase')) {
 		}
 
 		/**
-		 * @return array{name:string,goal_date:string,target_time:string,description:string,actual_time:string,active:string}
+		 * @return array{name:string,goal_date:string,target_time:string,actual_time:string,active:string}
 		 */
 		private function input(string $name, string $date, bool $active = true, string $actual_time = ''): array
 		{
@@ -101,7 +101,6 @@ if (class_exists('WP_UnitTestCase')) {
 				'name'        => $name,
 				'goal_date'   => $date,
 				'target_time' => '',
-				'description' => '',
 				'actual_time' => $actual_time,
 				'active'      => $active ? '1' : '0',
 			];

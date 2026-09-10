@@ -14,7 +14,6 @@ final class GoalValidatorTest extends TestCase
 		$result = (new GoalValidator())->validate(
 			[
 				'name'        => 'Dam tot Damloop',
-				'description' => 'Testwedstrijd',
 				'goal_date'   => '2026-09-09',
 				'target_time' => 'Onder 45 minuten',
 				'actual_time' => '00:44:21',
@@ -38,7 +37,6 @@ final class GoalValidatorTest extends TestCase
 			]
 		);
 
-		self::assertSame('', $result['description']);
 		self::assertSame('', $result['target_time']);
 		self::assertSame('', $result['actual_time']);
 		self::assertFalse($result['active']);

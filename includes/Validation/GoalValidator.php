@@ -10,7 +10,7 @@ final class GoalValidator
 {
 	/**
 	 * @param array<string,mixed> $input
-	 * @return array{name:string,description:string,goal_date:string,target_time:string,actual_time:string,active:bool}
+	 * @return array{name:string,goal_date:string,target_time:string,actual_time:string,active:bool}
 	 */
 	public function validate(array $input): array
 	{
@@ -28,7 +28,6 @@ final class GoalValidator
 
 		return [
 			'name'        => $name,
-			'description' => $this->textarea($input['description'] ?? ''),
 			'goal_date'   => $goal_date,
 			'target_time' => $this->text($input['target_time'] ?? ''),
 			'actual_time' => $actual_time,

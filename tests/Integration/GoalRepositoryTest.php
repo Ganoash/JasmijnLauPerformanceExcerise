@@ -73,13 +73,12 @@ if (class_exists('WP_UnitTestCase')) {
 		}
 
 		/**
-		 * @return array{name:string,description:string,goal_date:string,target_time:string,actual_time:string,active:bool}
+		 * @return array{name:string,goal_date:string,target_time:string,actual_time:string,active:bool}
 		 */
 		private function fields(string $name, string $date, bool $active): array
 		{
 			return [
 				'name'        => $name,
-				'description' => '',
 				'goal_date'   => $date,
 				'target_time' => '',
 				'actual_time' => '',

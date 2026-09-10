@@ -76,7 +76,7 @@ final class GoalRepository
 	}
 
 	/**
-	 * @param array{name:string,description:string,goal_date:string,target_time:string,actual_time:string,active:bool} $fields
+	 * @param array{name:string,goal_date:string,target_time:string,actual_time:string,active:bool} $fields
 	 */
 	public function create(int $user_id, array $fields): int
 	{
@@ -88,7 +88,6 @@ final class GoalRepository
 			[
 				'user_id'     => $user_id,
 				'name'        => $fields['name'],
-				'description' => $fields['description'],
 				'goal_date'   => $fields['goal_date'],
 				'target_time' => $fields['target_time'],
 				'actual_time' => $fields['actual_time'],
@@ -103,7 +102,7 @@ final class GoalRepository
 	}
 
 	/**
-	 * @param array{name:string,description:string,goal_date:string,target_time:string,actual_time:string,active:bool} $fields
+	 * @param array{name:string,goal_date:string,target_time:string,actual_time:string,active:bool} $fields
 	 */
 	public function update(int $goal_id, array $fields): void
 	{
@@ -113,7 +112,6 @@ final class GoalRepository
 			$this->table(),
 			[
 				'name'        => $fields['name'],
-				'description' => $fields['description'],
 				'goal_date'   => $fields['goal_date'],
 				'target_time' => $fields['target_time'],
 				'actual_time' => $fields['actual_time'],

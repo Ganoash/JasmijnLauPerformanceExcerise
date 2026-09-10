@@ -36,9 +36,6 @@ if (! function_exists('lpt_render_goals_page_list')) {
 							<?php echo esc_html(GoalFormatter::date($goal->goalDate)); ?>
 							<span><?php echo esc_html(GoalFormatter::targetTime($goal->targetTime)); ?></span>
 						</p>
-						<?php if ($goal->description !== '') : ?>
-							<p><?php echo esc_html($goal->description); ?></p>
-						<?php endif; ?>
 						<?php if ($goal->actualTime !== '') : ?>
 							<p class="lpt-goal-actual">Behaalde tijd: <?php echo esc_html($goal->actualTime); ?></p>
 						<?php endif; ?>
@@ -110,11 +107,6 @@ $form_goal = $edit_goal;
 					<input name="actual_time" pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}" placeholder="HH:MM:SS" value="<?php echo esc_attr($form_goal ? $form_goal->actualTime : ''); ?>">
 				</label>
 			</div>
-
-			<label>
-				<span>Beschrijving</span>
-				<textarea name="description" rows="4"><?php echo esc_textarea($form_goal ? $form_goal->description : ''); ?></textarea>
-			</label>
 
 			<label class="lpt-goal-active-toggle">
 				<input type="hidden" name="active" value="0">

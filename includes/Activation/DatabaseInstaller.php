@@ -59,7 +59,6 @@ final class DatabaseInstaller
 				schema_id BIGINT UNSIGNED NOT NULL,
 				day_index TINYINT UNSIGNED NOT NULL,
 				time_of_day VARCHAR(20) NOT NULL,
-				description TEXT NULL,
 				primary_training_type_id BIGINT UNSIGNED NULL,
 				actual_running_distance DECIMAL(10,2) NULL,
 				actual_cycling_distance DECIMAL(10,2) NULL,
