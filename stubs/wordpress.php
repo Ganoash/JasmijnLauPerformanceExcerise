@@ -122,6 +122,7 @@ function current_time(string $type, int|bool $gmt = 0): string { return '2026-08
 function current_user_can(string $capability, mixed ...$args): bool { return false; }
 function dbDelta(string|array $queries = '', bool $execute = true): array { return []; }
 function delete_option(string $option): bool { return true; }
+function delete_user_meta(int $user_id, string $meta_key, mixed $meta_value = ''): bool { return true; }
 function esc_html(string $text): string { return $text; }
 function esc_html__(string $text, string $domain = 'default'): string { return $text; }
 function esc_url(string $url, array $protocols = [], ?string $_context = 'display'): string { return $url; }
@@ -159,6 +160,7 @@ function wp_body_open(): void {}
 function wp_localize_script(string $handle, string $object_name, array $l10n): bool { return true; }
 function wp_login_url(string $redirect = '', bool $force_reauth = false): string { return ''; }
 function wp_next_scheduled(string $hook, array $args = []): int|false { return false; }
+function wp_parse_url(string $url, int $component = -1): int|string|array|null|false { return parse_url($url, $component); }
 function wp_register_script(string $handle, string|false $src, array $deps = [], string|bool|null $ver = false, array|bool $args = []): bool { return true; }
 function wp_register_style(string $handle, string|false $src, array $deps = [], string|bool|null $ver = false, string $media = 'all'): bool { return true; }
 function wp_safe_redirect(string $location, int $status = 302, string $x_redirect_by = 'WordPress'): bool { return true; }

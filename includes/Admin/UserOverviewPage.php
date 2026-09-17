@@ -5,9 +5,11 @@ namespace LauPerformanceTraining\Admin;
 
 use LauPerformanceTraining\Domain\Training;
 use LauPerformanceTraining\Domain\Week;
+use InvalidArgumentException;
 use LauPerformanceTraining\Repositories\GoalRepository;
 use LauPerformanceTraining\Repositories\SchemaRepository;
 use LauPerformanceTraining\Repositories\TrainingRepository;
+use LauPerformanceTraining\Services\UserPaymentService;
 use LauPerformanceTraining\Services\UserTrainingPreferenceService;
 use LauPerformanceTraining\Support\DateFactory;
 use LauPerformanceTraining\Support\Nonce;
@@ -21,12 +23,15 @@ final class UserOverviewPage
 		private readonly ?Nonce $nonce = null,
 		private readonly ?SchemaRepository $schemas = null,
 		private readonly ?TrainingRepository $trainings = null,
+		private readonly ?UserPaymentService $payments = null,
 	) {
 	}
 
 	public function register(): void
 	{
 		add_action('admin_post_lpt_save_user_training_preference', [$this, 'saveTrainingPreference']);
+		add_action('admin_post_lpt_save_user_payment', [$this, 'savePayment']);
+		add_action('admin_enqueue_scripts', [$this, 'enqueueStyles']);
 	}
 
 	public function render(): void
@@ -57,6 +62,9 @@ final class UserOverviewPage
 				'injury_comments'           => $this->injuryCommentsByUser($users, $current_week->startDate()),
 				'last_week_injury_comments' => $this->injuryCommentsByUser($users, $last_week->startDate()),
 				'nonce'                     => $this->nonce()->create(Nonce::USER_TRAINING_PREFERENCE_ACTION),
+				'payment_dates'             => $this->paymentDates($users),
+				'payment_nonce'             => $this->nonce()->create(Nonce::USER_PAYMENT_ACTION),
+				'payment_overdue'           => $this->paymentOverdue($users),
 				'search'                    => $search,
 				'training_counts'           => $this->trainingCounts($users),
 				'users'                     => $users,
@@ -86,6 +94,58 @@ final class UserOverviewPage
 		exit;
 	}
 
+	public function savePayment(): void
+	{
+		if (! current_user_can('manage_training_schemas')) {
+			wp_die(esc_html__('Je hebt geen toegang tot deze pagina.', 'lau-performance-training'));
+		}
+
+		$nonce = isset($_POST['_lpt_nonce']) ? sanitize_text_field(wp_unslash($_POST['_lpt_nonce'])) : '';
+		if (! $this->nonce()->verify($nonce, Nonce::USER_PAYMENT_ACTION)) {
+			wp_die(esc_html__('Ongeldige beveiligingscode.', 'lau-performance-training'));
+		}
+
+		$user_id = isset($_POST['user_id']) ? (int) $_POST['user_id'] : 0;
+		$date    = isset($_POST['next_payment_date']) ? sanitize_text_field(wp_unslash($_POST['next_payment_date'])) : '';
+		$action  = isset($_POST['payment_action']) ? sanitize_text_field(wp_unslash($_POST['payment_action'])) : 'save';
+
+		try {
+			if ($user_id > 0 && get_user_by('id', $user_id)) {
+				if ($action === 'advance') {
+					$this->payments()->advanceNextPaymentDate($user_id, $date);
+				} else {
+					$this->payments()->setNextPaymentDate($user_id, $date);
+				}
+			}
+
+			wp_safe_redirect(admin_url('admin.php?page=lpt-training&payment_updated=1'));
+			exit;
+		} catch (InvalidArgumentException $exception) {
+			wp_safe_redirect(
+				add_query_arg(
+					'lpt_error',
+					rawurlencode($exception->getMessage()),
+					admin_url('admin.php?page=lpt-training')
+				)
+			);
+			exit;
+		}
+	}
+
+	public function enqueueStyles(string $hook_suffix): void
+	{
+		if (! isset($_GET['page']) || $_GET['page'] !== 'lpt-training') {
+			return;
+		}
+
+		wp_enqueue_style(
+			'lpt-user-overview',
+			LPT_PLUGIN_URL . 'assets/admin/user-overview.css',
+			[],
+			LPT_VERSION
+		);
+	}
+
 	/**
 	 * @param \WP_User[] $users
 	 * @return array<int,int>
@@ -98,6 +158,35 @@ final class UserOverviewPage
 		}
 
 		return $counts;
+	}
+
+	/**
+	 * @param \WP_User[] $users
+	 * @return array<int,string>
+	 */
+	private function paymentDates(array $users): array
+	{
+		$dates = [];
+		foreach ($users as $user) {
+			$dates[(int) $user->ID] = $this->payments()->nextPaymentDate((int) $user->ID);
+		}
+
+		return $dates;
+	}
+
+	/**
+	 * @param \WP_User[] $users
+	 * @return array<int,bool>
+	 */
+	private function paymentOverdue(array $users): array
+	{
+		$overdue = [];
+		foreach ($users as $user) {
+			$date = $this->payments()->nextPaymentDate((int) $user->ID);
+			$overdue[(int) $user->ID] = $this->payments()->isOverdue($date);
+		}
+
+		return $overdue;
 	}
 
 	/**
@@ -150,5 +239,10 @@ final class UserOverviewPage
 	private function trainings(): TrainingRepository
 	{
 		return $this->trainings ?? new TrainingRepository();
+	}
+
+	private function payments(): UserPaymentService
+	{
+		return $this->payments ?? new UserPaymentService();
 	}
 }

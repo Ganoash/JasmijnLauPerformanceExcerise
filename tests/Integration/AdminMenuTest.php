@@ -98,6 +98,13 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertNotFalse(has_action('admin_post_lpt_save_heart_rate_zones'));
 		}
 
+		public function test_user_payment_save_action_is_registered(): void
+		{
+			$this->adminMenu()->register();
+
+			self::assertNotFalse(has_action('admin_post_lpt_save_user_payment'));
+		}
+
     public function test_schema_editor_scripts_are_localized(): void
     {
         $schemas = new SchemaRepository();

@@ -11,6 +11,7 @@ final class Nonce
 	public const TRAINING_TYPE_ACTION     = 'lpt_training_type';
 	public const HEART_RATE_ZONES_ACTION  = 'lpt_heart_rate_zones';
 	public const USER_TRAINING_PREFERENCE_ACTION = 'lpt_user_training_preference';
+	public const USER_PAYMENT_ACTION      = 'lpt_user_payment';
 
 	public function create(string $action): string
 	{

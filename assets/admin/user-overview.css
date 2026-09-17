@@ -1,0 +1,51 @@
+.lpt-payment-form {
+	max-width: 280px;
+}
+
+.lpt-payment-form.is-overdue {
+	color: #b32d2e;
+}
+
+.lpt-payment-label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.lpt-payment-form input[type="date"] {
+	border-color: #8c8f94;
+	max-width: 145px;
+}
+
+.lpt-payment-form.is-overdue input[type="date"] {
+	border-color: #b32d2e;
+	color: #b32d2e;
+}
+
+.lpt-payment-alert {
+	background: #b32d2e;
+	border-radius: 50%;
+	color: #fff;
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 700;
+	height: 16px;
+	line-height: 16px;
+	margin-left: 4px;
+	text-align: center;
+	width: 16px;
+}
+
+.lpt-payment-controls {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.lpt-payment-advance .dashicons {
+	font-size: 16px;
+	height: 16px;
+	line-height: 1.4;
+	width: 16px;
+}

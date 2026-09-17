@@ -5,6 +5,9 @@
  * @var array<int,array<int,array{day:string,time_of_day:string,comment:string}>> $injury_comments
  * @var array<int,array<int,array{day:string,time_of_day:string,comment:string}>> $last_week_injury_comments
  * @var string $nonce
+ * @var array<int,string> $payment_dates
+ * @var string $payment_nonce
+ * @var array<int,bool> $payment_overdue
  * @var string $search
  * @var array<int,int> $training_counts
  * @var WP_User[] $users
@@ -13,6 +16,8 @@ use LauPerformanceTraining\Support\GoalFormatter;
 
 $day_names  = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
 $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
+$payment_dates = $payment_dates ?? [];
+$payment_overdue = $payment_overdue ?? [];
 ?>
 <div class="wrap">
 	<h1>Schema’s bewerken</h1>
@@ -26,11 +31,20 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 		</p>
 	</form>
 
+	<?php if (isset($_GET['payment_updated'])) : ?>
+		<div class="notice notice-success"><p>Betaaldatum opgeslagen.</p></div>
+	<?php endif; ?>
+
+	<?php if (isset($_GET['lpt_error'])) : ?>
+		<div class="notice notice-error"><p><?php echo esc_html(sanitize_text_field(wp_unslash($_GET['lpt_error']))); ?></p></div>
+	<?php endif; ?>
+
 	<table class="widefat striped">
 		<thead>
 			<tr>
 				<th>Naam</th>
 				<th>E-mail</th>
+				<th>Volgende betaling</th>
                 <th>Klachten vorige week</th>
 				<th>Klachten deze week</th>
 				<th>Trainingen per dag</th>
@@ -42,6 +56,43 @@ $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 				<tr>
 					<td><?php echo esc_html($user->display_name); ?></td>
 					<td><?php echo esc_html($user->user_email); ?></td>
+					<td>
+						<?php
+						$next_payment_date = $payment_dates[$user->ID] ?? '';
+						$is_payment_overdue = (bool) ($payment_overdue[$user->ID] ?? false);
+						?>
+						<form method="post" action="<?php echo esc_url($action_url); ?>" class="lpt-payment-form <?php echo $is_payment_overdue ? 'is-overdue' : ''; ?>">
+							<input type="hidden" name="action" value="lpt_save_user_payment">
+							<input type="hidden" name="_lpt_nonce" value="<?php echo esc_attr($payment_nonce); ?>">
+							<input type="hidden" name="user_id" value="<?php echo esc_attr((string) $user->ID); ?>">
+							<label class="screen-reader-text" for="lpt-payment-date-<?php echo esc_attr((string) $user->ID); ?>">Volgende betaling op</label>
+							<span class="lpt-payment-label">
+								Volgende betaling op
+								<?php if ($is_payment_overdue) : ?>
+									<span class="lpt-payment-alert" aria-label="Betaaldatum verstreken">!</span>
+								<?php endif; ?>
+							</span>
+							<span class="lpt-payment-controls">
+								<input
+									type="date"
+									id="lpt-payment-date-<?php echo esc_attr((string) $user->ID); ?>"
+									name="next_payment_date"
+									value="<?php echo esc_attr($next_payment_date); ?>"
+								>
+								<button
+									type="submit"
+									name="payment_action"
+									value="advance"
+									class="button button-secondary lpt-payment-advance"
+									aria-label="Herhaal volgende maand"
+									title="Herhaal volgende maand"
+								>
+									<span class="dashicons dashicons-update" aria-hidden="true"></span>
+								</button>
+								<button type="submit" name="payment_action" value="save" class="button button-small">Opslaan</button>
+							</span>
+						</form>
+					</td>
 					<td>
 						<?php if (($last_week_injury_comments[$user->ID] ?? []) === []) : ?>
 							-
