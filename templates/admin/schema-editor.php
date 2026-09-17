@@ -8,6 +8,7 @@
  * @var array<int,int[]> $linked_types
  * @var \LauPerformanceTraining\Domain\TrainingType[] $linked_training_types
  * @var string $nonce
+ * @var array<string,string> $previous_descriptions
  * @var \LauPerformanceTraining\Domain\Schema $schema
  * @var bool $show_time_of_day
  * @var \LauPerformanceTraining\Domain\TrainingType[] $training_types
@@ -22,6 +23,7 @@ $day_names = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterda
 $time_names = ['morning' => 'ochtend', 'afternoon' => 'middag'];
 $active_goals = $active_goals ?? [];
 $goals_by_date = $goals_by_date ?? [];
+$previous_descriptions = $previous_descriptions ?? [];
 $rendered_goal_days = [];
 ?>
 <div class="wrap">
@@ -99,6 +101,8 @@ $rendered_goal_days = [];
 					<?php
 					$training_date = $week->dayDate($training->dayIndex);
 					$show_goals = ! isset($rendered_goal_days[$training->dayIndex]);
+					$slot_key = $training->dayIndex . ':' . $training->timeOfDay;
+					$previous_description = trim($previous_descriptions[$slot_key] ?? '');
 					$rendered_goal_days[$training->dayIndex] = true;
 					?>
 					<tr>
@@ -121,6 +125,14 @@ $rendered_goal_days = [];
 						</td>
 						<td>
 							<textarea name="trainings[<?php echo esc_attr((string) $index); ?>][description]" rows="4" class="large-text"><?php echo esc_textarea($training->description); ?></textarea>
+							<div class="lpt-previous-training" aria-label="Training vorige week">
+								<strong class="lpt-previous-training__label">Vorige week</strong>
+								<?php if ($previous_description !== '') : ?>
+									<p class="lpt-previous-training__content"><?php echo esc_html($previous_description); ?></p>
+								<?php else : ?>
+									<p class="lpt-previous-training__content lpt-previous-training__empty">Rust</p>
+								<?php endif; ?>
+							</div>
 						</td>
 						<td>
 							<select name="trainings[<?php echo esc_attr((string) $index); ?>][primary_training_type_id]">

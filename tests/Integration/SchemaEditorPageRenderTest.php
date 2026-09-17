@@ -108,6 +108,38 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertStringNotContainsString('Oude wedstrijd', $html);
 		}
 
+		public function test_previous_week_description_renders_under_training_textarea(): void
+		{
+			$user_id = self::factory()->user->create(['display_name' => 'Schema Athlete']);
+			wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
+
+			$schemas = new SchemaRepository();
+			$trainings = new TrainingRepository();
+			$schema_creation = new SchemaCreationService($schemas, $trainings, new DateFactory());
+			$previous_schema_id = $schema_creation->createForUserWeek($user_id, '2026-08-10');
+			$previous_training = $trainings->findBySlot($previous_schema_id, 0, TrainingRepository::TIME_MORNING);
+			self::assertNotNull($previous_training);
+
+			$trainings->updateCoachFields(
+				$previous_training->id,
+				[
+					'description'              => "Rustige duurloop\nmet strides",
+					'primary_training_type_id' => null,
+					'coach_comment'            => '',
+				]
+			);
+
+			$_GET['user_id'] = (string) $user_id;
+			$_GET['week_start_date'] = '2026-08-17';
+
+			ob_start();
+			$this->schemaEditorPage(new TrainingTypeRepository())->render();
+			$html = (string) ob_get_clean();
+
+			self::assertStringContainsString('Vorige week', $html);
+			self::assertStringContainsString("Rustige duurloop\nmet strides", $html);
+		}
+
 		private function schemaEditorPage(
 			TrainingTypeRepository $training_types,
 			?UserTrainingPreferenceService $preferences = null,

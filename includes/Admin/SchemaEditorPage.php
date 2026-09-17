@@ -70,8 +70,8 @@ final class SchemaEditorPage
 			$week = Week::fromDate($this->date_factory->now());
 		}
 
-		$schema_id = $this->schema_creation_service->createForUserWeek($user_id, $week);
-		$schema    = $this->schemas->findById($schema_id);
+		$schema_id         = $this->schema_creation_service->createForUserWeek($user_id, $week);
+		$schema            = $this->schemas->findById($schema_id);
 		$show_time_of_day = $this->userPreferences()->trainingsPerDay($user_id) === 2;
 
 		View::render(
@@ -85,6 +85,7 @@ final class SchemaEditorPage
 				'linked_types'          => $this->linkedTypeMap($schema_id),
 				'linked_training_types' => $this->linkedTrainingTypesForEditor($schema_id),
 				'nonce'                 => $this->nonce->create(Nonce::ADMIN_SCHEMA_ACTION),
+				'previous_descriptions' => $this->previousDescriptionMap($user_id, $week, $show_time_of_day),
 				'schema'                => $schema,
 				'show_time_of_day'      => $show_time_of_day,
 				'training_types'        => $this->trainingTypesForEditor($schema_id),
@@ -201,6 +202,13 @@ final class SchemaEditorPage
             true
         );
 
+		wp_enqueue_style(
+			'lpt-schema-editor',
+			LPT_PLUGIN_URL . 'assets/admin/schema-editor.css',
+			[],
+			LPT_VERSION
+		);
+
         wp_localize_script(
             'lpt-schema-editor',
             'lptSchemaEditor',
@@ -283,6 +291,24 @@ final class SchemaEditorPage
 	}
 
 	/**
+	 * @return array<string,string>
+	 */
+	private function previousDescriptionMap(int $user_id, Week $week, bool $show_time_of_day): array
+	{
+		$previous_schema = $this->schemas->findByUserAndWeek($user_id, $week->plusWeeks(-1)->startDate());
+		if ($previous_schema === null) {
+			return [];
+		}
+
+		$descriptions = [];
+		foreach ($this->visibleTrainings($previous_schema->id, $show_time_of_day) as $training) {
+			$descriptions[$this->slotKey($training)] = $training->description;
+		}
+
+		return $descriptions;
+	}
+
+	/**
 	 * @return Training[]
 	 */
 	private function visibleTrainings(int $schema_id, bool $show_time_of_day): array
@@ -298,5 +324,10 @@ final class SchemaEditorPage
 				static fn (Training $training): bool => $training->timeOfDay === TrainingRepository::TIME_AFTERNOON
 			)
 		);
+	}
+
+	private function slotKey(Training $training): string
+	{
+		return $training->dayIndex . ':' . $training->timeOfDay;
 	}
 }
