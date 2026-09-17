@@ -1,0 +1,25 @@
+.lpt-previous-training {
+	background: #f6f7f7;
+	border-left: 4px solid #72aee6;
+	margin-top: 8px;
+	padding: 8px 10px;
+}
+
+.lpt-previous-training__label {
+	color: #50575e;
+	display: block;
+	font-size: 12px;
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.lpt-previous-training__content {
+	color: #1d2327;
+	margin: 0;
+	white-space: pre-wrap;
+}
+
+.lpt-previous-training__empty {
+	color: #646970;
+	font-style: italic;
+}
