@@ -154,6 +154,10 @@
 
   rows.forEach((row) => {
     row.querySelectorAll("[data-field]").forEach((field) => {
+      if (field.dataset.field === "fitness_rating") {
+        return;
+      }
+
       field.addEventListener("input", () => {
         if (field.dataset.category) {
           updateTotals();
@@ -165,6 +169,61 @@
           updateTotals();
         }
         saveField(row, field.dataset.field, field.value, 1);
+      });
+    });
+
+    const fitnessInput = row.querySelector('[data-field="fitness_rating"]');
+    if (!fitnessInput) {
+      return;
+    }
+
+    const fitnessControl = fitnessInput.closest(".lpt-fitness-control");
+    const fitnessError = row.querySelector(".lpt-fitness-error");
+    let fitnessSaveTimer;
+
+    function validateFitness() {
+      const value = fitnessInput.value.trim();
+      const valid = value === "" || /^(?:[1-9]|10)$/.test(value);
+
+      fitnessInput.setAttribute("aria-invalid", String(!valid));
+      fitnessControl.classList.toggle("is-invalid", !valid);
+      fitnessError.textContent = valid ? "" : "Vul een geheel getal van 1 t/m 10 in.";
+
+      return valid;
+    }
+
+    function queueFitnessSave() {
+      window.clearTimeout(fitnessSaveTimer);
+      if (!validateFitness()) {
+        setStatus(row, "", false);
+        return;
+      }
+
+      fitnessSaveTimer = window.setTimeout(() => {
+        saveField(row, "fitness_rating", fitnessInput.value.trim(), 1);
+      }, 150);
+    }
+
+    fitnessInput.addEventListener("input", () => {
+      window.clearTimeout(fitnessSaveTimer);
+      setStatus(row, "", false);
+      validateFitness();
+    });
+    fitnessInput.addEventListener("blur", queueFitnessSave);
+    fitnessInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        fitnessInput.blur();
+      }
+    });
+
+    fitnessControl.querySelectorAll("[data-fitness-step]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const step = Number(button.dataset.fitnessStep);
+        const current = Number.parseInt(fitnessInput.value, 10);
+        const base = /^(?:[1-9]|10)$/.test(fitnessInput.value.trim()) ? current : step > 0 ? 0 : 2;
+        fitnessInput.value = String(Math.min(10, Math.max(1, base + step)));
+        queueFitnessSave();
       });
     });
   });

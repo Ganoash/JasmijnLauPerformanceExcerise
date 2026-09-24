@@ -140,6 +140,37 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertStringContainsString("Rustige duurloop\nmet strides", $html);
 		}
 
+		public function test_coach_can_see_athlete_fitness_rating(): void
+		{
+			$user_id = self::factory()->user->create();
+			wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
+
+			$schemas = new SchemaRepository();
+			$trainings = new TrainingRepository();
+			$schema_id = (new SchemaCreationService($schemas, $trainings, new DateFactory()))->createForUserWeek($user_id, '2026-08-17');
+			$training = $trainings->findBySchema($schema_id)[0];
+			$trainings->updateFeedbackFields(
+				$training->id,
+				[
+					'actual_running_distance'  => null,
+					'actual_cycling_distance'  => null,
+					'actual_swimming_distance' => null,
+					'execution_comment'        => '',
+					'injury_comment'           => '',
+					'fitness_rating'           => 8,
+				]
+			);
+
+			$_GET['user_id'] = (string) $user_id;
+			$_GET['week_start_date'] = '2026-08-17';
+
+			ob_start();
+			$this->schemaEditorPage(new TrainingTypeRepository())->render();
+			$html = (string) ob_get_clean();
+
+			self::assertStringContainsString('Fitheid: 8', $html);
+		}
+
 		private function schemaEditorPage(
 			TrainingTypeRepository $training_types,
 			?UserTrainingPreferenceService $preferences = null,

@@ -223,6 +223,95 @@
   font: inherit;
 }
 
+.lpt-fitness-field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.lpt-fitness-field > label {
+  font-weight: 600;
+}
+
+.lpt-fitness-control {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  width: min(100%, 190px);
+  overflow: hidden;
+  border: 1px solid #8995a5;
+  border-radius: 6px;
+  background: #fff;
+  color: #202124;
+}
+
+.lpt-fitness-control:focus-within {
+  border-color: #135e96;
+  box-shadow: 0 0 0 2px rgba(19, 94, 150, 0.2);
+}
+
+.lpt-fitness-control.is-invalid {
+  border-color: #b42318;
+}
+
+.lpt-feedback-fields .lpt-fitness-control input {
+  min-width: 0;
+  height: 44px;
+  border: 0;
+  border-radius: 0;
+  padding: 8px 2px;
+  background: transparent;
+  box-shadow: none;
+  color: #202124;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.lpt-feedback-fields .lpt-fitness-control input::placeholder {
+  color: #596575;
+  opacity: 1;
+}
+
+.lpt-fitness-control .lpt-fitness-step {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #202124;
+  font: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lpt-fitness-step:first-child {
+  border-right: 1px solid #d8dee4;
+}
+
+.lpt-fitness-step:last-child {
+  border-left: 1px solid #d8dee4;
+}
+
+.lpt-fitness-control .lpt-fitness-step:hover,
+.lpt-fitness-control .lpt-fitness-step:focus-visible {
+  background: #eef4f9;
+  color: #135e96;
+}
+
+.lpt-fitness-error {
+  color: #b42318;
+  font-size: 0.85rem;
+}
+
+.lpt-fitness-error:empty {
+  display: none;
+}
+
 .lpt-coach-comment {
   grid-column: 1 / -1;
   padding-top: 12px;

@@ -38,6 +38,7 @@ if (class_exists('WP_UnitTestCase')) {
 					'actual_swimming_distance' => null,
 					'execution_comment'        => 'Ging goed',
 					'injury_comment'           => 'Geen pijn',
+					'fitness_rating'           => 7,
 				]
 			);
 
@@ -66,6 +67,7 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertSame(8.5, $updated->actualRunningDistance);
 			self::assertSame('Ging goed', $updated->executionComment);
 			self::assertSame('Geen pijn', $updated->injuryComment);
+			self::assertSame(7, $updated->fitnessRating);
 		}
 
 		public function test_admin_schema_save_allows_only_one_filled_training_slot(): void

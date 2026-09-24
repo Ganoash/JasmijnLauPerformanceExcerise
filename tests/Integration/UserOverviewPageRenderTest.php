@@ -48,6 +48,7 @@ if (class_exists('WP_UnitTestCase')) {
 					'actual_swimming_distance' => null,
 					'execution_comment'        => '',
 					'injury_comment'           => 'Knie zeurt',
+					'fitness_rating'           => null,
 				]
 			);
 			$trainings->updateFeedbackFields(
@@ -58,6 +59,7 @@ if (class_exists('WP_UnitTestCase')) {
 					'actual_swimming_distance' => null,
 					'execution_comment'        => '',
 					'injury_comment'           => 'Enkel stijf',
+					'fitness_rating'           => null,
 				]
 			);
 

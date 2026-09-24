@@ -172,7 +172,8 @@ $rendered_goal_days = [];
 							Fietsen: <?php echo esc_html($training->actualCyclingDistance === null ? '-' : (string) $training->actualCyclingDistance); ?><br>
 							Zwemmen: <?php echo esc_html($training->actualSwimmingDistance === null ? '-' : (string) $training->actualSwimmingDistance); ?><br>
 							Uitvoering: <?php echo esc_html($training->executionComment !== '' ? $training->executionComment : '-'); ?><br>
-							Blessure: <?php echo esc_html($training->injuryComment !== '' ? $training->injuryComment : '-'); ?>
+							Blessure: <?php echo esc_html($training->injuryComment !== '' ? $training->injuryComment : '-'); ?><br>
+							Fitheid: <?php echo esc_html($training->fitnessRating === null ? '-' : (string) $training->fitnessRating); ?>
 						</td>
 					</tr>
 				<?php endforeach; ?>

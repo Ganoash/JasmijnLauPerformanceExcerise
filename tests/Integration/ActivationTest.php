@@ -26,6 +26,11 @@ if (class_exists('WP_UnitTestCase')) {
 			foreach ($tables as $table) {
 				self::assertSame($table, $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)));
 			}
+
+			self::assertSame(
+				'fitness_rating',
+				$wpdb->get_var("SHOW COLUMNS FROM {$wpdb->prefix}lpt_trainings LIKE 'fitness_rating'", 0)
+			);
 		}
 
 		public function test_capability_installer_grants_coach_capabilities(): void

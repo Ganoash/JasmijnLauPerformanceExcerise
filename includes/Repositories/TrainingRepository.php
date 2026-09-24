@@ -125,7 +125,7 @@ final class TrainingRepository
 	}
 
 	/**
-	 * @param array{actual_running_distance:float|null,actual_cycling_distance:float|null,actual_swimming_distance:float|null,execution_comment:string,injury_comment:string} $fields
+	 * @param array{actual_running_distance:float|null,actual_cycling_distance:float|null,actual_swimming_distance:float|null,execution_comment:string,injury_comment:string,fitness_rating:int|null} $fields
 	 */
 	public function updateFeedbackFields(int $training_id, array $fields): void
 	{
@@ -139,10 +139,11 @@ final class TrainingRepository
 				'actual_swimming_distance' => $fields['actual_swimming_distance'],
 				'execution_comment'        => $fields['execution_comment'],
 				'injury_comment'           => $fields['injury_comment'],
+				'fitness_rating'           => $fields['fitness_rating'],
 				'updated_at'               => current_time('mysql'),
 			],
 			['id' => $training_id],
-			['%f', '%f', '%f', '%s', '%s', '%s'],
+			['%f', '%f', '%f', '%s', '%s', '%d', '%s'],
 			['%d']
 		);
 	}

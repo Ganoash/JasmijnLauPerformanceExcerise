@@ -18,6 +18,7 @@ final class Training
 		public readonly ?float $actualRunningDistance = null,
 		public readonly ?float $actualCyclingDistance = null,
 		public readonly ?float $actualSwimmingDistance = null,
+		public readonly ?int $fitnessRating = null,
 	) {
 	}
 
@@ -40,7 +41,8 @@ final class Training
 			(string) ($row['coach_comment'] ?? ''),
 			self::nullableFloat($row, 'actual_running_distance'),
 			self::nullableFloat($row, 'actual_cycling_distance'),
-			self::nullableFloat($row, 'actual_swimming_distance')
+			self::nullableFloat($row, 'actual_swimming_distance'),
+			isset($row['fitness_rating']) ? (int) $row['fitness_rating'] : null
 		);
 	}
 

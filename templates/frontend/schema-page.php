@@ -252,6 +252,25 @@ if (! function_exists('lpt_render_schedule_goal_badges')) {
 						<span>Klachten/ Blessures</span>
 						<textarea data-field="injury_comment" rows="3"><?php echo esc_textarea($training->injuryComment); ?></textarea>
 					</label>
+					<div class="lpt-fitness-field">
+						<label for="lpt-fitness-<?php echo esc_attr((string) $training->id); ?>">Fitheid</label>
+						<div class="lpt-fitness-control">
+							<button type="button" class="lpt-fitness-step" data-fitness-step="-1" aria-label="Verlaag fitheid" aria-controls="lpt-fitness-<?php echo esc_attr((string) $training->id); ?>">−</button>
+							<input
+								id="lpt-fitness-<?php echo esc_attr((string) $training->id); ?>"
+								data-field="fitness_rating"
+								type="text"
+								inputmode="numeric"
+								pattern="(?:[1-9]|10)"
+								maxlength="2"
+								placeholder="1–10"
+								aria-describedby="lpt-fitness-error-<?php echo esc_attr((string) $training->id); ?>"
+								value="<?php echo esc_attr($training->fitnessRating === null ? '' : (string) $training->fitnessRating); ?>"
+							>
+							<button type="button" class="lpt-fitness-step" data-fitness-step="1" aria-label="Verhoog fitheid" aria-controls="lpt-fitness-<?php echo esc_attr((string) $training->id); ?>">+</button>
+						</div>
+						<span id="lpt-fitness-error-<?php echo esc_attr((string) $training->id); ?>" class="lpt-fitness-error" aria-live="polite"></span>
+					</div>
 					<span class="lpt-save-status" aria-live="polite"></span>
 				</div>
 

@@ -18,6 +18,7 @@ final class FrontendFeedbackService
 	public const FIELD_ACTUAL_SWIMMING_DISTANCE = 'actual_swimming_distance';
 	public const FIELD_EXECUTION_COMMENT        = 'execution_comment';
 	public const FIELD_INJURY_COMMENT           = 'injury_comment';
+	public const FIELD_FITNESS_RATING           = 'fitness_rating';
 
 	private const ALLOWED_FIELDS = [
 		self::FIELD_ACTUAL_RUNNING_DISTANCE,
@@ -25,6 +26,7 @@ final class FrontendFeedbackService
 		self::FIELD_ACTUAL_SWIMMING_DISTANCE,
 		self::FIELD_EXECUTION_COMMENT,
 		self::FIELD_INJURY_COMMENT,
+		self::FIELD_FITNESS_RATING,
 	];
 
 	public function __construct(
@@ -57,9 +59,12 @@ final class FrontendFeedbackService
 			self::FIELD_ACTUAL_SWIMMING_DISTANCE => $training->actualSwimmingDistance,
 			self::FIELD_EXECUTION_COMMENT        => $training->executionComment,
 			self::FIELD_INJURY_COMMENT           => $training->injuryComment,
+			self::FIELD_FITNESS_RATING           => $training->fitnessRating,
 		];
 
-		if (in_array($field, $this->distanceFields(), true)) {
+		if ($field === self::FIELD_FITNESS_RATING) {
+			$fields[$field] = $this->normalizeFitnessRating($value);
+		} elseif (in_array($field, $this->distanceFields(), true)) {
 			$fields[$field] = $this->distance_validator->normalize($value);
 		} else {
 			$fields[$field] = sanitize_textarea_field((string) $value);
@@ -73,6 +78,24 @@ final class FrontendFeedbackService
 		}
 
 		return $updated;
+	}
+
+	private function normalizeFitnessRating(mixed $value): ?int
+	{
+		if (! is_string($value) && ! is_int($value)) {
+			throw new InvalidArgumentException('Fitheid moet een getal van 1 tot en met 10 zijn.');
+		}
+
+		$rating = trim((string) $value);
+		if ($rating === '') {
+			return null;
+		}
+
+		if (! preg_match('/^(?:[1-9]|10)$/', $rating)) {
+			throw new InvalidArgumentException('Fitheid moet een getal van 1 tot en met 10 zijn.');
+		}
+
+		return (int) $rating;
 	}
 
 	/**

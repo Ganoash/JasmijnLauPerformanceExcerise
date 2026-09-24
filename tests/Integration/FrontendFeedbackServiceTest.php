@@ -56,6 +56,42 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertNull($updated?->actualSwimmingDistance);
 		}
 
+		public function test_athlete_can_set_and_clear_fitness_rating_without_changing_other_feedback(): void
+		{
+			$user_id   = self::factory()->user->create();
+			$schemas   = new SchemaRepository();
+			$trainings = new TrainingRepository();
+			$schema_id = (new SchemaCreationService($schemas, $trainings, new DateFactory()))->createForUserWeek($user_id, '2026-08-17');
+			$training  = $trainings->findBySchema($schema_id)[0];
+			$service   = new FrontendFeedbackService($trainings, $schemas, new SchemaAccess(static fn (): bool => false), new DistanceValidator());
+
+			$service->updateField($user_id, $training->id, FrontendFeedbackService::FIELD_INJURY_COMMENT, 'Knie stijf');
+			self::assertSame(1, $service->updateField($user_id, $training->id, FrontendFeedbackService::FIELD_FITNESS_RATING, '1')->fitnessRating);
+			self::assertSame(10, $service->updateField($user_id, $training->id, FrontendFeedbackService::FIELD_FITNESS_RATING, '10')->fitnessRating);
+			self::assertSame('Knie stijf', $trainings->findById($training->id)?->injuryComment);
+			self::assertNull($service->updateField($user_id, $training->id, FrontendFeedbackService::FIELD_FITNESS_RATING, '')->fitnessRating);
+		}
+
+		public function test_fitness_rating_rejects_values_outside_one_to_ten(): void
+		{
+			$user_id   = self::factory()->user->create();
+			$schemas   = new SchemaRepository();
+			$trainings = new TrainingRepository();
+			$schema_id = (new SchemaCreationService($schemas, $trainings, new DateFactory()))->createForUserWeek($user_id, '2026-08-17');
+			$training  = $trainings->findBySchema($schema_id)[0];
+			$service   = new FrontendFeedbackService($trainings, $schemas, new SchemaAccess(static fn (): bool => false), new DistanceValidator());
+
+			$service->updateField($user_id, $training->id, FrontendFeedbackService::FIELD_FITNESS_RATING, '7');
+			foreach (['0', '11', '4.5', 'abc'] as $invalid_rating) {
+				try {
+					$service->updateField($user_id, $training->id, FrontendFeedbackService::FIELD_FITNESS_RATING, $invalid_rating);
+					self::fail('Ongeldige fitheid is geaccepteerd: ' . $invalid_rating);
+				} catch (InvalidArgumentException) {
+					self::assertSame(7, $trainings->findById($training->id)?->fitnessRating);
+				}
+			}
+		}
+
 		public function test_rejects_unauthorized_schema_access(): void
 		{
 			$owner_id    = self::factory()->user->create();

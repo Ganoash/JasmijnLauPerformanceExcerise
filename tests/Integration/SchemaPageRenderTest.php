@@ -101,7 +101,7 @@ if (class_exists('WP_UnitTestCase')) {
 					'totals'            => new DistanceTotals(0.0, 0.0, 0.0),
 					'trainings'         => [
 						new Training(1, 1, 0, 'morning', '', null, '', '', ''),
-						new Training(2, 1, 0, 'afternoon', 'Rustige duurloop', 1, '', '', ''),
+						new Training(2, 1, 0, 'afternoon', 'Rustige duurloop', 1, '', '', '', null, null, null, 8),
 					],
 					'user'              => $user,
 					'week'              => Week::fromDateString('2026-08-17'),
@@ -112,6 +112,12 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertStringContainsString('id="lpt-hide-rest-days"', $html);
 			self::assertStringContainsString('data-is-rest="1"', $html);
 			self::assertStringContainsString('data-is-rest="0"', $html);
+			self::assertMatchesRegularExpression('/Klachten\/ Blessures.*?<label for="lpt-fitness-2">Fitheid<\/label>/s', $html);
+			self::assertMatchesRegularExpression('/id="lpt-fitness-2"\s+data-field="fitness_rating"[^>]+value="8"/s', $html);
+			self::assertSame(2, substr_count($html, 'data-field="fitness_rating"'));
+			self::assertSame(2, substr_count($html, 'aria-label="Verhoog fitheid"'));
+			self::assertStringContainsString('inputmode="numeric"', $html);
+			self::assertStringContainsString('pattern="(?:[1-9]|10)"', $html);
 			self::assertStringContainsString('Vorige week', $html);
 			self::assertStringContainsString('Volgende week', $html);
 			self::assertStringContainsString(

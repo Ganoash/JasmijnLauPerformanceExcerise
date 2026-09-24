@@ -66,6 +66,7 @@ final class DatabaseInstaller
 				actual_swimming_distance DECIMAL(10,2) NULL,
 				execution_comment TEXT NULL,
 				injury_comment TEXT NULL,
+				fitness_rating TINYINT UNSIGNED NULL,
 				coach_comment TEXT NULL,
 				created_at DATETIME NOT NULL,
 				updated_at DATETIME NOT NULL,
