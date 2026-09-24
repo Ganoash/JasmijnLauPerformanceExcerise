@@ -48,7 +48,7 @@ final class UserPaymentService
 		}
 
 		$this->dateValidator()->assertValidRequestDate($current);
-		$next = $this->addOneMonth($current);
+		$next = $this->addFourWeeks($current);
 		update_user_meta($user_id, self::META_NEXT_PAYMENT_DATE, $next);
 
 		return $next;
@@ -69,21 +69,14 @@ final class UserPaymentService
 		return $date < $this->today();
 	}
 
-	private function addOneMonth(string $date): string
+	private function addFourWeeks(string $date): string
 	{
 		$current = DateTimeImmutable::createFromFormat('!Y-m-d', $date, new DateTimeZone(self::TIMEZONE));
 		if (! $current) {
 			throw new InvalidArgumentException('Ongeldige datum.');
 		}
 
-		$next_month = $current->modify('first day of next month');
-		$day = min((int) $current->format('d'), (int) $next_month->format('t'));
-
-		return $next_month->setDate(
-			(int) $next_month->format('Y'),
-			(int) $next_month->format('m'),
-			$day
-		)->format('Y-m-d');
+		return $current->modify('+4 weeks')->format('Y-m-d');
 	}
 
 	private function today(): string

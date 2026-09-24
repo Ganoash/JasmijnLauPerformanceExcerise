@@ -30,15 +30,16 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertSame('', $service->nextPaymentDate($user_id));
 		}
 
-		public function test_advance_payment_date_moves_to_next_month_and_clamps_month_end(): void
+		public function test_advance_payment_date_moves_forward_four_weeks(): void
 		{
 			$user_id = self::factory()->user->create();
 			$service = new UserPaymentService();
 
-			$next = $service->advanceNextPaymentDate($user_id, '2026-01-31');
+			$next = $service->advanceNextPaymentDate($user_id, '2026-01-30');
 
-			self::assertSame('2026-02-28', $next);
-			self::assertSame('2026-02-28', $service->nextPaymentDate($user_id));
+			self::assertSame('2026-02-27', $next);
+			self::assertSame('2026-02-27', $service->nextPaymentDate($user_id));
+			self::assertSame('2026-03-27', $service->advanceNextPaymentDate($user_id));
 		}
 	}
 }

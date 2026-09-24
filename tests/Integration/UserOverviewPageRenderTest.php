@@ -92,7 +92,7 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertStringContainsString('name="next_payment_date"', $html);
 			self::assertStringContainsString('value="' . $overdue_date . '"', $html);
 			self::assertStringContainsString('is-overdue', $html);
-			self::assertStringContainsString('Herhaal volgende maand', $html);
+			self::assertStringContainsString('Schuif betaaldatum vier weken op', $html);
 			self::assertStringContainsString('dashicons-update', $html);
 		}
 	}

@@ -84,8 +84,8 @@ $payment_overdue = $payment_overdue ?? [];
 									name="payment_action"
 									value="advance"
 									class="button button-secondary lpt-payment-advance"
-									aria-label="Herhaal volgende maand"
-									title="Herhaal volgende maand"
+									aria-label="Schuif betaaldatum vier weken op"
+									title="Schuif betaaldatum vier weken op"
 								>
 									<span class="dashicons dashicons-update" aria-hidden="true"></span>
 								</button>
