@@ -76,6 +76,29 @@
     });
   }
 
+  function updateExtraDistances(row) {
+    const toggle = row.querySelector(".lpt-extra-distances-toggle");
+    if (!toggle) {
+      return;
+    }
+
+    const expanded = toggle.getAttribute("aria-expanded") === "true";
+    row.querySelectorAll('[data-extra-distance="1"]').forEach((container) => {
+      const input = container.querySelector("input");
+      const value = input.value.trim();
+      const hasNonZeroValue = value !== "" && Number(value.replace(",", ".")) !== 0;
+      const collapsed = !expanded && !hasNonZeroValue;
+
+      container.classList.toggle("is-collapsed", collapsed);
+      container.toggleAttribute("inert", collapsed);
+      if (collapsed) {
+        container.setAttribute("aria-hidden", "true");
+      } else {
+        container.removeAttribute("aria-hidden");
+      }
+    });
+  }
+
   function payloadMessage(payload) {
     if (payload && payload.data && typeof payload.data.message === "string") {
       return payload.data.message;
@@ -153,6 +176,21 @@
   }
 
   rows.forEach((row) => {
+    const extraDistancesToggle = row.querySelector(".lpt-extra-distances-toggle");
+    if (extraDistancesToggle) {
+      extraDistancesToggle.addEventListener("click", () => {
+        const expanded = extraDistancesToggle.getAttribute("aria-expanded") !== "true";
+        extraDistancesToggle.setAttribute("aria-expanded", String(expanded));
+        extraDistancesToggle.setAttribute(
+          "aria-label",
+          expanded ? "Verberg extra afstanden" : "Toon extra afstanden",
+        );
+        extraDistancesToggle.textContent = expanded ? "−" : "+";
+        updateExtraDistances(row);
+      });
+      updateExtraDistances(row);
+    }
+
     row.querySelectorAll("[data-field]").forEach((field) => {
       if (field.dataset.field === "fitness_rating") {
         return;
@@ -167,6 +205,7 @@
       field.addEventListener("blur", () => {
         if (field.dataset.category) {
           updateTotals();
+          updateExtraDistances(row);
         }
         saveField(row, field.dataset.field, field.value, 1);
       });
@@ -179,7 +218,7 @@
 
     const fitnessControl = fitnessInput.closest(".lpt-fitness-control");
     const fitnessError = row.querySelector(".lpt-fitness-error");
-    let fitnessSaveTimer;
+    let pendingFitnessSave = Promise.resolve();
 
     function validateFitness() {
       const value = fitnessInput.value.trim();
@@ -193,19 +232,18 @@
     }
 
     function queueFitnessSave() {
-      window.clearTimeout(fitnessSaveTimer);
       if (!validateFitness()) {
         setStatus(row, "", false);
         return;
       }
 
-      fitnessSaveTimer = window.setTimeout(() => {
-        saveField(row, "fitness_rating", fitnessInput.value.trim(), 1);
-      }, 150);
+      const value = fitnessInput.value.trim();
+      pendingFitnessSave = pendingFitnessSave.then(() =>
+        saveField(row, "fitness_rating", value, 1),
+      );
     }
 
     fitnessInput.addEventListener("input", () => {
-      window.clearTimeout(fitnessSaveTimer);
       setStatus(row, "", false);
       validateFitness();
     });
@@ -220,9 +258,10 @@
     fitnessControl.querySelectorAll("[data-fitness-step]").forEach((button) => {
       button.addEventListener("click", () => {
         const step = Number(button.dataset.fitnessStep);
-        const current = Number.parseInt(fitnessInput.value, 10);
-        const base = /^(?:[1-9]|10)$/.test(fitnessInput.value.trim()) ? current : step > 0 ? 0 : 2;
-        fitnessInput.value = String(Math.min(10, Math.max(1, base + step)));
+        const value = fitnessInput.value.trim();
+        const current = /^(?:[1-9]|10)$/.test(value) ? Number(value) : null;
+        const next = current === null ? 1 : Math.min(10, Math.max(1, current + step));
+        fitnessInput.value = String(next);
         queueFitnessSave();
       });
     });

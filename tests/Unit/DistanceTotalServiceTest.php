@@ -48,4 +48,16 @@ final class DistanceTotalServiceTest extends TestCase
 		self::assertSame(42.0, $totals->cyclingKm);
 		self::assertSame(1.5, $totals->swimmingKm);
 	}
+
+	public function test_totals_include_extra_distances_without_matching_training_types(): void
+	{
+		$training = new Training(1, 1, 0, 'morning', '', 1, '', '', '', 8.5, 42.0, 1500.0);
+		$types = [1 => new TrainingType(1, 'Lopen', 'running', 'kilometers', '#ffffff', '', true)];
+
+		$totals = (new DistanceTotalService())->calculate([$training], $types);
+
+		self::assertSame(8.5, $totals->runningKm);
+		self::assertSame(42.0, $totals->cyclingKm);
+		self::assertSame(1.5, $totals->swimmingKm);
+	}
 }

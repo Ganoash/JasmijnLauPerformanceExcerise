@@ -213,6 +213,41 @@
   font-weight: 600;
 }
 
+.lpt-distance-fields {
+  display: grid;
+}
+
+.lpt-distance-field {
+  display: grid;
+  grid-template-rows: 1fr;
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 10px;
+  opacity: 1;
+  transition:
+    grid-template-rows 220ms ease,
+    padding-bottom 220ms ease,
+    opacity 180ms ease,
+    visibility 0s;
+}
+
+.lpt-distance-field > label {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.lpt-distance-field.is-collapsed {
+  grid-template-rows: 0fr;
+  padding-bottom: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 220ms ease,
+    padding-bottom 220ms ease,
+    opacity 180ms ease,
+    visibility 0s 220ms;
+}
+
 .lpt-feedback-fields input,
 .lpt-feedback-fields textarea {
   width: 100%;
@@ -229,14 +264,47 @@
   min-width: 0;
 }
 
+.lpt-fitness-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .lpt-fitness-field > label {
   font-weight: 600;
+}
+
+.lpt-extra-distances-toggle {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  margin: 0;
+  border: 1px solid #8995a5;
+  border-radius: 6px;
+  padding: 0;
+  background: #fff;
+  color: #202124;
+  font: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lpt-extra-distances-toggle:hover,
+.lpt-extra-distances-toggle:focus-visible {
+  border-color: #135e96;
+  background: #eef4f9;
+  color: #135e96;
 }
 
 .lpt-fitness-control {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) 44px;
-  width: min(100%, 190px);
+  width: 190px;
+  max-width: calc(100% - 40px);
+  flex-shrink: 1;
   overflow: hidden;
   border: 1px solid #8995a5;
   border-radius: 6px;
@@ -357,5 +425,12 @@
 
   .lpt-totals {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpt-distance-field,
+  .lpt-distance-field.is-collapsed {
+    transition: none;
   }
 }

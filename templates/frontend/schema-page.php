@@ -45,7 +45,7 @@ if (! function_exists('lpt_hex_to_rgba')) {
 /**
  * @param \LauPerformanceTraining\Domain\TrainingType|null $primary_type
  * @param \LauPerformanceTraining\Domain\TrainingType[] $linked_types
- * @return array<string,array{label:string,unit:string,field:string,value:float|null}>
+ * @return array<string,array{label:string,unit:string,field:string,value:float|null,default:bool}>
  */
 if (! function_exists('lpt_distance_fields_for_training')) {
 	function lpt_distance_fields_for_training(
@@ -53,26 +53,32 @@ if (! function_exists('lpt_distance_fields_for_training')) {
 		?\LauPerformanceTraining\Domain\TrainingType $primary_type,
 		array $linked_types
 	): array {
-		$fields = [];
+		$types_by_category = [];
 		foreach (array_filter([$primary_type, ...$linked_types]) as $type) {
 			$category = strtolower($type->category);
-			if (! in_array($category, ['running', 'cycling', 'swimming'], true) || isset($fields[$category])) {
+			if (! in_array($category, ['running', 'cycling', 'swimming'], true) || isset($types_by_category[$category])) {
 				continue;
 			}
 
+			$types_by_category[$category] = $type;
+		}
+
+		$fields = [];
+		foreach (['running' => 'kilometers', 'cycling' => 'kilometers', 'swimming' => 'meters'] as $category => $default_unit) {
 			$fields[$category] = [
 				'label' => match ($category) {
 					'running' => 'Lopen',
 					'cycling' => 'Fietsen',
 					default => 'Zwemmen',
 				},
-				'unit'  => $type->unit,
+				'unit'  => $types_by_category[$category]->unit ?? $default_unit,
 				'field' => 'actual_' . $category . '_distance',
 				'value' => match ($category) {
 					'running' => $training->actualRunningDistance,
 					'cycling' => $training->actualCyclingDistance,
 					default => $training->actualSwimmingDistance,
 				},
+				'default' => isset($types_by_category[$category]),
 			];
 		}
 
@@ -230,20 +236,25 @@ if (! function_exists('lpt_render_schedule_goal_badges')) {
 				</div>
 
 				<div class="lpt-feedback-fields">
-					<?php foreach ($distance_fields as $category => $field) : ?>
-						<label>
-							<span><?php echo esc_html($field['label'] . ' (' . $field['unit'] . ')'); ?></span>
-							<input
-								data-field="<?php echo esc_attr($field['field']); ?>"
-								data-category="<?php echo esc_attr($category); ?>"
-								data-unit="<?php echo esc_attr($field['unit']); ?>"
-								type="number"
-								step="0.01"
-								min="0"
-								value="<?php echo esc_attr($field['value'] === null ? '' : (string) $field['value']); ?>"
-							>
-						</label>
-					<?php endforeach; ?>
+					<div class="lpt-distance-fields" id="lpt-distances-<?php echo esc_attr((string) $training->id); ?>">
+						<?php foreach ($distance_fields as $category => $field) : ?>
+							<?php $collapsed = ! $field['default'] && ($field['value'] === null || $field['value'] === 0.0); ?>
+							<div class="lpt-distance-field<?php echo $collapsed ? ' is-collapsed' : ''; ?>" data-extra-distance="<?php echo $field['default'] ? '0' : '1'; ?>"<?php echo $collapsed ? ' aria-hidden="true" inert' : ''; ?>>
+								<label>
+									<span><?php echo esc_html($field['label'] . ' (' . $field['unit'] . ')'); ?></span>
+									<input
+										data-field="<?php echo esc_attr($field['field']); ?>"
+										data-category="<?php echo esc_attr($category); ?>"
+										data-unit="<?php echo esc_attr($field['unit']); ?>"
+										type="number"
+										step="0.01"
+										min="0"
+										value="<?php echo esc_attr($field['value'] === null ? '' : (string) $field['value']); ?>"
+									>
+								</label>
+							</div>
+						<?php endforeach; ?>
+					</div>
 					<label>
 						<span>Uitvoering</span>
 						<textarea data-field="execution_comment" rows="3"><?php echo esc_textarea($training->executionComment); ?></textarea>
@@ -254,20 +265,25 @@ if (! function_exists('lpt_render_schedule_goal_badges')) {
 					</label>
 					<div class="lpt-fitness-field">
 						<label for="lpt-fitness-<?php echo esc_attr((string) $training->id); ?>">Fitheid</label>
-						<div class="lpt-fitness-control">
-							<button type="button" class="lpt-fitness-step" data-fitness-step="-1" aria-label="Verlaag fitheid" aria-controls="lpt-fitness-<?php echo esc_attr((string) $training->id); ?>">−</button>
-							<input
-								id="lpt-fitness-<?php echo esc_attr((string) $training->id); ?>"
-								data-field="fitness_rating"
-								type="text"
-								inputmode="numeric"
-								pattern="(?:[1-9]|10)"
-								maxlength="2"
-								placeholder="1–10"
-								aria-describedby="lpt-fitness-error-<?php echo esc_attr((string) $training->id); ?>"
-								value="<?php echo esc_attr($training->fitnessRating === null ? '' : (string) $training->fitnessRating); ?>"
-							>
-							<button type="button" class="lpt-fitness-step" data-fitness-step="1" aria-label="Verhoog fitheid" aria-controls="lpt-fitness-<?php echo esc_attr((string) $training->id); ?>">+</button>
+						<div class="lpt-fitness-input-row">
+							<div class="lpt-fitness-control">
+								<button type="button" class="lpt-fitness-step" data-fitness-step="-1" aria-label="Verlaag fitheid" aria-controls="lpt-fitness-<?php echo esc_attr((string) $training->id); ?>">−</button>
+								<input
+									id="lpt-fitness-<?php echo esc_attr((string) $training->id); ?>"
+									data-field="fitness_rating"
+									type="text"
+									inputmode="numeric"
+									pattern="(?:[1-9]|10)"
+									maxlength="2"
+									placeholder="1–10"
+									aria-describedby="lpt-fitness-error-<?php echo esc_attr((string) $training->id); ?>"
+									value="<?php echo esc_attr($training->fitnessRating === null ? '' : (string) $training->fitnessRating); ?>"
+								>
+								<button type="button" class="lpt-fitness-step" data-fitness-step="1" aria-label="Verhoog fitheid" aria-controls="lpt-fitness-<?php echo esc_attr((string) $training->id); ?>">+</button>
+							</div>
+							<?php if (count(array_filter($distance_fields, static fn (array $field): bool => ! $field['default'])) > 0) : ?>
+								<button type="button" class="lpt-extra-distances-toggle" aria-expanded="false" aria-controls="lpt-distances-<?php echo esc_attr((string) $training->id); ?>" aria-label="Toon extra afstanden">+</button>
+							<?php endif; ?>
 						</div>
 						<span id="lpt-fitness-error-<?php echo esc_attr((string) $training->id); ?>" class="lpt-fitness-error" aria-live="polite"></span>
 					</div>

@@ -101,7 +101,7 @@ if (class_exists('WP_UnitTestCase')) {
 					'totals'            => new DistanceTotals(0.0, 0.0, 0.0),
 					'trainings'         => [
 						new Training(1, 1, 0, 'morning', '', null, '', '', ''),
-						new Training(2, 1, 0, 'afternoon', 'Rustige duurloop', 1, '', '', '', null, null, null, 8),
+						new Training(2, 1, 0, 'afternoon', 'Rustige duurloop', 1, '', '', '', null, 42.0, 0.0, 8),
 					],
 					'user'              => $user,
 					'week'              => Week::fromDateString('2026-08-17'),
@@ -116,6 +116,11 @@ if (class_exists('WP_UnitTestCase')) {
 			self::assertMatchesRegularExpression('/id="lpt-fitness-2"\s+data-field="fitness_rating"[^>]+value="8"/s', $html);
 			self::assertSame(2, substr_count($html, 'data-field="fitness_rating"'));
 			self::assertSame(2, substr_count($html, 'aria-label="Verhoog fitheid"'));
+			self::assertSame(2, substr_count($html, 'class="lpt-extra-distances-toggle"'));
+			self::assertSame(6, substr_count($html, 'data-extra-distance='));
+			self::assertSame(4, substr_count($html, 'class="lpt-distance-field is-collapsed"'));
+			self::assertMatchesRegularExpression('/class="lpt-distance-field" data-extra-distance="1">\s*<label>\s*<span>Fietsen \(kilometers\)<\/span>\s*<input\s+data-field="actual_cycling_distance"[^>]+value="42"/s', $html);
+			self::assertMatchesRegularExpression('/<div class="lpt-fitness-input-row">\s*<div class="lpt-fitness-control">.*?<\/div>\s*<button[^>]+class="lpt-extra-distances-toggle"/s', $html);
 			self::assertStringContainsString('inputmode="numeric"', $html);
 			self::assertStringContainsString('pattern="(?:[1-9]|10)"', $html);
 			self::assertStringContainsString('Vorige week', $html);

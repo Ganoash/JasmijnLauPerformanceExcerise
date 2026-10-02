@@ -51,11 +51,17 @@ final class DistanceTotalService
 	 */
 	private function distanceCategories(?TrainingType $primary_type, array $linked_types): array
 	{
-		$categories = [];
+		$categories = [
+			'running'  => 'kilometers',
+			'cycling'  => 'kilometers',
+			'swimming' => 'meters',
+		];
+		$matched_categories = [];
 		foreach (array_filter([$primary_type, ...$linked_types]) as $type) {
 			$category = strtolower($type->category);
-			if (in_array($category, ['running', 'cycling', 'swimming'], true) && ! isset($categories[$category])) {
+			if (isset($categories[$category]) && ! isset($matched_categories[$category])) {
 				$categories[$category] = strtolower($type->unit);
+				$matched_categories[$category] = true;
 			}
 		}
 
