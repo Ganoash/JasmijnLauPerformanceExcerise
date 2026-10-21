@@ -203,6 +203,7 @@ if (! function_exists('lpt_render_schedule_goal_badges')) {
 							<div class="lpt-training-types">
 								<strong class="lpt-field-heading">Type</strong>
 								<ul class="lpt-type-links">
+									<?php $type_index = 0; ?>
 									<?php if ($primary_type) : ?>
 										<li>
 											<?php if ($primary_type->linkedUrl !== '') : ?>
@@ -213,9 +214,11 @@ if (! function_exists('lpt_render_schedule_goal_badges')) {
 												<?php echo esc_html($primary_type->name); ?>
 											<?php endif; ?>
 										</li>
+										<?php $type_index++; ?>
 									<?php endif; ?>
 									<?php foreach ($training_linked_types as $type) : ?>
 										<li>
+											<?php if ($type_index > 0) : ?>, <?php endif; ?>
 											<?php if ($type->linkedUrl !== '') : ?>
 												<a href="<?php echo esc_url($type->linkedUrl); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr('Info over ' . $type->name); ?>">
 													<?php echo esc_html($type->name); ?>
@@ -224,6 +227,7 @@ if (! function_exists('lpt_render_schedule_goal_badges')) {
 												<?php echo esc_html($type->name); ?>
 											<?php endif; ?>
 										</li>
+										<?php $type_index++; ?>
 									<?php endforeach; ?>
 								</ul>
 							</div>
